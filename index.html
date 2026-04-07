@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Urban Guardian - Prototipo SPA</title>
+    <!-- Fuentes e Iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Hoja de estilos separada -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="mobile-frame">
+
+        <!-- ============ HEADER (siempre visible) ============ -->
+        <header id="app-header">
+            <div class="user-info">
+                <h1>Hola, Laura</h1>
+                <p>Red de apoyo activa</p>
+            </div>
+            <div class="profile-pic" onclick="navigateTo('perfil')">
+                <i class="fa-solid fa-user-nurse"></i>
+            </div>
+        </header>
+
+        <!-- ============ VIEW 1: MAPA (Realista) ============ -->
+        <div id="view-mapa" class="view active">
+
+            <!-- Mapa Ficticio Realista -->
+            <div class="realistic-map">
+                <!-- Edificios/Cuadras -->
+                <div class="map-block" style="top: 5%; left: 5%; width: 15%; height: 20%;"></div>
+                <div class="map-block" style="top: 5%; left: 28%; width: 42%; height: 20%;"></div>
+                <div class="map-block" style="top: 5%; right: 5%; width: 15%; height: 20%;"></div>
+                <div class="map-block" style="top: 35%; left: 5%; width: 15%; height: 20%;"></div>
+                <div class="map-block" style="top: 35%; right: 5%; width: 15%; height: 20%;"></div>
+                <div class="map-block" style="bottom: 5%; left: 5%; width: 15%; height: 20%;"></div>
+                <div class="map-block" style="bottom: 5%; left: 28%; width: 42%; height: 20%;"></div>
+                <div class="map-block" style="bottom: 5%; right: 5%; width: 15%; height: 20%;"></div>
+
+                <!-- Parque -->
+                <div class="map-park" style="top: 35%; left: 28%; width: 42%; height: 20%;"></div>
+
+                <!-- Nombres de calles -->
+                <div class="street-label" style="top: 26%; left: 50%; transform: translateX(-50%);">Av. Seguridad</div>
+                <div class="street-label" style="top: 56%; left: 50%; transform: translateX(-50%);">Calle Luz Verde</div>
+                <div class="street-label" style="top: 42%; left: 10%; transform: rotate(-90deg);">Calle Central</div>
+                <div class="street-label" style="top: 42%; right: 8%; transform: rotate(90deg);">Calle Norte</div>
+            </div>
+
+            <!-- Heatmap de seguridad -->
+            <div class="heatmap-layer"></div>
+
+            <!-- Marcador de Ubicación del Usuario (GPS) -->
+            <div class="user-location-marker">
+                <div class="gps-pulse-ring"></div>
+                <div class="gps-pulse-ring"></div>
+                <div class="gps-pulse-ring"></div>
+                <div class="user-dot"></div>
+                <div class="user-label">Tú</div>
+            </div>
+
+            <!-- Marcador de Destino -->
+            <div class="destination-marker">
+                <div class="destination-pin">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <div class="destination-label">Casa</div>
+            </div>
+
+            <!-- Ruta Segura Overlay -->
+            <div class="safe-route-overlay" id="safe-route-overlay">
+                <!-- SVG con la ruta animada -->
+                <svg class="route-svg-container" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice">
+                    <!-- Ruta principal verde -->
+                    <path class="route-path" id="route-path"
+                          d="M 200 490 
+                             L 200 420
+                             Q 200 380, 240 380
+                             L 280 380
+                             Q 320 380, 320 340
+                             L 320 280
+                             Q 320 240, 280 240
+                             L 230 240
+                             Q 190 240, 190 200
+                             L 190 180"/>
+                    <!-- Línea brillante animada -->
+                    <path class="route-glow"
+                          d="M 200 490 
+                             L 200 420
+                             Q 200 380, 240 380
+                             L 280 380
+                             Q 320 380, 320 340
+                             L 320 280
+                             Q 320 240, 280 240
+                             L 230 240
+                             Q 190 240, 190 200
+                             L 190 180"/>
+                </svg>
+
+                <!-- Zonas iluminadas seguras -->
+                <div class="safe-zone" style="bottom: 35%; left: 35%; width: 80px; height: 80px;"></div>
+                <div class="safe-zone" style="top: 30%; right: 20%; width: 100px; height: 100px;"></div>
+                <div class="safe-zone" style="top: 20%; left: 35%; width: 60px; height: 60px;"></div>
+
+                <!-- Waypoints de la ruta -->
+                <div class="route-waypoint" style="bottom: 60%; left: 50%;"></div>
+                <div class="route-waypoint" style="bottom: 54%; left: 70%;"></div>
+                <div class="route-waypoint" style="top: 40%; right: 20%;"></div>
+                <div class="route-waypoint" style="top: 34%; left: 57%;"></div>
+
+                <!-- Indicador de giro -->
+                <div class="turn-indicator" style="bottom: 54%; left: 68%;">
+                    <i class="fa-solid fa-turn-right"></i>
+                </div>
+
+                <!-- Tarjeta de navegación -->
+                <div class="nav-info-card">
+                    <div class="nav-arrow">
+                        <i class="fa-solid fa-arrow-up"></i>
+                    </div>
+                    <div class="nav-details">
+                        <h4>Gira a la derecha en 200m</h4>
+                        <p><i class="fa-solid fa-shield-halved"></i> Ruta iluminada · 12 min</p>
+                    </div>
+                </div>
+
+                <!-- Contador de pasos -->
+                <div class="step-counter">
+                    <div class="step-item">
+                        <div class="value">850m</div>
+                        <div class="label">Distancia</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="value">12min</div>
+                        <div class="label">Tiempo</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="value" style="color: var(--safe);">98%</div>
+                        <div class="label">Segura</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAB Refugio Cercano -->
+            <div class="fab-safe-spot" id="btn-refugio">
+                <i class="fa-solid fa-shield-heart"></i> Refugio Cercano
+            </div>
+
+            <!-- Card de Rutas -->
+            <div class="route-card">
+                <div class="input-group">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" placeholder="¿Hacia dónde vas? (Ej. Casa)" id="destination-input" value="Casa">
+                </div>
+                <div class="route-options">
+                    <button class="btn-route btn-safe active" id="btn-safe-route">
+                        <i class="fa-solid fa-lightbulb"></i> Ruta Segura
+                        <div style="font-size:10px;font-weight:normal;margin-top:4px;">Iluminada + Peatones</div>
+                    </button>
+                    <button class="btn-route btn-fast" id="btn-fast-route">
+                        <i class="fa-solid fa-bolt"></i> Rápida
+                        <div style="font-size:10px;font-weight:normal;margin-top:4px;">Zonas oscuras</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ VIEW 3: RED (Community) ============ -->
+        <div id="view-red" class="view">
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="tab-contactos">Mis Contactos</button>
+                <button class="tab-btn" data-tab="tab-guardianes">Guardianes Locales</button>
+            </div>
+
+            <!-- Tab: Mis Contactos -->
+            <div class="tab-panel active" id="tab-contactos">
+                <h3 class="section-title" style="padding:0;">Contactos de confianza</h3>
+
+                <!-- Contact 1 -->
+                <div class="contact-card">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Mamá</h4>
+                        <p>Último contacto: hace 2h</p>
+                    </div>
+                    <div class="toggle-wrap">
+                        <span class="toggle-label">Ubicación</span>
+                        <div class="toggle on" data-toggle="contact-1"></div>
+                    </div>
+                </div>
+
+                <!-- Contact 2 -->
+                <div class="contact-card">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#4A90E2,#6a5acd);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Carlos (Compañero)</h4>
+                        <p>Compartiendo ubicación en vivo</p>
+                    </div>
+                    <div class="toggle-wrap">
+                        <span class="toggle-label">Ubicación</span>
+                        <div class="toggle on" data-toggle="contact-2"></div>
+                    </div>
+                </div>
+
+                <!-- Contact 3 -->
+                <div class="contact-card">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#2ECC71,#27ae60);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Andrea (Roomie)</h4>
+                        <p>Desconectada</p>
+                    </div>
+                    <div class="toggle-wrap">
+                        <span class="toggle-label">Ubicación</span>
+                        <div class="toggle" data-toggle="contact-3"></div>
+                    </div>
+                </div>
+
+                <!-- Contact 4 -->
+                <div class="contact-card">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#F39C12,#e67e22);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Papá</h4>
+                        <p>Último contacto: hace 5h</p>
+                    </div>
+                    <div class="toggle-wrap">
+                        <span class="toggle-label">Ubicación</span>
+                        <div class="toggle" data-toggle="contact-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Guardianes Locales -->
+            <div class="tab-panel" id="tab-guardianes">
+                <h3 class="section-title" style="padding:0;">Voluntarios y guardias activos cerca de ti</h3>
+
+                <!-- Guardian 1 -->
+                <div class="guardian-card">
+                    <div class="guardian-avatar" style="background:linear-gradient(135deg,#2ECC71,#27ae60);">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Miguel R.</h4>
+                        <p>Guardia verificado · 350m</p>
+                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Disponible</span>
+                    </div>
+                    <button class="btn-request-guardian" onclick="requestGuardian(this)">Solicitar</button>
+                </div>
+
+                <!-- Guardian 2 -->
+                <div class="guardian-card">
+                    <div class="guardian-avatar" style="background:linear-gradient(135deg,#4A90E2,#3a7bd5);">
+                        <i class="fa-solid fa-person-walking"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Ana P.</h4>
+                        <p>Voluntaria · 200m</p>
+                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Disponible</span>
+                    </div>
+                    <button class="btn-request-guardian" onclick="requestGuardian(this)">Solicitar</button>
+                </div>
+
+                <!-- Guardian 3 -->
+                <div class="guardian-card">
+                    <div class="guardian-avatar" style="background:linear-gradient(135deg,#F39C12,#e67e22);">
+                        <i class="fa-solid fa-bicycle"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Rider David</h4>
+                        <p>Rider verificado · 500m</p>
+                        <span class="guardian-status busy-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> En ruta</span>
+                    </div>
+                    <button class="btn-request-guardian" onclick="requestGuardian(this)" disabled style="opacity:0.4; cursor:default;">En ruta</button>
+                </div>
+
+                <!-- Guardian 4 -->
+                <div class="guardian-card">
+                    <div class="guardian-avatar" style="background:linear-gradient(135deg,#9b59b6,#8e44ad);">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Lucía M.</h4>
+                        <p>Vecina verificada · 150m</p>
+                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Disponible</span>
+                    </div>
+                    <button class="btn-request-guardian" onclick="requestGuardian(this)">Solicitar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ VIEW 4: PERFIL / DASHBOARD ============ -->
+        <div id="view-perfil" class="view">
+
+            <!-- Profile header -->
+            <div class="profile-header">
+                <div class="profile-avatar-large">
+                    <i class="fa-solid fa-user-nurse"></i>
+                </div>
+                <h2>Laura García</h2>
+                <div class="profile-level">
+                    <i class="fa-solid fa-shield-halved"></i> Guardián Nivel 3
+                </div>
+            </div>
+
+            <!-- XP Bar -->
+            <div class="xp-bar-container">
+                <div class="xp-header">
+                    <span>Progreso al Nivel 4</span>
+                    <strong>650 / 1000 XP</strong>
+                </div>
+                <div class="xp-track">
+                    <div class="xp-fill" id="xp-fill"></div>
+                </div>
+            </div>
+
+            <!-- Safety Dashboard -->
+            <div class="dashboard-section">
+                <h3>Safety Dashboard</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color:var(--warning);"><i class="fa-solid fa-bullhorn"></i></div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Micro-incidentes reportados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color:var(--safe);"><i class="fa-solid fa-route"></i></div>
+                        <div class="stat-value">34</div>
+                        <div class="stat-label">Rutas seguras tomadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color:var(--primary);"><i class="fa-solid fa-lightbulb"></i></div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Puntos de luz verificados</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Badges section -->
+            <div class="dashboard-section">
+                <h3>Logros recientes</h3>
+                <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:4px;">
+                    <div class="stat-card" style="min-width:100px;">
+                        <div class="stat-icon" style="color:#F39C12;">🛡️</div>
+                        <div class="stat-label">Primer reporte</div>
+                    </div>
+                    <div class="stat-card" style="min-width:100px;">
+                        <div class="stat-icon" style="color:#2ECC71;">🌙</div>
+                        <div class="stat-label">10 rutas nocturnas</div>
+                    </div>
+                    <div class="stat-card" style="min-width:100px;">
+                        <div class="stat-icon" style="color:#4A90E2;">👥</div>
+                        <div class="stat-label">Red de 5+</div>
+                    </div>
+                    <div class="stat-card" style="min-width:100px;">
+                        <div class="stat-icon" style="color:#e74c3c;">🔦</div>
+                        <div class="stat-label">Verificador de luz</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="dashboard-section">
+                <h3>Ajustes</h3>
+                <div class="settings-list">
+                    <div class="setting-item" id="btn-sos-settings">
+                        <i class="fa-solid fa-key"></i>
+                        <div class="setting-text">
+                            <h4>Ajustes de SOS</h4>
+                            <p>Configurar PIN falso de cancelación</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right setting-arrow"></i>
+                    </div>
+                    <div class="setting-item">
+                        <i class="fa-solid fa-bell"></i>
+                        <div class="setting-text">
+                            <h4>Notificaciones</h4>
+                            <p>Alertas de zona, guardián cercano</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right setting-arrow"></i>
+                    </div>
+                    <div class="setting-item">
+                        <i class="fa-solid fa-user-group"></i>
+                        <div class="setting-text">
+                            <h4>Contactos de emergencia</h4>
+                            <p>Gestionar tu red de confianza</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right setting-arrow"></i>
+                    </div>
+                    <div class="setting-item">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <div class="setting-text">
+                            <h4>Acerca de Urban Guardian</h4>
+                            <p>Versión 1.0 · Prototipo</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right setting-arrow"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ BOTTOM NAVIGATION ============ -->
+        <nav id="bottom-nav">
+            <div class="nav-item active" data-view="mapa">
+                <i class="fa-solid fa-map"></i> Mapa
+            </div>
+            <div class="nav-item" data-view="reportar">
+                <i class="fa-solid fa-bullhorn"></i> Reportar
+            </div>
+
+            <!-- Botón SOS Silencioso (Long Press) -->
+            <div class="sos-container">
+                <div class="btn-sos" id="sos-btn">SOS</div>
+                <div class="sos-progress" id="sos-progress"></div>
+                <div class="sos-hold-label">Mantener</div>
+            </div>
+
+            <div class="nav-item" data-view="red">
+                <i class="fa-solid fa-users"></i> Red
+            </div>
+            <div class="nav-item" data-view="perfil">
+                <i class="fa-solid fa-gear"></i> Perfil
+            </div>
+        </nav>
+
+        <!-- ============ MODAL: Reporte de Micro-Incidentes ============ -->
+        <div class="modal-overlay" id="report-modal">
+            <div class="modal-content">
+                <div class="modal-title">
+                    <span>Reportar Micro-incidente</span>
+                    <i class="fa-solid fa-xmark modal-close" id="close-report-modal"></i>
+                </div>
+                <p style="color:var(--text-muted);font-size:12px;margin-bottom:20px;">
+                    Tu reporte actualiza el mapa de calor para otros usuarios en tiempo real.
+                </p>
+                <div class="report-grid">
+                    <div class="report-item" onclick="sendReport(this)">
+                        <i class="fa-regular fa-lightbulb"></i><br>Calle oscura / Sin luz
+                    </div>
+                    <div class="report-item" onclick="sendReport(this)">
+                        <i class="fa-solid fa-users-slash"></i><br>Grupo sospechoso
+                    </div>
+                    <div class="report-item" onclick="sendReport(this)">
+                        <i class="fa-solid fa-street-view"></i><br>Acoso verbal
+                    </div>
+                    <div class="report-item" onclick="sendReport(this)">
+                        <i class="fa-solid fa-triangle-exclamation"></i><br>Zona desolada
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ BOTTOM SHEET: Safe Spots (Refugio) ============ -->
+        <div class="modal-overlay" id="shelter-modal">
+            <div class="modal-content">
+                <div class="modal-title">
+                    <span><i class="fa-solid fa-shield-heart" style="color:var(--primary);margin-right:8px;"></i>Refugios Cercanos</span>
+                    <i class="fa-solid fa-xmark modal-close" id="close-shelter-modal"></i>
+                </div>
+                <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">
+                    Safe Spots verificados por la comunidad cerca de tu ubicación.
+                </p>
+
+                <!-- Spot 1 -->
+                <div class="safe-spot-item">
+                    <div class="safe-spot-icon" style="background:rgba(46,204,113,0.15);color:var(--safe);">
+                        <i class="fa-solid fa-prescription-bottle-medical"></i>
+                    </div>
+                    <div class="safe-spot-info">
+                        <h4>Farmacia 24h Ahumada</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> 200m · Abierto ahora</p>
+                    </div>
+                    <button class="btn-navigate" onclick="navigateToSpot(this)">Ir</button>
+                </div>
+
+                <!-- Spot 2 -->
+                <div class="safe-spot-item">
+                    <div class="safe-spot-icon" style="background:rgba(74,144,226,0.15);color:var(--primary);">
+                        <i class="fa-solid fa-gas-pump"></i>
+                    </div>
+                    <div class="safe-spot-info">
+                        <h4>Gasolinera Repsol</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> 500m · Cámaras activas</p>
+                    </div>
+                    <button class="btn-navigate" onclick="navigateToSpot(this)">Ir</button>
+                </div>
+
+                <!-- Spot 3 -->
+                <div class="safe-spot-item">
+                    <div class="safe-spot-icon" style="background:rgba(243,156,18,0.15);color:var(--warning);">
+                        <i class="fa-solid fa-shop"></i>
+                    </div>
+                    <div class="safe-spot-info">
+                        <h4>Tienda OXXO 24h</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> 320m · Zona iluminada</p>
+                    </div>
+                    <button class="btn-navigate" onclick="navigateToSpot(this)">Ir</button>
+                </div>
+
+                <!-- Spot 4 -->
+                <div class="safe-spot-item">
+                    <div class="safe-spot-icon" style="background:rgba(155,89,182,0.15);color:#9b59b6;">
+                        <i class="fa-solid fa-building-shield"></i>
+                    </div>
+                    <div class="safe-spot-info">
+                        <h4>Comisaría Municipal</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> 750m · Abierto 24h</p>
+                    </div>
+                    <button class="btn-navigate" onclick="navigateToSpot(this)">Ir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SOS SETTINGS BOTTOM SHEET ============ -->
+        <div class="modal-overlay" id="sos-settings-modal">
+            <div class="modal-content">
+                <div class="modal-title">
+                    <span><i class="fa-solid fa-key" style="color:var(--danger);margin-right:8px;"></i>Ajustes de SOS</span>
+                    <i class="fa-solid fa-xmark modal-close" id="close-sos-settings"></i>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:6px;">PIN falso de cancelación</h4>
+                    <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">
+                        Si te obligan a cancelar el SOS, usa este PIN. La app simulará la cancelación pero seguirá grabando y enviando tu ubicación en segundo plano.
+                    </p>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <div class="input-group" style="margin-bottom:0;flex:1;">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" value="1234" id="fake-pin-input" style="letter-spacing:8px;font-size:18px;font-weight:700;">
+                        </div>
+                        <button class="btn-navigate" onclick="showToast('PIN actualizado ✓')" style="padding:12px 18px;">Guardar</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:6px;">PIN real de cancelación</h4>
+                    <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">
+                        Este PIN realmente cancela la alerta. Solo tú debes conocerlo.
+                    </p>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <div class="input-group" style="margin-bottom:0;flex:1;">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <input type="password" value="5678" id="real-pin-input" style="letter-spacing:8px;font-size:18px;font-weight:700;">
+                        </div>
+                        <button class="btn-navigate" onclick="showToast('PIN actualizado ✓')" style="padding:12px 18px;">Guardar</button>
+                    </div>
+                </div>
+
+                <div class="setting-item" style="margin-top:8px;">
+                    <i class="fa-solid fa-video" style="color:var(--danger);"></i>
+                    <div class="setting-text">
+                        <h4>Grabación automática</h4>
+                        <p>Audio + Video al activar SOS</p>
+                    </div>
+                    <div class="toggle on" data-toggle="sos-recording"></div>
+                </div>
+
+                <div class="setting-item" style="margin-top:10px;">
+                    <i class="fa-solid fa-satellite-dish" style="color:var(--safe);"></i>
+                    <div class="setting-text">
+                        <h4>Envío de ubicación GPS</h4>
+                        <p>Cada 10 seg a contactos de confianza</p>
+                    </div>
+                    <div class="toggle on" data-toggle="sos-gps"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SOS ACTIVE SCREEN ============ -->
+        <div id="sos-active-screen">
+            <div class="pulsing-circle"><i class="fa-solid fa-video"></i></div>
+            <h2 style="margin-bottom:10px;">Modo Discreto Activo</h2>
+            <p style="font-size:14px;opacity:0.9;max-width:80%;">
+                Grabando audio/video en segundo plano. Ubicación enviada a contactos de confianza.
+            </p>
+            <button class="btn-cancel-sos" id="btn-cancel-sos">DESACTIVAR SOS (PIN)</button>
+        </div>
+
+        <!-- ============ PIN MODAL (SOS Cancellation) ============ -->
+        <div class="pin-overlay" id="pin-modal">
+            <div class="pin-box">
+                <h3>Introduce tu PIN</h3>
+                <p>Ingresa el PIN para desactivar la alerta</p>
+                <div class="pin-dots">
+                    <div class="pin-dot" id="dot-0"></div>
+                    <div class="pin-dot" id="dot-1"></div>
+                    <div class="pin-dot" id="dot-2"></div>
+                    <div class="pin-dot" id="dot-3"></div>
+                </div>
+                <div class="pin-pad">
+                    <button class="pin-key" onclick="enterPin('1')">1</button>
+                    <button class="pin-key" onclick="enterPin('2')">2</button>
+                    <button class="pin-key" onclick="enterPin('3')">3</button>
+                    <button class="pin-key" onclick="enterPin('4')">4</button>
+                    <button class="pin-key" onclick="enterPin('5')">5</button>
+                    <button class="pin-key" onclick="enterPin('6')">6</button>
+                    <button class="pin-key" onclick="enterPin('7')">7</button>
+                    <button class="pin-key" onclick="enterPin('8')">8</button>
+                    <button class="pin-key" onclick="enterPin('9')">9</button>
+                    <button class="pin-key empty"></button>
+                    <button class="pin-key" onclick="enterPin('0')">0</button>
+                    <button class="pin-key backspace" onclick="deletePin()"><i class="fa-solid fa-delete-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ TOAST NOTIFICATION ============ -->
+        <div class="toast" id="toast">
+            <i class="fa-solid fa-circle-check" style="color:var(--safe);"></i>
+            <span id="toast-text">Acción completada</span>
+        </div>
+
+    </div><!-- /mobile-frame -->
+
+    <!-- App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>

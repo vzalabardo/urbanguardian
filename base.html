@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Urban Guardian - Prototipo UX</title>
+    <!-- Fuentes e Iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Variables y Reset */
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1E1E24;
+            --primary: #4A90E2; /* Azul confianza */
+            --safe: #2ECC71; /* Verde seguro */
+            --warning: #F39C12; /* Naranja alerta */
+            --danger: #E74C3C; /* Rojo peligro */
+            --text-main: #FFFFFF;
+            --text-muted: #A0A0A5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Contenedor simulando la pantalla del móvil */
+        #mobile-frame {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: var(--bg-dark);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 401px) {
+            #mobile-frame { border-radius: 30px; height: 90vh; }
+        }
+
+        /* Header */
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(18,18,18,1) 0%, rgba(18,18,18,0) 100%);
+            position: absolute;
+            top: 0; width: 100%; z-index: 10;
+        }
+
+        .user-info h1 { font-size: 18px; color: var(--text-main); font-weight: 600;}
+        .user-info p { font-size: 12px; color: var(--safe); display: flex; align-items: center; gap: 5px;}
+        .user-info p::before { content: ''; display: block; width: 8px; height: 8px; background-color: var(--safe); border-radius: 50%; box-shadow: 0 0 8px var(--safe); }
+        
+        .profile-pic { width: 40px; height: 40px; background-color: #333; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white;}
+
+        /* Mapa simulado (Heatmap) */
+        #map-view {
+            flex: 1;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png'), radial-gradient(circle at 70% 30%, rgba(231, 76, 60, 0.2) 0%, transparent 40%), radial-gradient(circle at 30% 70%, rgba(46, 204, 113, 0.15) 0%, transparent 50%);
+            background-color: #1a1a24;
+            position: relative;
+        }
+
+        /* Buscador de rutas */
+        .route-card {
+            position: absolute;
+            bottom: 90px;
+            left: 5%;
+            width: 90%;
+            background-color: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: #2A2A35;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+        }
+        .input-group i { color: var(--primary); margin-right: 10px; }
+        .input-group input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 15px; }
+
+        .route-options { display: flex; gap: 10px; }
+        
+        .btn-route {
+            flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-safe { background-color: rgba(46, 204, 113, 0.1); color: var(--safe); border: 1px solid var(--safe); }
+        .btn-safe.active { background-color: var(--safe); color: #000; }
+        .btn-fast { background-color: #2A2A35; color: var(--text-muted); }
+
+        /* Botón Flotante Safe Spot */
+        .fab-safe-spot {
+            position: absolute; top: 80px; right: 20px;
+            background-color: var(--bg-card); color: var(--primary);
+            padding: 10px 15px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 1px solid rgba(74, 144, 226, 0.3);
+        }
+
+        /* Navegación Inferior */
+        nav {
+            height: 70px;
+            background-color: var(--bg-card);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #333;
+            z-index: 20;
+        }
+
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-muted); text-decoration: none; font-size: 10px; gap: 5px; cursor: pointer;
+            width: 60px;
+        }
+        .nav-item i { font-size: 20px; }
+        .nav-item.active { color: var(--primary); }
+
+        /* SOS Button (El del centro) */
+        .sos-container {
+            position: relative;
+            top: -20px;
+        }
+        .btn-sos {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 20px; font-weight: bold;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+            border: 4px solid var(--bg-dark);
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+        
+        /* Efecto de anillo de carga para el SOS */
+        .sos-progress {
+            position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: white;
+            opacity: 0;
+            transform: rotate(0deg);
+        }
+
+        /* Modal Base */
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content {
+            background: var(--bg-card); width: 100%; border-radius: 25px 25px 0 0;
+            padding: 30px 20px; transform: translateY(100%); transition: 0.3s;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+
+        .modal-title { color: white; margin-bottom: 20px; font-size: 18px; display: flex; justify-content: space-between;}
+        
+        /* Grid de Reportes (Micro-incidentes) */
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .report-item {
+            background: #2A2A35; padding: 15px; border-radius: 15px; text-align: center;
+            color: white; cursor: pointer; transition: 0.2s; border: 1px solid transparent;
+        }
+        .report-item i { font-size: 24px; margin-bottom: 10px; color: var(--warning); }
+        .report-item:active { border-color: var(--primary); background: rgba(74,144,226,0.1); }
+
+        /* Pantalla SOS Activo */
+        #sos-active-screen {
+            position: absolute; top:0; left:0; width: 100%; height: 100%;
+            background: var(--danger); z-index: 200; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; color: white; text-align: center;
+            opacity: 0; pointer-events: none; transition: 0.3s; padding: 20px;
+        }
+        #sos-active-screen.active { opacity: 1; pointer-events: auto; }
+        .pulsing-circle {
+            width: 100px; height: 100px; background: white; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--danger); font-size: 40px; margin-bottom: 30px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+            70% { box-shadow: 0 0 0 30px rgba(255,255,255,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+        }
+        .btn-cancel-sos {
+            margin-top: 50px; padding: 15px 30px; background: transparent;
+            border: 2px solid white; color: white; border-radius: 20px; font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="mobile-frame">
+        
+        <!-- Cabecera -->
+        <header>
+            <div class="user-info">
+                <h1>Hola, Laura</h1>
+                <p>Red de apoyo activa</p>
+            </div>
+            <div class="profile-pic"><i class="fa-solid fa-user-nurse"></i></div>
+        </header>
+
+        <!-- Vista del Mapa (Main) -->
+        <div id="map-view">
+            <div class="fab-safe-spot">
+                <i class="fa-solid fa-shield-heart"></i> Refugio Cercano
+            </div>
+
+            <!-- Card de Rutas Seguras -->
+            <div class="route-card">
+                <div class="input-group">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" placeholder="¿Hacia dónde vas? (Ej. Casa)">
+                </div>
+                <div class="route-options">
+                    <button class="btn-route btn-safe active">
+                        <i class="fa-solid fa-lightbulb"></i> Ruta Segura
+                        <div style="font-size: 10px; font-weight: normal; margin-top: 4px;">Iluminada + Peatones</div>
+                    </button>
+                    <button class="btn-route btn-fast">
+                        <i class="fa-solid fa-bolt"></i> Rápida
+                        <div style="font-size: 10px; font-weight: normal; margin-top: 4px;">Zonas oscuras</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación Inferior -->
+        <nav>
+            <div class="nav-item active"><i class="fa-solid fa-map"></i> Mapa</div>
+            <div class="nav-item" onclick="openReportModal()"><i class="fa-solid fa-bullhorn"></i> Reportar</div>
+            
+            <!-- Botón SOS Silencioso (Long Press) -->
+            <div class="sos-container">
+                <div class="btn-sos" id="sos-btn">SOS</div>
+                <div class="sos-progress" id="sos-progress"></div>
+                <div style="color: var(--text-muted); font-size: 9px; text-align: center; margin-top: 5px;">Mantener</div>
+            </div>
+            
+            <div class="nav-item"><i class="fa-solid fa-users"></i> Red</div>
+            <div class="nav-item"><i class="fa-solid fa-gear"></i> Perfil</div>
+        </nav>
+
+        <!-- Modal de Reporte de Micro-Incidentes -->
+        <div class="modal-overlay" id="report-modal">
+            <div class="modal-content">
+                <div class="modal-title">
+                    <span>Reportar Micro-incidente</span>
+                    <i class="fa-solid fa-xmark" onclick="closeReportModal()" style="cursor: pointer;"></i>
+                </div>
+                <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 20px;">Tu reporte actualiza el mapa de calor para otros usuarios en tiempo real.</p>
+                <div class="report-grid">
+                    <div class="report-item" onclick="sendReport(this)">
+                        <i class="fa-regular fa-lightbulb"></i><br>Calle oscura / Sin luz
+                    </div>
+                    <div class="report-item" onclick="sendReport(this)">
+                        <i class="fa-solid fa-users-slash"></i><br>Grupo sospechoso
+                    </div>
+                    <div class="report-item" onclick="sendReport(this)">
+                        <i class="fa-solid fa-street-view"></i><br>Acoso verbal
+                    </div>
+                    <div class="report-item" onclick="sendReport(this)">
+                        <i class="fa-solid fa-triangle-exclamation"></i><br>Zona desolada
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla de SOS Activo -->
+        <div id="sos-active-screen">
+            <div class="pulsing-circle"><i class="fa-solid fa-video"></i></div>
+            <h2 style="margin-bottom: 10px;">Modo Discreto Activo</h2>
+            <p style="font-size: 14px; opacity: 0.9; max-width: 80%;">Grabando audio/video en segundo plano. Ubicación enviada a contactos de confianza.</p>
+            <button class="btn-cancel-sos" onclick="cancelSOS()">DESACTIVAR SOS (PIN)</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Lógica del UI
+        
+        // --- Modal de Reporte ---
+        const reportModal = document.getElementById('report-modal');
+        function openReportModal() { reportModal.classList.add('active'); }
+        function closeReportModal() { reportModal.classList.remove('active'); }
+        function sendReport(el) {
+            const originalHtml = el.innerHTML;
+            el.innerHTML = '<i class="fa-solid fa-check" style="color: var(--safe);"></i><br>¡Reportado!';
+            el.style.borderColor = 'var(--safe)';
+            setTimeout(() => {
+                closeReportModal();
+                setTimeout(() => {
+                    el.innerHTML = originalHtml;
+                    el.style.borderColor = 'transparent';
+                }, 300);
+            }, 1000);
+        }
+
+        // --- Lógica del Botón SOS (Long Press) ---
+        const sosBtn = document.getElementById('sos-btn');
+        const sosProgress = document.getElementById('sos-progress');
+        const sosScreen = document.getElementById('sos-active-screen');
+        
+        let pressTimer;
+        let rotationValue = 0;
+        let animationInterval;
+
+        function startSOSPress() {
+            sosBtn.style.transform = 'scale(0.9)';
+            sosProgress.style.opacity = '1';
+            
+            // Animación CSS del anillo simulada
+            animationInterval = setInterval(() => {
+                rotationValue += 10;
+                sosProgress.style.transform = `rotate(${rotationValue}deg)`;
+            }, 30);
+
+            // 1.5 segundos para activar SOS
+            pressTimer = setTimeout(() => {
+                clearInterval(animationInterval);
+                activateSOS();
+            }, 1500);
+        }
+
+        function endSOSPress() {
+            clearTimeout(pressTimer);
+            clearInterval(animationInterval);
+            sosBtn.style.transform = 'scale(1)';
+            sosProgress.style.opacity = '0';
+            rotationValue = 0;
+        }
+
+        function activateSOS() {
+            endSOSPress();
+            sosScreen.classList.add('active');
+            // Aquí en un entorno real se activaría la cámara y envío de GPS
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]); // Feedback háptico
+        }
+
+        function cancelSOS() {
+            sosScreen.classList.remove('active');
+            // Simulación de pedida de PIN
+            alert("Para cancelar realmente se pediría el PIN de seguridad del usuario.");
+        }
+
+        // Eventos táctiles y de ratón para el SOS
+        sosBtn.addEventListener('mousedown', startSOSPress);
+        sosBtn.addEventListener('mouseup', endSOSPress);
+        sosBtn.addEventListener('mouseleave', endSOSPress);
+        
+        sosBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startSOSPress(); });
+        sosBtn.addEventListener('touchend', endSOSPress);
+
+        // --- Toggle Rutas ---
+        const btnSafe = document.querySelector('.btn-safe');
+        const btnFast = document.querySelector('.btn-fast');
+
+        btnSafe.addEventListener('click', () => {
+            btnSafe.classList.add('active');
+            btnFast.classList.remove('active');
+            btnSafe.style.backgroundColor = 'var(--safe)';
+            btnFast.style.backgroundColor = '#2A2A35';
+            btnFast.style.color = 'var(--text-muted)';
+        });
+
+        btnFast.addEventListener('click', () => {
+            btnFast.classList.add('active');
+            btnSafe.classList.remove('active');
+            btnFast.style.backgroundColor = '#4A90E2';
+            btnFast.style.color = '#fff';
+            btnSafe.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+            btnSafe.style.color = 'var(--safe)';
+        });
+
+    </script>
+</body>
+</html>
