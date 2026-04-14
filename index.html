@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Urban Guardian - Prototipo SPA</title>
+    <title>Urban Guardian - Prototype SPA</title>
     <!-- Fuentes e Iconos -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,8 +17,8 @@
         <!-- ============ HEADER (siempre visible) ============ -->
         <header id="app-header">
             <div class="user-info">
-                <h1>Hola, Laura</h1>
-                <p>Red de apoyo activa</p>
+                <h1>Hi, Laura</h1>
+                <p>Active support network</p>
             </div>
             <div class="profile-pic" onclick="navigateTo('perfil')">
                 <i class="fa-solid fa-user-nurse"></i>
@@ -59,7 +59,7 @@
                 <div class="gps-pulse-ring"></div>
                 <div class="gps-pulse-ring"></div>
                 <div class="user-dot"></div>
-                <div class="user-label">Tú</div>
+                <div class="user-label">You</div>
             </div>
 
             <!-- Marcador de Destino -->
@@ -67,7 +67,7 @@
                 <div class="destination-pin">
                     <i class="fa-solid fa-house"></i>
                 </div>
-                <div class="destination-label">Casa</div>
+                <div class="destination-label">Home</div>
             </div>
 
             <!-- Ruta Segura Overlay -->
@@ -174,42 +174,42 @@
                         <div class="dest-flow-icon">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
-                        <h2>¿A dónde vas?</h2>
-                        <p>Te guiaremos por la ruta más segura</p>
+                        <h2>Where are you going?</h2>
+                        <p>We'll guide you through the safest route</p>
                     </div>
                     <div class="dest-input-wrap">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" placeholder="Escribe tu destino..." id="dest-flow-input">
+                        <input type="text" placeholder="Type your destination..." id="dest-flow-input">
                     </div>
                     <div class="dest-suggestions">
-                        <h5>Lugares frecuentes</h5>
-                        <div class="dest-suggestion" data-dest="Casa">
+                        <h5>Frequent places</h5>
+                        <div class="dest-suggestion" data-dest="Home">
                             <div class="dest-suggestion-icon"><i class="fa-solid fa-house"></i></div>
                             <div class="dest-suggestion-info">
-                                <h4>Casa</h4>
-                                <p>Av. Seguridad 123</p>
+                                <h4>Home</h4>
+                                <p>Safety Ave 123</p>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:12px;"></i>
                         </div>
-                        <div class="dest-suggestion" data-dest="Trabajo">
+                        <div class="dest-suggestion" data-dest="Work">
                             <div class="dest-suggestion-icon" style="background:rgba(74,144,226,0.15);color:var(--primary);"><i class="fa-solid fa-briefcase"></i></div>
                             <div class="dest-suggestion-info">
-                                <h4>Trabajo</h4>
-                                <p>Calle Central 456</p>
+                                <h4>Work</h4>
+                                <p>Central St 456</p>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:12px;"></i>
                         </div>
-                        <div class="dest-suggestion" data-dest="Universidad">
+                        <div class="dest-suggestion" data-dest="University">
                             <div class="dest-suggestion-icon" style="background:rgba(155,89,182,0.15);color:#9b59b6;"><i class="fa-solid fa-graduation-cap"></i></div>
                             <div class="dest-suggestion-info">
-                                <h4>Universidad</h4>
-                                <p>Av. Norte 789</p>
+                                <h4>University</h4>
+                                <p>North Ave 789</p>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:12px;"></i>
                         </div>
                     </div>
                     <button class="btn-start-route" id="btn-start-route">
-                        <i class="fa-solid fa-shield-halved"></i> Calcular Ruta Segura
+                        <i class="fa-solid fa-shield-halved"></i> Calculate Safe Route
                     </button>
                 </div>
             </div>
@@ -217,10 +217,10 @@
             <!-- Navigation Controls (shown during navigation) -->
             <div class="nav-controls" id="nav-controls">
                 <button class="btn-toggle-view" id="btn-toggle-view">
-                    <i class="fa-solid fa-list-ol"></i> Indicaciones
+                    <i class="fa-solid fa-list-ol"></i> Directions
                 </button>
                 <button class="btn-finish-route" id="btn-finish-route">
-                    <i class="fa-solid fa-xmark"></i> Finalizar Ruta
+                    <i class="fa-solid fa-xmark"></i> End Route
                 </button>
             </div>
 
@@ -228,8 +228,8 @@
             <div class="directions-panel" id="directions-panel">
                 <div class="directions-header">
                     <div>
-                        <h3><i class="fa-solid fa-route" style="color:var(--safe);margin-right:8px;"></i>Indicaciones</h3>
-                        <span class="directions-dest" id="directions-dest">Hacia: Casa</span>
+                        <h3><i class="fa-solid fa-route" style="color:var(--safe);margin-right:8px;"></i>Directions</h3>
+                        <span class="directions-dest" id="directions-dest">To: Home</span>
                     </div>
                     <div class="directions-badges">
                         <span class="dir-badge"><i class="fa-solid fa-ruler"></i> 850m</span>
@@ -242,16 +242,16 @@
                         <div class="step-line-v"></div>
                         <div class="step-dot start"><i class="fa-solid fa-location-dot"></i></div>
                         <div class="step-text">
-                            <h4>Tu ubicación actual</h4>
-                            <p>Calle Central</p>
+                            <h4>Your current location</h4>
+                            <p>Central Street</p>
                         </div>
                     </div>
                     <div class="direction-step">
                         <div class="step-line-v"></div>
                         <div class="step-dot"><i class="fa-solid fa-arrow-up"></i></div>
                         <div class="step-text">
-                            <h4>Continúa recto 200m</h4>
-                            <p><i class="fa-solid fa-lightbulb" style="color:var(--warning);margin-right:4px;"></i> Zona iluminada</p>
+                            <h4>Continue straight 200m</h4>
+                            <p><i class="fa-solid fa-lightbulb" style="color:var(--warning);margin-right:4px;"></i> Well-lit area</p>
                         </div>
                         <span class="step-dist">200m</span>
                     </div>
@@ -259,8 +259,8 @@
                         <div class="step-line-v"></div>
                         <div class="step-dot turn"><i class="fa-solid fa-turn-right"></i></div>
                         <div class="step-text">
-                            <h4>Gira a la derecha</h4>
-                            <p>Hacia Av. Seguridad · Cámaras activas</p>
+                            <h4>Turn right</h4>
+                            <p>To Safety Ave · Active cameras</p>
                         </div>
                         <span class="step-dist">350m</span>
                     </div>
@@ -268,8 +268,8 @@
                         <div class="step-line-v"></div>
                         <div class="step-dot"><i class="fa-solid fa-arrow-up"></i></div>
                         <div class="step-text">
-                            <h4>Continúa recto 150m</h4>
-                            <p><i class="fa-solid fa-person-walking" style="color:var(--primary);margin-right:4px;"></i> Zona peatonal</p>
+                            <h4>Continue straight 150m</h4>
+                            <p><i class="fa-solid fa-person-walking" style="color:var(--primary);margin-right:4px;"></i> Pedestrian area</p>
                         </div>
                         <span class="step-dist">500m</span>
                     </div>
@@ -277,8 +277,8 @@
                         <div class="step-line-v"></div>
                         <div class="step-dot turn"><i class="fa-solid fa-turn-left"></i></div>
                         <div class="step-text">
-                            <h4>Gira a la izquierda</h4>
-                            <p>Hacia Calle Luz Verde</p>
+                            <h4>Turn left</h4>
+                            <p>To Green Light St</p>
                         </div>
                         <span class="step-dist">700m</span>
                     </div>
@@ -286,21 +286,21 @@
                         <div class="step-line-v"></div>
                         <div class="step-dot"><i class="fa-solid fa-arrow-up"></i></div>
                         <div class="step-text">
-                            <h4>Continúa recto 150m</h4>
-                            <p><i class="fa-solid fa-lightbulb" style="color:var(--warning);margin-right:4px;"></i> Peatones frecuentes</p>
+                            <h4>Continue straight 150m</h4>
+                            <p><i class="fa-solid fa-lightbulb" style="color:var(--warning);margin-right:4px;"></i> Frequent pedestrians</p>
                         </div>
                         <span class="step-dist">850m</span>
                     </div>
                     <div class="direction-step last-step">
                         <div class="step-dot dest"><i class="fa-solid fa-flag-checkered"></i></div>
                         <div class="step-text">
-                            <h4>Has llegado a tu destino</h4>
-                            <p id="dir-dest-name">Casa</p>
+                            <h4>You've arrived at your destination</h4>
+                            <p id="dir-dest-name">Home</p>
                         </div>
                     </div>
                 </div>
                 <button class="btn-finish-route-dir" id="btn-finish-route-dir">
-                    <i class="fa-solid fa-xmark"></i> Finalizar Ruta
+                    <i class="fa-solid fa-xmark"></i> End Route
                 </button>
             </div>
 
@@ -311,13 +311,13 @@
 
             <!-- Tabs -->
             <div class="tabs">
-                <button class="tab-btn active" data-tab="tab-contactos">Mis Contactos</button>
-                <button class="tab-btn" data-tab="tab-guardianes">Guardianes Locales</button>
+                <button class="tab-btn active" data-tab="tab-contactos">My Contacts</button>
+                <button class="tab-btn" data-tab="tab-guardianes">Local Guardians</button>
             </div>
 
             <!-- Tab: Mis Contactos -->
             <div class="tab-panel active" id="tab-contactos">
-                <h3 class="section-title" style="padding:0;">Contactos de confianza</h3>
+                <h3 class="section-title" style="padding:0;">Trusted contacts</h3>
 
                 <!-- Contact 1 -->
                 <div class="contact-card">
@@ -325,11 +325,11 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="contact-info">
-                        <h4>Mamá</h4>
-                        <p>Último contacto: hace 2h</p>
+                        <h4>Mom</h4>
+                        <p>Online · Sharing location</p>
                     </div>
                     <div class="toggle-wrap">
-                        <span class="toggle-label">Ubicación</span>
+                        <span class="toggle-label">Location</span>
                         <div class="toggle on" data-toggle="contact-1"></div>
                     </div>
                 </div>
@@ -340,8 +340,8 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="contact-info">
-                        <h4>Carlos (Compañero)</h4>
-                        <p>Compartiendo ubicación en vivo</p>
+                        <h4>Carlos (Partner)</h4>
+                        <p>Sharing live location</p>
                     </div>
                     <div class="toggle-wrap">
                         <span class="toggle-label">Ubicación</span>
@@ -355,8 +355,8 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="contact-info">
-                        <h4>Andrea (Roomie)</h4>
-                        <p>Desconectada</p>
+                        <h4>Andrea (Roommate)</h4>
+                        <p>Offline</p>
                     </div>
                     <div class="toggle-wrap">
                         <span class="toggle-label">Ubicación</span>
@@ -370,8 +370,8 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="contact-info">
-                        <h4>Papá</h4>
-                        <p>Último contacto: hace 5h</p>
+                        <h4>Dad</h4>
+                        <p>Last contact: 5h ago</p>
                     </div>
                     <div class="toggle-wrap">
                         <span class="toggle-label">Ubicación</span>
@@ -382,7 +382,7 @@
 
             <!-- Tab: Guardianes Locales -->
             <div class="tab-panel" id="tab-guardianes">
-                <h3 class="section-title" style="padding:0;">Voluntarios y guardias activos cerca de ti</h3>
+                <h3 class="section-title" style="padding:0;">Active volunteers and guards near you</h3>
 
                 <!-- Guardian 1 -->
                 <div class="guardian-card">
@@ -391,8 +391,8 @@
                     </div>
                     <div class="contact-info">
                         <h4>Miguel R.</h4>
-                        <p>Guardia verificado · 350m</p>
-                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Disponible</span>
+                        <p>Verified guard · 350m</p>
+                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Available</span>
                     </div>
                     <button class="btn-request-guardian" onclick="requestGuardian(this)">Solicitar</button>
                 </div>
@@ -404,8 +404,8 @@
                     </div>
                     <div class="contact-info">
                         <h4>Ana P.</h4>
-                        <p>Voluntaria · 200m</p>
-                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Disponible</span>
+                        <p>Volunteer · 200m</p>
+                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Available</span>
                     </div>
                     <button class="btn-request-guardian" onclick="requestGuardian(this)">Solicitar</button>
                 </div>
@@ -417,10 +417,10 @@
                     </div>
                     <div class="contact-info">
                         <h4>Rider David</h4>
-                        <p>Rider verificado · 500m</p>
-                        <span class="guardian-status busy-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> En ruta</span>
+                        <p>Verified rider · 500m</p>
+                        <span class="guardian-status busy-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> On route</span>
                     </div>
-                    <button class="btn-request-guardian" onclick="requestGuardian(this)" disabled style="opacity:0.4; cursor:default;">En ruta</button>
+                    <button class="btn-request-guardian" onclick="requestGuardian(this)" disabled style="opacity:0.4; cursor:default;">On route</button>
                 </div>
 
                 <!-- Guardian 4 -->
@@ -430,8 +430,8 @@
                     </div>
                     <div class="contact-info">
                         <h4>Lucía M.</h4>
-                        <p>Vecina verificada · 150m</p>
-                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Disponible</span>
+                        <p>Verified neighbor · 150m</p>
+                        <span class="guardian-status active-status"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Available</span>
                     </div>
                     <button class="btn-request-guardian" onclick="requestGuardian(this)">Solicitar</button>
                 </div>
@@ -448,14 +448,14 @@
                 </div>
                 <h2>Laura García</h2>
                 <div class="profile-level">
-                    <i class="fa-solid fa-shield-halved"></i> Guardián Nivel 3
+                    <i class="fa-solid fa-shield-halved"></i> Guardian Level 3
                 </div>
             </div>
 
             <!-- XP Bar -->
             <div class="xp-bar-container">
                 <div class="xp-header">
-                    <span>Progreso al Nivel 4</span>
+                    <span>Progress to Level 4</span>
                     <strong>650 / 1000 XP</strong>
                 </div>
                 <div class="xp-track">
@@ -470,77 +470,77 @@
                     <div class="stat-card">
                         <div class="stat-icon" style="color:var(--warning);"><i class="fa-solid fa-bullhorn"></i></div>
                         <div class="stat-value">12</div>
-                        <div class="stat-label">Micro-incidentes reportados</div>
+                        <div class="stat-label">Micro-incidents reported</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon" style="color:var(--safe);"><i class="fa-solid fa-route"></i></div>
                         <div class="stat-value">34</div>
-                        <div class="stat-label">Rutas seguras tomadas</div>
+                        <div class="stat-label">Safe routes taken</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon" style="color:var(--primary);"><i class="fa-solid fa-lightbulb"></i></div>
                         <div class="stat-value">8</div>
-                        <div class="stat-label">Puntos de luz verificados</div>
+                        <div class="stat-label">Light points verified</div>
                     </div>
                 </div>
             </div>
 
             <!-- Badges section -->
             <div class="dashboard-section">
-                <h3>Logros recientes</h3>
+                <h3>Recent achievements</h3>
                 <div class="logros-scroll">
                     <div class="stat-card" style="min-width:100px;">
                         <div class="stat-icon" style="color:#F39C12;">🛡️</div>
-                        <div class="stat-label">Primer reporte</div>
+                        <div class="stat-label">First report</div>
                     </div>
                     <div class="stat-card" style="min-width:100px;">
                         <div class="stat-icon" style="color:#2ECC71;">🌙</div>
-                        <div class="stat-label">10 rutas nocturnas</div>
+                        <div class="stat-label">10 night routes</div>
                     </div>
                     <div class="stat-card" style="min-width:100px;">
                         <div class="stat-icon" style="color:#4A90E2;">👥</div>
-                        <div class="stat-label">Red de 5+</div>
+                        <div class="stat-label">Network of 5+</div>
                     </div>
                     <div class="stat-card" style="min-width:100px;">
                         <div class="stat-icon" style="color:#e74c3c;">🔦</div>
-                        <div class="stat-label">Verificador de luz</div>
+                        <div class="stat-label">Light verifier</div>
                     </div>
                 </div>
             </div>
 
             <!-- Settings -->
             <div class="dashboard-section">
-                <h3>Ajustes</h3>
+                <h3>Settings</h3>
                 <div class="settings-list">
                     <div class="setting-item" id="btn-sos-settings">
                         <i class="fa-solid fa-key"></i>
                         <div class="setting-text">
-                            <h4>Ajustes de SOS</h4>
-                            <p>Configurar PIN falso de cancelación</p>
+                            <h4>SOS Settings</h4>
+                            <p>Configure fake cancellation PIN</p>
                         </div>
                         <i class="fa-solid fa-chevron-right setting-arrow"></i>
                     </div>
                     <div class="setting-item" id="btn-notifications">
                         <i class="fa-solid fa-bell"></i>
                         <div class="setting-text">
-                            <h4>Notificaciones</h4>
-                            <p>Alertas de zona, guardián cercano</p>
+                            <h4>Notifications</h4>
+                            <p>Zone alerts, nearby guardian</p>
                         </div>
                         <i class="fa-solid fa-chevron-right setting-arrow"></i>
                     </div>
                     <div class="setting-item" id="btn-emergency-contacts">
                         <i class="fa-solid fa-user-group"></i>
                         <div class="setting-text">
-                            <h4>Contactos de emergencia</h4>
-                            <p>Gestionar tu red de confianza</p>
+                            <h4>Emergency contacts</h4>
+                            <p>Manage your trusted network</p>
                         </div>
                         <i class="fa-solid fa-chevron-right setting-arrow"></i>
                     </div>
                     <div class="setting-item" id="btn-about">
                         <i class="fa-solid fa-circle-info"></i>
                         <div class="setting-text">
-                            <h4>Acerca de Urban Guardian</h4>
-                            <p>Versión 1.0 · Prototipo</p>
+                            <h4>About Urban Guardian</h4>
+                            <p>Version 1.0 · Prototype</p>
                         </div>
                         <i class="fa-solid fa-chevron-right setting-arrow"></i>
                     </div>
@@ -551,24 +551,24 @@
         <!-- ============ BOTTOM NAVIGATION ============ -->
         <nav id="bottom-nav">
             <div class="nav-item active" data-view="mapa">
-                <i class="fa-solid fa-map"></i> Mapa
+                <i class="fa-solid fa-map-location-dot"></i> Map
             </div>
             <div class="nav-item" data-view="reportar">
-                <i class="fa-solid fa-bullhorn"></i> Reportar
+                <i class="fa-solid fa-bullhorn"></i> Report
             </div>
 
             <!-- Botón SOS Silencioso (Long Press) -->
             <div class="sos-container">
                 <div class="btn-sos" id="sos-btn">SOS</div>
                 <div class="sos-progress" id="sos-progress"></div>
-                <div class="sos-hold-label">Mantener</div>
+                <div class="sos-hold-label">Hold</div>
             </div>
 
             <div class="nav-item" data-view="red">
-                <i class="fa-solid fa-users"></i> Red
+                <i class="fa-solid fa-users"></i> Network
             </div>
             <div class="nav-item" data-view="perfil">
-                <i class="fa-solid fa-gear"></i> Perfil
+                <i class="fa-solid fa-user"></i> Profile
             </div>
         </nav>
 
@@ -576,24 +576,24 @@
         <div class="modal-overlay" id="report-modal">
             <div class="modal-content">
                 <div class="modal-title">
-                    <span>Reportar Micro-incidente</span>
+                    <span>Report Micro-incident</span>
                     <i class="fa-solid fa-xmark modal-close" id="close-report-modal"></i>
                 </div>
                 <p style="color:var(--text-muted);font-size:12px;margin-bottom:20px;">
-                    Tu reporte actualiza el mapa de calor para otros usuarios en tiempo real.
+                    Your report updates the heatmap for other users in real-time.
                 </p>
                 <div class="report-grid">
                     <div class="report-item" onclick="sendReport(this)">
-                        <i class="fa-regular fa-lightbulb"></i><br>Calle oscura / Sin luz
+                        <i class="fa-regular fa-lightbulb"></i><br>Dark street / No light
                     </div>
                     <div class="report-item" onclick="sendReport(this)">
-                        <i class="fa-solid fa-users-slash"></i><br>Grupo sospechoso
+                        <i class="fa-solid fa-users-slash"></i><br>Suspicious group
                     </div>
                     <div class="report-item" onclick="sendReport(this)">
-                        <i class="fa-solid fa-street-view"></i><br>Acoso verbal
+                        <i class="fa-solid fa-street-view"></i><br>Verbal harassment
                     </div>
                     <div class="report-item" onclick="sendReport(this)">
-                        <i class="fa-solid fa-triangle-exclamation"></i><br>Zona desolada
+                        <i class="fa-solid fa-triangle-exclamation"></i><br>Deserted area
                     </div>
                 </div>
             </div>
@@ -603,11 +603,11 @@
         <div class="modal-overlay" id="shelter-modal">
             <div class="modal-content">
                 <div class="modal-title">
-                    <span><i class="fa-solid fa-shield-heart" style="color:var(--primary);margin-right:8px;"></i>Refugios Cercanos</span>
+                    <span><i class="fa-solid fa-shield-heart" style="color:var(--primary);margin-right:8px;"></i>Nearby Shelters</span>
                     <i class="fa-solid fa-xmark modal-close" id="close-shelter-modal"></i>
                 </div>
                 <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">
-                    Safe Spots verificados por la comunidad cerca de tu ubicación.
+                    Community-verified Safe Spots near your location.
                 </p>
 
                 <!-- Spot 1 -->
@@ -616,10 +616,10 @@
                         <i class="fa-solid fa-prescription-bottle-medical"></i>
                     </div>
                     <div class="safe-spot-info">
-                        <h4>Farmacia 24h Ahumada</h4>
-                        <p><i class="fa-solid fa-location-dot"></i> 200m · Abierto ahora</p>
+                        <h4>24h Pharmacy Ahumada</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> 200m · Open now</p>
                     </div>
-                    <button class="btn-navigate" onclick="navigateToSpot(this)">Ir</button>
+                    <button class="btn-navigate" onclick="navigateToSpot(this)">Go</button>
                 </div>
 
                 <!-- Spot 2 -->
@@ -628,10 +628,10 @@
                         <i class="fa-solid fa-gas-pump"></i>
                     </div>
                     <div class="safe-spot-info">
-                        <h4>Gasolinera Repsol</h4>
-                        <p><i class="fa-solid fa-location-dot"></i> 500m · Cámaras activas</p>
+                        <h4>Repsol Gas Station</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> 500m · Active cameras</p>
                     </div>
-                    <button class="btn-navigate" onclick="navigateToSpot(this)">Ir</button>
+                    <button class="btn-navigate" onclick="navigateToSpot(this)">Go</button>
                 </div>
 
                 <!-- Spot 3 -->
@@ -640,10 +640,10 @@
                         <i class="fa-solid fa-shop"></i>
                     </div>
                     <div class="safe-spot-info">
-                        <h4>Tienda OXXO 24h</h4>
-                        <p><i class="fa-solid fa-location-dot"></i> 320m · Zona iluminada</p>
+                        <h4>OXXO Store 24h</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> 320m · Well-lit area</p>
                     </div>
-                    <button class="btn-navigate" onclick="navigateToSpot(this)">Ir</button>
+                    <button class="btn-navigate" onclick="navigateToSpot(this)">Go</button>
                 </div>
 
                 <!-- Spot 4 -->
@@ -652,10 +652,10 @@
                         <i class="fa-solid fa-building-shield"></i>
                     </div>
                     <div class="safe-spot-info">
-                        <h4>Comisaría Municipal</h4>
-                        <p><i class="fa-solid fa-location-dot"></i> 750m · Abierto 24h</p>
+                        <h4>Municipal Police Station</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> 750m · Open 24h</p>
                     </div>
-                    <button class="btn-navigate" onclick="navigateToSpot(this)">Ir</button>
+                    <button class="btn-navigate" onclick="navigateToSpot(this)">Go</button>
                 </div>
             </div>
         </div>
@@ -664,18 +664,18 @@
         <div class="modal-overlay" id="notifications-modal">
             <div class="modal-content">
                 <div class="modal-title">
-                    <span><i class="fa-solid fa-bell" style="color:var(--primary);margin-right:8px;"></i>Notificaciones</span>
+                    <span><i class="fa-solid fa-bell" style="color:var(--primary);margin-right:8px;"></i>Notifications</span>
                     <i class="fa-solid fa-xmark modal-close" id="close-notifications"></i>
                 </div>
                 <p style="color:var(--text-muted);font-size:12px;margin-bottom:20px;">
-                    Configura qué alertas quieres recibir para mantenerte segura.
+                    Configure which alerts you want to receive to stay safe.
                 </p>
 
                 <div class="setting-item" style="margin-bottom:10px;">
                     <i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i>
                     <div class="setting-text">
-                        <h4>Alertas de zona peligrosa</h4>
-                        <p>Notificación al entrar en zona roja</p>
+                        <h4>Dangerous zone alerts</h4>
+                        <p>Notification when entering red zone</p>
                     </div>
                     <div class="toggle on" data-toggle="notif-zone"></div>
                 </div>
@@ -683,8 +683,8 @@
                 <div class="setting-item" style="margin-bottom:10px;">
                     <i class="fa-solid fa-shield-halved" style="color:var(--safe);"></i>
                     <div class="setting-text">
-                        <h4>Guardián cercano disponible</h4>
-                        <p>Aviso cuando hay guardianes a menos de 500m</p>
+                        <h4>Nearby guardian available</h4>
+                        <p>Alert when guardians within 500m</p>
                     </div>
                     <div class="toggle on" data-toggle="notif-guardian"></div>
                 </div>
@@ -692,8 +692,8 @@
                 <div class="setting-item" style="margin-bottom:10px;">
                     <i class="fa-solid fa-lightbulb" style="color:var(--warning);"></i>
                     <div class="setting-text">
-                        <h4>Micro-incidentes reportados</h4>
-                        <p>Alertas de reportes en tu zona</p>
+                        <h4>Reported micro-incidents</h4>
+                        <p>Alerts of reports in your area</p>
                     </div>
                     <div class="toggle on" data-toggle="notif-incidents"></div>
                 </div>
@@ -701,8 +701,8 @@
                 <div class="setting-item" style="margin-bottom:10px;">
                     <i class="fa-solid fa-route" style="color:var(--primary);"></i>
                     <div class="setting-text">
-                        <h4>Sugerencias de ruta</h4>
-                        <p>Rutas alternativas más seguras</p>
+                        <h4>Route suggestions</h4>
+                        <p>Safer alternative routes</p>
                     </div>
                     <div class="toggle" data-toggle="notif-routes"></div>
                 </div>
@@ -710,8 +710,8 @@
                 <div class="setting-item" style="margin-bottom:10px;">
                     <i class="fa-solid fa-moon" style="color:#9b59b6;"></i>
                     <div class="setting-text">
-                        <h4>Modo nocturno automático</h4>
-                        <p>Alertas extra entre 22:00 - 06:00</p>
+                        <h4>Automatic night mode</h4>
+                        <p>Extra alerts between 22:00 - 06:00</p>
                     </div>
                     <div class="toggle on" data-toggle="notif-night"></div>
                 </div>
@@ -722,11 +722,11 @@
         <div class="modal-overlay" id="emergency-contacts-modal">
             <div class="modal-content">
                 <div class="modal-title">
-                    <span><i class="fa-solid fa-user-group" style="color:var(--safe);margin-right:8px;"></i>Contactos de Emergencia</span>
+                    <span><i class="fa-solid fa-user-group" style="color:var(--safe);margin-right:8px;"></i>Emergency Contacts</span>
                     <i class="fa-solid fa-xmark modal-close" id="close-emergency-contacts"></i>
                 </div>
                 <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">
-                    Estas personas recibirán tu ubicación en tiempo real al activar SOS.
+                    These people will receive your real-time location when activating SOS.
                 </p>
 
                 <div class="emergency-contact-item">
@@ -734,10 +734,10 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="contact-info">
-                        <h4>Mamá</h4>
-                        <p>+34 612 345 678 · Contacto principal</p>
+                        <h4>Mom</h4>
+                        <p>+34 612 345 678 · Primary contact</p>
                     </div>
-                    <button class="btn-contact-action" onclick="showToast('Contacto verificado ✓')"><i class="fa-solid fa-check"></i></button>
+                    <button class="btn-contact-action" onclick="showToast('Contact verified ✓')"><i class="fa-solid fa-check"></i></button>
                 </div>
 
                 <div class="emergency-contact-item">
@@ -745,10 +745,10 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="contact-info">
-                        <h4>Carlos (Compañero)</h4>
+                        <h4>Carlos (Partner)</h4>
                         <p>+34 623 456 789</p>
                     </div>
-                    <button class="btn-contact-action" onclick="showToast('Contacto verificado ✓')"><i class="fa-solid fa-check"></i></button>
+                    <button class="btn-contact-action" onclick="showToast('Contact verified ✓')"><i class="fa-solid fa-check"></i></button>
                 </div>
 
                 <div class="emergency-contact-item">
@@ -756,10 +756,10 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="contact-info">
-                        <h4>Andrea (Roomie)</h4>
+                        <h4>Andrea (Roommate)</h4>
                         <p>+34 634 567 890</p>
                     </div>
-                    <button class="btn-contact-action" onclick="showToast('Contacto verificado ✓')"><i class="fa-solid fa-check"></i></button>
+                    <button class="btn-contact-action" onclick="showToast('Contact verified ✓')"><i class="fa-solid fa-check"></i></button>
                 </div>
 
                 <div class="emergency-contact-item">
@@ -767,14 +767,14 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="contact-info">
-                        <h4>Papá</h4>
+                        <h4>Dad</h4>
                         <p>+34 645 678 901</p>
                     </div>
-                    <button class="btn-contact-action" onclick="showToast('Contacto verificado ✓')"><i class="fa-solid fa-check"></i></button>
+                    <button class="btn-contact-action" onclick="showToast('Contact verified ✓')"><i class="fa-solid fa-check"></i></button>
                 </div>
 
-                <button class="btn-add-contact" onclick="showToast('Función disponible próximamente')">
-                    <i class="fa-solid fa-plus"></i> Añadir Contacto
+                <button class="btn-add-contact" onclick="showToast('Feature coming soon')">
+                    <i class="fa-solid fa-plus"></i> Add Contact
                 </button>
             </div>
         </div>
@@ -783,52 +783,41 @@
         <div class="modal-overlay" id="about-modal">
             <div class="modal-content">
                 <div class="modal-title">
-                    <span><i class="fa-solid fa-circle-info" style="color:var(--primary);margin-right:8px;"></i>Acerca de Urban Guardian</span>
+                    <span><i class="fa-solid fa-circle-info" style="color:var(--primary);margin-right:8px;"></i>About Urban Guardian</span>
                     <i class="fa-solid fa-xmark modal-close" id="close-about"></i>
                 </div>
 
-                <div style="text-align:center;margin:20px 0;">
-                    <div class="dest-flow-icon" style="margin:0 auto 16px;width:80px;height:80px;font-size:36px;">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <h2 style="color:var(--text-main);font-size:22px;margin-bottom:4px;">Urban Guardian</h2>
-                    <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;">Versión 1.0.0 (Prototipo)</p>
-                </div>
-
-                <div style="background:var(--bg-input);border-radius:12px;padding:16px;margin-bottom:16px;">
-                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:8px;">Nuestra Misión</h4>
-                    <p style="color:var(--text-muted);font-size:12px;line-height:1.6;">
-                        Crear espacios urbanos más seguros mediante tecnología colaborativa, 
-                        empoderando a las personas para que se desplacen con confianza.
+                        Create safer urban spaces through collaborative technology, 
+                        empowering people to move with confidence.
                     </p>
                 </div>
 
                 <div style="background:var(--bg-input);border-radius:12px;padding:16px;margin-bottom:16px;">
-                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:12px;">Características</h4>
+                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:12px;">Features</h4>
                     <div style="display:flex;flex-direction:column;gap:8px;">
                         <div style="display:flex;align-items:center;gap:10px;">
                             <i class="fa-solid fa-check" style="color:var(--safe);font-size:12px;"></i>
-                            <span style="color:var(--text-muted);font-size:12px;">Rutas seguras con IA</span>
+                            <span style="color:var(--text-muted);font-size:12px;">AI-powered safe routes</span>
                         </div>
                         <div style="display:flex;align-items:center;gap:10px;">
                             <i class="fa-solid fa-check" style="color:var(--safe);font-size:12px;"></i>
-                            <span style="color:var(--text-muted);font-size:12px;">Red de guardianes comunitarios</span>
+                            <span style="color:var(--text-muted);font-size:12px;">Community guardian network</span>
                         </div>
                         <div style="display:flex;align-items:center;gap:10px;">
                             <i class="fa-solid fa-check" style="color:var(--safe);font-size:12px;"></i>
-                            <span style="color:var(--text-muted);font-size:12px;">SOS discreto con PIN falso</span>
+                            <span style="color:var(--text-muted);font-size:12px;">Discreet SOS with fake PIN</span>
                         </div>
                         <div style="display:flex;align-items:center;gap:10px;">
                             <i class="fa-solid fa-check" style="color:var(--safe);font-size:12px;"></i>
-                            <span style="color:var(--text-muted);font-size:12px;">Reportes de micro-incidentes</span>
+                            <span style="color:var(--text-muted);font-size:12px;">Micro-incident reports</span>
                         </div>
                     </div>
                 </div>
 
                 <div style="text-align:center;margin-top:20px;">
                     <p style="color:var(--text-muted);font-size:11px;">
-                        Desarrollado con ❤️ para hacer las ciudades más seguras<br>
-                        © 2026 Urban Guardian. Todos los derechos reservados.
+                        Developed with ❤️ to make cities safer<br>
+                        © 2026 Urban Guardian. All rights reserved.
                     </p>
                 </div>
             </div>
@@ -838,43 +827,43 @@
         <div class="modal-overlay" id="sos-settings-modal">
             <div class="modal-content">
                 <div class="modal-title">
-                    <span><i class="fa-solid fa-key" style="color:var(--danger);margin-right:8px;"></i>Ajustes de SOS</span>
+                    <span><i class="fa-solid fa-key" style="color:var(--danger);margin-right:8px;"></i>SOS Settings</span>
                     <i class="fa-solid fa-xmark modal-close" id="close-sos-settings"></i>
                 </div>
 
                 <div style="margin-bottom:20px;">
-                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:6px;">PIN falso de cancelación</h4>
+                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:6px;">Fake cancellation PIN</h4>
                     <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">
-                        Si te obligan a cancelar el SOS, usa este PIN. La app simulará la cancelación pero seguirá grabando y enviando tu ubicación en segundo plano.
+                        If forced to cancel SOS, use this PIN. The app will simulate cancellation but continue recording and sending your location in the background.
                     </p>
                     <div style="display:flex;gap:10px;align-items:center;">
                         <div class="input-group" style="margin-bottom:0;flex:1;">
                             <i class="fa-solid fa-lock"></i>
                             <input type="password" value="1234" id="fake-pin-input" style="letter-spacing:8px;font-size:18px;font-weight:700;">
                         </div>
-                        <button class="btn-navigate" onclick="showToast('PIN actualizado ✓')" style="padding:12px 18px;">Guardar</button>
+                        <button class="btn-navigate" onclick="showToast('PIN updated ✓')" style="padding:12px 18px;">Save</button>
                     </div>
                 </div>
 
                 <div style="margin-bottom:16px;">
-                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:6px;">PIN real de cancelación</h4>
+                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:6px;">Real cancellation PIN</h4>
                     <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">
-                        Este PIN realmente cancela la alerta. Solo tú debes conocerlo.
+                        This PIN actually cancels the alert. Only you should know it.
                     </p>
                     <div style="display:flex;gap:10px;align-items:center;">
                         <div class="input-group" style="margin-bottom:0;flex:1;">
                             <i class="fa-solid fa-shield-halved"></i>
                             <input type="password" value="5678" id="real-pin-input" style="letter-spacing:8px;font-size:18px;font-weight:700;">
                         </div>
-                        <button class="btn-navigate" onclick="showToast('PIN actualizado ✓')" style="padding:12px 18px;">Guardar</button>
+                        <button class="btn-navigate" onclick="showToast('PIN updated ✓')" style="padding:12px 18px;">Save</button>
                     </div>
                 </div>
 
                 <div class="setting-item" style="margin-top:8px;">
                     <i class="fa-solid fa-video" style="color:var(--danger);"></i>
                     <div class="setting-text">
-                        <h4>Grabación automática</h4>
-                        <p>Audio + Video al activar SOS</p>
+                        <h4>Automatic recording</h4>
+                        <p>Audio + Video when activating SOS</p>
                     </div>
                     <div class="toggle on" data-toggle="sos-recording"></div>
                 </div>
@@ -882,8 +871,8 @@
                 <div class="setting-item" style="margin-top:10px;">
                     <i class="fa-solid fa-satellite-dish" style="color:var(--safe);"></i>
                     <div class="setting-text">
-                        <h4>Envío de ubicación GPS</h4>
-                        <p>Cada 10 seg a contactos de confianza</p>
+                        <h4>GPS location sending</h4>
+                        <p>Every 10 sec to trusted contacts</p>
                     </div>
                     <div class="toggle on" data-toggle="sos-gps"></div>
                 </div>
@@ -893,36 +882,36 @@
         <!-- ============ SOS ACTIVE SCREEN ============ -->
         <div id="sos-active-screen">
             <div class="pulsing-circle"><i class="fa-solid fa-video"></i></div>
-            <h2 style="margin-bottom:6px;">Modo SOS Activo</h2>
+            <h2 style="margin-bottom:6px;">SOS Mode Active</h2>
             <p style="font-size:14px;opacity:0.9;max-width:80%;margin-bottom:24px;">
-                Enviando alertas de emergencia...
+                Sending emergency alerts...
             </p>
             <div class="sos-timeline" id="sos-timeline">
                 <div class="sos-tl-item" id="sos-step-1">
                     <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <span>Grabando audio y video...</span>
+                    <span>Recording audio and video...</span>
                 </div>
                 <div class="sos-tl-item" id="sos-step-2">
                     <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <span>Enviando ubicación GPS a contactos...</span>
+                    <span>Sending GPS location to contacts...</span>
                 </div>
                 <div class="sos-tl-item" id="sos-step-3">
                     <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <span>Alertando a Policía Nacional (112)...</span>
+                    <span>Alerting National Police (112)...</span>
                 </div>
                 <div class="sos-tl-item" id="sos-step-4">
                     <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <span>Notificando a Guardianes cercanos...</span>
+                    <span>Notifying nearby Guardians...</span>
                 </div>
             </div>
-            <button class="btn-cancel-sos" id="btn-cancel-sos">DESACTIVAR SOS (PIN)</button>
+            <button class="btn-cancel-sos" id="btn-cancel-sos">DEACTIVATE SOS (PIN)</button>
         </div>
 
         <!-- ============ PIN MODAL (SOS Cancellation) ============ -->
         <div class="pin-overlay" id="pin-modal">
             <div class="pin-box">
-                <h3>Introduce tu PIN</h3>
-                <p>Ingresa el PIN para desactivar la alerta</p>
+                <h3>Enter your PIN</h3>
+                <p>Enter PIN to deactivate the alert</p>
                 <div class="pin-dots">
                     <div class="pin-dot" id="dot-0"></div>
                     <div class="pin-dot" id="dot-1"></div>
@@ -997,7 +986,7 @@
         <!-- ============ TOAST NOTIFICATION ============ -->
         <div class="toast" id="toast">
             <i class="fa-solid fa-circle-check" style="color:var(--safe);"></i>
-            <span id="toast-text">Acción completada</span>
+            <span id="toast-text">Action completed</span>
         </div>
 
     </div><!-- /mobile-frame -->
