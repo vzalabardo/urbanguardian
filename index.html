@@ -149,8 +149,8 @@
                 <i class="fa-solid fa-shield-heart"></i> Refugio Cercano
             </div>
 
-            <!-- Card de Rutas -->
-            <div class="route-card">
+            <!-- Card de Rutas (hidden, internal use) -->
+            <div class="route-card" id="route-card" style="display:none;">
                 <div class="input-group">
                     <i class="fa-solid fa-location-dot"></i>
                     <input type="text" placeholder="¿Hacia dónde vas? (Ej. Casa)" id="destination-input" value="Casa">
@@ -166,6 +166,144 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Destination Flow Screen -->
+            <div class="destination-flow active" id="destination-flow">
+                <div class="destination-flow-content">
+                    <div class="dest-flow-header">
+                        <div class="dest-flow-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h2>¿A dónde vas?</h2>
+                        <p>Te guiaremos por la ruta más segura</p>
+                    </div>
+                    <div class="dest-input-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Escribe tu destino..." id="dest-flow-input">
+                    </div>
+                    <div class="dest-suggestions">
+                        <h5>Lugares frecuentes</h5>
+                        <div class="dest-suggestion" data-dest="Casa">
+                            <div class="dest-suggestion-icon"><i class="fa-solid fa-house"></i></div>
+                            <div class="dest-suggestion-info">
+                                <h4>Casa</h4>
+                                <p>Av. Seguridad 123</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:12px;"></i>
+                        </div>
+                        <div class="dest-suggestion" data-dest="Trabajo">
+                            <div class="dest-suggestion-icon" style="background:rgba(74,144,226,0.15);color:var(--primary);"><i class="fa-solid fa-briefcase"></i></div>
+                            <div class="dest-suggestion-info">
+                                <h4>Trabajo</h4>
+                                <p>Calle Central 456</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:12px;"></i>
+                        </div>
+                        <div class="dest-suggestion" data-dest="Universidad">
+                            <div class="dest-suggestion-icon" style="background:rgba(155,89,182,0.15);color:#9b59b6;"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <div class="dest-suggestion-info">
+                                <h4>Universidad</h4>
+                                <p>Av. Norte 789</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:12px;"></i>
+                        </div>
+                    </div>
+                    <button class="btn-start-route" id="btn-start-route">
+                        <i class="fa-solid fa-shield-halved"></i> Calcular Ruta Segura
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Controls (shown during navigation) -->
+            <div class="nav-controls" id="nav-controls">
+                <button class="btn-toggle-view" id="btn-toggle-view">
+                    <i class="fa-solid fa-list-ol"></i> Indicaciones
+                </button>
+                <button class="btn-finish-route" id="btn-finish-route">
+                    <i class="fa-solid fa-xmark"></i> Finalizar Ruta
+                </button>
+            </div>
+
+            <!-- Directions List Panel -->
+            <div class="directions-panel" id="directions-panel">
+                <div class="directions-header">
+                    <div>
+                        <h3><i class="fa-solid fa-route" style="color:var(--safe);margin-right:8px;"></i>Indicaciones</h3>
+                        <span class="directions-dest" id="directions-dest">Hacia: Casa</span>
+                    </div>
+                    <div class="directions-badges">
+                        <span class="dir-badge"><i class="fa-solid fa-ruler"></i> 850m</span>
+                        <span class="dir-badge"><i class="fa-solid fa-clock"></i> 12 min</span>
+                        <span class="dir-badge safe"><i class="fa-solid fa-shield-halved"></i> 98%</span>
+                    </div>
+                </div>
+                <div class="directions-list">
+                    <div class="direction-step current-step">
+                        <div class="step-line-v"></div>
+                        <div class="step-dot start"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="step-text">
+                            <h4>Tu ubicación actual</h4>
+                            <p>Calle Central</p>
+                        </div>
+                    </div>
+                    <div class="direction-step">
+                        <div class="step-line-v"></div>
+                        <div class="step-dot"><i class="fa-solid fa-arrow-up"></i></div>
+                        <div class="step-text">
+                            <h4>Continúa recto 200m</h4>
+                            <p><i class="fa-solid fa-lightbulb" style="color:var(--warning);margin-right:4px;"></i> Zona iluminada</p>
+                        </div>
+                        <span class="step-dist">200m</span>
+                    </div>
+                    <div class="direction-step">
+                        <div class="step-line-v"></div>
+                        <div class="step-dot turn"><i class="fa-solid fa-turn-right"></i></div>
+                        <div class="step-text">
+                            <h4>Gira a la derecha</h4>
+                            <p>Hacia Av. Seguridad · Cámaras activas</p>
+                        </div>
+                        <span class="step-dist">350m</span>
+                    </div>
+                    <div class="direction-step">
+                        <div class="step-line-v"></div>
+                        <div class="step-dot"><i class="fa-solid fa-arrow-up"></i></div>
+                        <div class="step-text">
+                            <h4>Continúa recto 150m</h4>
+                            <p><i class="fa-solid fa-person-walking" style="color:var(--primary);margin-right:4px;"></i> Zona peatonal</p>
+                        </div>
+                        <span class="step-dist">500m</span>
+                    </div>
+                    <div class="direction-step">
+                        <div class="step-line-v"></div>
+                        <div class="step-dot turn"><i class="fa-solid fa-turn-left"></i></div>
+                        <div class="step-text">
+                            <h4>Gira a la izquierda</h4>
+                            <p>Hacia Calle Luz Verde</p>
+                        </div>
+                        <span class="step-dist">700m</span>
+                    </div>
+                    <div class="direction-step">
+                        <div class="step-line-v"></div>
+                        <div class="step-dot"><i class="fa-solid fa-arrow-up"></i></div>
+                        <div class="step-text">
+                            <h4>Continúa recto 150m</h4>
+                            <p><i class="fa-solid fa-lightbulb" style="color:var(--warning);margin-right:4px;"></i> Peatones frecuentes</p>
+                        </div>
+                        <span class="step-dist">850m</span>
+                    </div>
+                    <div class="direction-step last-step">
+                        <div class="step-dot dest"><i class="fa-solid fa-flag-checkered"></i></div>
+                        <div class="step-text">
+                            <h4>Has llegado a tu destino</h4>
+                            <p id="dir-dest-name">Casa</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-finish-route-dir" id="btn-finish-route-dir">
+                    <i class="fa-solid fa-xmark"></i> Finalizar Ruta
+                </button>
+            </div>
+
         </div>
 
         <!-- ============ VIEW 3: RED (Community) ============ -->
@@ -350,7 +488,7 @@
             <!-- Badges section -->
             <div class="dashboard-section">
                 <h3>Logros recientes</h3>
-                <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:4px;">
+                <div class="logros-scroll">
                     <div class="stat-card" style="min-width:100px;">
                         <div class="stat-icon" style="color:#F39C12;">🛡️</div>
                         <div class="stat-label">Primer reporte</div>
@@ -382,7 +520,7 @@
                         </div>
                         <i class="fa-solid fa-chevron-right setting-arrow"></i>
                     </div>
-                    <div class="setting-item">
+                    <div class="setting-item" id="btn-notifications">
                         <i class="fa-solid fa-bell"></i>
                         <div class="setting-text">
                             <h4>Notificaciones</h4>
@@ -390,7 +528,7 @@
                         </div>
                         <i class="fa-solid fa-chevron-right setting-arrow"></i>
                     </div>
-                    <div class="setting-item">
+                    <div class="setting-item" id="btn-emergency-contacts">
                         <i class="fa-solid fa-user-group"></i>
                         <div class="setting-text">
                             <h4>Contactos de emergencia</h4>
@@ -398,7 +536,7 @@
                         </div>
                         <i class="fa-solid fa-chevron-right setting-arrow"></i>
                     </div>
-                    <div class="setting-item">
+                    <div class="setting-item" id="btn-about">
                         <i class="fa-solid fa-circle-info"></i>
                         <div class="setting-text">
                             <h4>Acerca de Urban Guardian</h4>
@@ -522,6 +660,180 @@
             </div>
         </div>
 
+        <!-- ============ NOTIFICATIONS MODAL ============ -->
+        <div class="modal-overlay" id="notifications-modal">
+            <div class="modal-content">
+                <div class="modal-title">
+                    <span><i class="fa-solid fa-bell" style="color:var(--primary);margin-right:8px;"></i>Notificaciones</span>
+                    <i class="fa-solid fa-xmark modal-close" id="close-notifications"></i>
+                </div>
+                <p style="color:var(--text-muted);font-size:12px;margin-bottom:20px;">
+                    Configura qué alertas quieres recibir para mantenerte segura.
+                </p>
+
+                <div class="setting-item" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i>
+                    <div class="setting-text">
+                        <h4>Alertas de zona peligrosa</h4>
+                        <p>Notificación al entrar en zona roja</p>
+                    </div>
+                    <div class="toggle on" data-toggle="notif-zone"></div>
+                </div>
+
+                <div class="setting-item" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-shield-halved" style="color:var(--safe);"></i>
+                    <div class="setting-text">
+                        <h4>Guardián cercano disponible</h4>
+                        <p>Aviso cuando hay guardianes a menos de 500m</p>
+                    </div>
+                    <div class="toggle on" data-toggle="notif-guardian"></div>
+                </div>
+
+                <div class="setting-item" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-lightbulb" style="color:var(--warning);"></i>
+                    <div class="setting-text">
+                        <h4>Micro-incidentes reportados</h4>
+                        <p>Alertas de reportes en tu zona</p>
+                    </div>
+                    <div class="toggle on" data-toggle="notif-incidents"></div>
+                </div>
+
+                <div class="setting-item" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-route" style="color:var(--primary);"></i>
+                    <div class="setting-text">
+                        <h4>Sugerencias de ruta</h4>
+                        <p>Rutas alternativas más seguras</p>
+                    </div>
+                    <div class="toggle" data-toggle="notif-routes"></div>
+                </div>
+
+                <div class="setting-item" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-moon" style="color:#9b59b6;"></i>
+                    <div class="setting-text">
+                        <h4>Modo nocturno automático</h4>
+                        <p>Alertas extra entre 22:00 - 06:00</p>
+                    </div>
+                    <div class="toggle on" data-toggle="notif-night"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ EMERGENCY CONTACTS MODAL ============ -->
+        <div class="modal-overlay" id="emergency-contacts-modal">
+            <div class="modal-content">
+                <div class="modal-title">
+                    <span><i class="fa-solid fa-user-group" style="color:var(--safe);margin-right:8px;"></i>Contactos de Emergencia</span>
+                    <i class="fa-solid fa-xmark modal-close" id="close-emergency-contacts"></i>
+                </div>
+                <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">
+                    Estas personas recibirán tu ubicación en tiempo real al activar SOS.
+                </p>
+
+                <div class="emergency-contact-item">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Mamá</h4>
+                        <p>+34 612 345 678 · Contacto principal</p>
+                    </div>
+                    <button class="btn-contact-action" onclick="showToast('Contacto verificado ✓')"><i class="fa-solid fa-check"></i></button>
+                </div>
+
+                <div class="emergency-contact-item">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#4A90E2,#6a5acd);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Carlos (Compañero)</h4>
+                        <p>+34 623 456 789</p>
+                    </div>
+                    <button class="btn-contact-action" onclick="showToast('Contacto verificado ✓')"><i class="fa-solid fa-check"></i></button>
+                </div>
+
+                <div class="emergency-contact-item">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#2ECC71,#27ae60);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Andrea (Roomie)</h4>
+                        <p>+34 634 567 890</p>
+                    </div>
+                    <button class="btn-contact-action" onclick="showToast('Contacto verificado ✓')"><i class="fa-solid fa-check"></i></button>
+                </div>
+
+                <div class="emergency-contact-item">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#F39C12,#e67e22);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Papá</h4>
+                        <p>+34 645 678 901</p>
+                    </div>
+                    <button class="btn-contact-action" onclick="showToast('Contacto verificado ✓')"><i class="fa-solid fa-check"></i></button>
+                </div>
+
+                <button class="btn-add-contact" onclick="showToast('Función disponible próximamente')">
+                    <i class="fa-solid fa-plus"></i> Añadir Contacto
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ ABOUT MODAL ============ -->
+        <div class="modal-overlay" id="about-modal">
+            <div class="modal-content">
+                <div class="modal-title">
+                    <span><i class="fa-solid fa-circle-info" style="color:var(--primary);margin-right:8px;"></i>Acerca de Urban Guardian</span>
+                    <i class="fa-solid fa-xmark modal-close" id="close-about"></i>
+                </div>
+
+                <div style="text-align:center;margin:20px 0;">
+                    <div class="dest-flow-icon" style="margin:0 auto 16px;width:80px;height:80px;font-size:36px;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h2 style="color:var(--text-main);font-size:22px;margin-bottom:4px;">Urban Guardian</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;">Versión 1.0.0 (Prototipo)</p>
+                </div>
+
+                <div style="background:var(--bg-input);border-radius:12px;padding:16px;margin-bottom:16px;">
+                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:8px;">Nuestra Misión</h4>
+                    <p style="color:var(--text-muted);font-size:12px;line-height:1.6;">
+                        Crear espacios urbanos más seguros mediante tecnología colaborativa, 
+                        empoderando a las personas para que se desplacen con confianza.
+                    </p>
+                </div>
+
+                <div style="background:var(--bg-input);border-radius:12px;padding:16px;margin-bottom:16px;">
+                    <h4 style="color:var(--text-main);font-size:14px;margin-bottom:12px;">Características</h4>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <i class="fa-solid fa-check" style="color:var(--safe);font-size:12px;"></i>
+                            <span style="color:var(--text-muted);font-size:12px;">Rutas seguras con IA</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <i class="fa-solid fa-check" style="color:var(--safe);font-size:12px;"></i>
+                            <span style="color:var(--text-muted);font-size:12px;">Red de guardianes comunitarios</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <i class="fa-solid fa-check" style="color:var(--safe);font-size:12px;"></i>
+                            <span style="color:var(--text-muted);font-size:12px;">SOS discreto con PIN falso</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <i class="fa-solid fa-check" style="color:var(--safe);font-size:12px;"></i>
+                            <span style="color:var(--text-muted);font-size:12px;">Reportes de micro-incidentes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align:center;margin-top:20px;">
+                    <p style="color:var(--text-muted);font-size:11px;">
+                        Desarrollado con ❤️ para hacer las ciudades más seguras<br>
+                        © 2026 Urban Guardian. Todos los derechos reservados.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- ============ SOS SETTINGS BOTTOM SHEET ============ -->
         <div class="modal-overlay" id="sos-settings-modal">
             <div class="modal-content">
@@ -581,10 +893,28 @@
         <!-- ============ SOS ACTIVE SCREEN ============ -->
         <div id="sos-active-screen">
             <div class="pulsing-circle"><i class="fa-solid fa-video"></i></div>
-            <h2 style="margin-bottom:10px;">Modo Discreto Activo</h2>
-            <p style="font-size:14px;opacity:0.9;max-width:80%;">
-                Grabando audio/video en segundo plano. Ubicación enviada a contactos de confianza.
+            <h2 style="margin-bottom:6px;">Modo SOS Activo</h2>
+            <p style="font-size:14px;opacity:0.9;max-width:80%;margin-bottom:24px;">
+                Enviando alertas de emergencia...
             </p>
+            <div class="sos-timeline" id="sos-timeline">
+                <div class="sos-tl-item" id="sos-step-1">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>Grabando audio y video...</span>
+                </div>
+                <div class="sos-tl-item" id="sos-step-2">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>Enviando ubicación GPS a contactos...</span>
+                </div>
+                <div class="sos-tl-item" id="sos-step-3">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>Alertando a Policía Nacional (112)...</span>
+                </div>
+                <div class="sos-tl-item" id="sos-step-4">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>Notificando a Guardianes cercanos...</span>
+                </div>
+            </div>
             <button class="btn-cancel-sos" id="btn-cancel-sos">DESACTIVAR SOS (PIN)</button>
         </div>
 
@@ -616,6 +946,54 @@
             </div>
         </div>
 
+        <!-- ============ TOAST NOTIFICATION ============ -->
+        <style>
+        .emergency-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--bg-input);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+        .btn-contact-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(46,204,113,0.15);
+            color: var(--safe);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .btn-contact-action:active { background: rgba(46,204,113,0.3); }
+        .btn-add-contact {
+            width: 100%;
+            padding: 14px;
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 14px;
+            background: transparent;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .btn-add-contact:active {
+            background: var(--bg-input);
+            border-color: var(--primary);
+        }
+        </style>
         <!-- ============ TOAST NOTIFICATION ============ -->
         <div class="toast" id="toast">
             <i class="fa-solid fa-circle-check" style="color:var(--safe);"></i>

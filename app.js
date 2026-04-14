@@ -15,11 +15,24 @@ const safeRouteOverlay = document.getElementById('safe-route-overlay');
 const btnRefugio       = document.getElementById('btn-refugio');
 const destinationInput = document.getElementById('destination-input');
 
+// Destination Flow
+const destinationFlow  = document.getElementById('destination-flow');
+const destFlowInput    = document.getElementById('dest-flow-input');
+const btnStartRoute    = document.getElementById('btn-start-route');
+const navControls      = document.getElementById('nav-controls');
+const btnToggleView    = document.getElementById('btn-toggle-view');
+const btnFinishRoute   = document.getElementById('btn-finish-route');
+const btnFinishRouteDir = document.getElementById('btn-finish-route-dir');
+const directionsPanel  = document.getElementById('directions-panel');
+
 // Modales
 const reportModal      = document.getElementById('report-modal');
 const shelterModal     = document.getElementById('shelter-modal');
 const sosSettingsModal = document.getElementById('sos-settings-modal');
 const pinModal         = document.getElementById('pin-modal');
+const notificationsModal = document.getElementById('notifications-modal');
+const emergencyContactsModal = document.getElementById('emergency-contacts-modal');
+const aboutModal       = document.getElementById('about-modal');
 
 // SOS
 const sosBtn        = document.getElementById('sos-btn');
@@ -103,9 +116,12 @@ function closeModal(modal) {
 document.getElementById('close-report-modal').addEventListener('click', () => closeModal(reportModal));
 document.getElementById('close-shelter-modal').addEventListener('click', () => closeModal(shelterModal));
 document.getElementById('close-sos-settings').addEventListener('click', () => closeModal(sosSettingsModal));
+document.getElementById('close-notifications').addEventListener('click', () => closeModal(notificationsModal));
+document.getElementById('close-emergency-contacts').addEventListener('click', () => closeModal(emergencyContactsModal));
+document.getElementById('close-about').addEventListener('click', () => closeModal(aboutModal));
 
 // Close modals on overlay click (outside content)
-[reportModal, shelterModal, sosSettingsModal].forEach(modal => {
+[reportModal, shelterModal, sosSettingsModal, notificationsModal, emergencyContactsModal, aboutModal].forEach(modal => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal(modal);
     });
@@ -279,11 +295,23 @@ function requestGuardian(btn) {
 
 
 /* ===========================================
-   9. PERFIL — AJUSTES SOS
+   9. PERFIL — AJUSTES SOS & OTHER SETTINGS
    =========================================== */
 
 document.getElementById('btn-sos-settings').addEventListener('click', () => {
     openModal(sosSettingsModal);
+});
+
+document.getElementById('btn-notifications').addEventListener('click', () => {
+    openModal(notificationsModal);
+});
+
+document.getElementById('btn-emergency-contacts').addEventListener('click', () => {
+    openModal(emergencyContactsModal);
+});
+
+document.getElementById('btn-about').addEventListener('click', () => {
+    openModal(aboutModal);
 });
 
 
@@ -325,17 +353,52 @@ function activateSOS() {
     sosScreen.classList.add('active');
     // Haptic feedback
     if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    // Animate SOS timeline
+    animateSOSTimeline();
 }
 
-// Mouse events
-sosBtn.addEventListener('mousedown', startSOSPress);
-sosBtn.addEventListener('mouseup', endSOSPress);
-sosBtn.addEventListener('mouseleave', endSOSPress);
+function animateSOSTimeline() {
+    const steps = document.querySelectorAll('.sos-tl-item');
+    steps.forEach(s => {
+        s.classList.remove('done');
+        s.querySelector('i').className = 'fa-solid fa-circle-notch fa-spin';
+    });
 
-// Touch events
-sosBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startSOSPress(); });
-sosBtn.addEventListener('touchend', endSOSPress);
+    const messages = [
+        { el: 'sos-step-1', delay: 800, text: 'Grabación de audio/video iniciada ✓' },
+        { el: 'sos-step-2', delay: 2200, text: 'Ubicación enviada a Mamá, Carlos, Andrea ✓' },
+        { el: 'sos-step-3', delay: 3800, text: 'Policía Nacional alertada · Caso #UG-7832 ✓' },
+        { el: 'sos-step-4', delay: 5200, text: 'Ana P. (200m) notificada · En camino ✓' },
+    ];
 
+    messages.forEach(msg => {
+        setTimeout(() => {
+            const el = document.getElementById(msg.el);
+            if (el) {
+                el.classList.add('done');
+                el.querySelector('i').className = 'fa-solid fa-circle-check';
+                el.querySelector('span').textContent = msg.text;
+            }
+        }, msg.delay);
+    });
+}
+
+function resetSOSTimeline() {
+    const defaults = [
+        { el: 'sos-step-1', text: 'Grabando audio y video...' },
+        { el: 'sos-step-2', text: 'Enviando ubicación GPS a contactos...' },
+        { el: 'sos-step-3', text: 'Alertando a Policía Nacional (112)...' },
+        { el: 'sos-step-4', text: 'Notificando a Guardianes cercanos...' },
+    ];
+    defaults.forEach(d => {
+        const el = document.getElementById(d.el);
+        if (el) {
+            el.classList.remove('done');
+            el.querySelector('i').className = 'fa-solid fa-circle-notch fa-spin';
+            el.querySelector('span').textContent = d.text;
+        }
+    });
+}
 
 /* ===========================================
    11. SOS — CANCEL WITH PIN
@@ -379,6 +442,7 @@ function validatePin() {
         sosScreen.classList.remove('active');
         pinBuffer = '';
         updatePinDots();
+        resetSOSTimeline();
         showToast('SOS desactivado correctamente');
     } else if (pinBuffer === FAKE_PIN) {
         // Fake cancel — looks like it cancels but doesn't
@@ -386,6 +450,7 @@ function validatePin() {
         sosScreen.classList.remove('active');
         pinBuffer = '';
         updatePinDots();
+        resetSOSTimeline();
         // In a real app, recording + GPS would continue in background
         showToast('SOS desactivado (modo falso activo)');
     } else {
@@ -437,3 +502,95 @@ if (xpFill) xpFill.style.width = '0%';
 
 // Log ready
 console.log('Urban Guardian SPA initialized ✓');
+
+
+/* ===========================================
+   14. DESTINATION FLOW & NAVIGATION
+   =========================================== */
+
+let showingDirections = false;
+
+// Destination suggestions click
+document.querySelectorAll('.dest-suggestion').forEach(item => {
+    item.addEventListener('click', () => {
+        const dest = item.dataset.dest;
+        destFlowInput.value = dest;
+        startNavigation(dest);
+    });
+});
+
+// Start route button
+btnStartRoute.addEventListener('click', () => {
+    const dest = destFlowInput.value.trim() || 'Destino';
+    startNavigation(dest);
+});
+
+function startNavigation(destination) {
+    // Update internal destination input
+    destinationInput.value = destination;
+
+    // Update directions panel
+    const dirDest = document.getElementById('directions-dest');
+    const dirDestName = document.getElementById('dir-dest-name');
+    if (dirDest) dirDest.textContent = 'Hacia: ' + destination;
+    if (dirDestName) dirDestName.textContent = destination;
+
+    // Hide destination flow
+    destinationFlow.classList.remove('active');
+
+    // Show nav controls
+    navControls.classList.add('active');
+
+    // Activate safe route
+    safeRouteActive = true;
+    calculatePathLength();
+    if (routePath) routePath.getBoundingClientRect();
+    safeRouteOverlay.classList.add('visible');
+
+    showToast('Calculando ruta segura hacia ' + destination + ' 🛡️');
+    updateRouteInfo();
+}
+
+// Toggle map/directions
+btnToggleView.addEventListener('click', () => {
+    showingDirections = !showingDirections;
+    if (showingDirections) {
+        directionsPanel.classList.add('active');
+        btnToggleView.innerHTML = '<i class="fa-solid fa-map"></i> Ver Mapa';
+    } else {
+        directionsPanel.classList.remove('active');
+        btnToggleView.innerHTML = '<i class="fa-solid fa-list-ol"></i> Indicaciones';
+    }
+});
+
+// Finish route
+function finishRoute() {
+    safeRouteOverlay.classList.remove('visible');
+    safeRouteActive = false;
+    navControls.classList.remove('active');
+    directionsPanel.classList.remove('active');
+    showingDirections = false;
+    btnToggleView.innerHTML = '<i class="fa-solid fa-list-ol"></i> Indicaciones';
+
+    // Reset destination
+    destFlowInput.value = '';
+
+    // Show destination flow again
+    destinationFlow.classList.add('active');
+
+    showToast('Ruta finalizada');
+}
+
+btnFinishRoute.addEventListener('click', finishRoute);
+btnFinishRouteDir.addEventListener('click', finishRoute);
+
+// SOS button click handler
+if (sosBtn) {
+    sosBtn.addEventListener('click', () => {
+        console.log('SOS button clicked!');
+        activateSOS();
+    });
+    console.log('SOS button listener attached');
+} else {
+    console.error('SOS button not found!');
+}
