@@ -1,0 +1,27 @@
+services:
+  urbanguardian:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: urbanguardian
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:80"
+    environment:
+      - TZ=Europe/Madrid
+    labels:
+      - "com.urbanguardian.service=frontend"
+
+# ── Notes ──────────────────────────────────────────────────
+# 1. Copy .env.example to .env and set PORT to a free port on your server
+# 2. Build and start:  docker compose up -d --build
+# 3. Stop:             docker compose down
+# 4. View logs:        docker compose logs -f
+#
+# If you use a reverse proxy (Traefik / nginx-proxy), add your
+# proxy's external network below and remove the ports mapping:
+#
+# networks:
+#   default:
+#     name: proxy
+#     external: true

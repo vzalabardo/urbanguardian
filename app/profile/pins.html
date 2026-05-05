@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <title>PINs de seguridad — Urban Guardian</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .screen { display: flex; flex-direction: column; height: 100dvh; }
+    .screen-header {
+      display: flex; align-items: center; gap: var(--space-md);
+      padding: 0 var(--space-lg); height: 56px;
+      background: var(--bg-dark); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .btn-back {
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-main); cursor: pointer; font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+    .screen-title { font-size: 1rem; font-weight: 700; }
+    .screen-body { flex: 1; overflow-y: auto; padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-lg); }
+    .info-box {
+      background: var(--primary-lt); border: 1px solid var(--primary);
+      border-radius: var(--radius-md); padding: var(--space-md);
+      font-size: 0.8125rem; color: var(--text-muted); line-height: 1.5;
+    }
+    .info-box strong { color: var(--text-main); }
+    .pin-input-wrap { position: relative; }
+    .pin-toggle {
+      position: absolute; right: var(--space-md); top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body class="mobile-frame">
+<div class="screen">
+
+  <header class="screen-header">
+    <button class="btn-back" onclick="history.back()">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <span class="screen-title">PINs de seguridad</span>
+  </header>
+
+  <div class="screen-body">
+
+    <div class="info-box">
+      <strong>¿Para qué sirven los PINs?</strong><br>
+      El <strong>PIN real</strong> desactiva la alerta SOS cuando estás a salvo.<br>
+      El <strong>PIN falso</strong> también desactiva la alerta visualmente, pero notifica en silencio a tus contactos de emergencia que estás siendo coaccionado.
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label" for="input-sos-pin">PIN real (4–6 dígitos)</label>
+        <div class="pin-input-wrap">
+          <input type="password" inputmode="numeric" pattern="[0-9]*"
+            class="form-input" id="input-sos-pin" maxlength="6"
+            placeholder="••••••" style="padding-right:44px">
+          <button class="pin-toggle" type="button" onclick="toggleVis('input-sos-pin', this)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <p class="text-xs text-dim mt-xs">Memoriza bien este PIN. Lo usarás para desactivar alertas.</p>
+      </div>
+
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label" for="input-fake-pin">PIN falso — coacción silenciosa (opcional)</label>
+        <div class="pin-input-wrap">
+          <input type="password" inputmode="numeric" pattern="[0-9]*"
+            class="form-input" id="input-fake-pin" maxlength="6"
+            placeholder="••••••" style="padding-right:44px">
+          <button class="pin-toggle" type="button" onclick="toggleVis('input-fake-pin', this)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <p class="text-xs text-dim mt-xs">Debe ser diferente al PIN real.</p>
+      </div>
+    </div>
+
+    <div id="error-banner" class="error-banner" style="display:none">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span id="error-text"></span>
+    </div>
+
+    <button class="btn btn-primary btn-full btn-lg" id="btn-save" onclick="savePINs()">
+      Guardar PINs
+    </button>
+
+  </div>
+</div>
+
+<script type="module">
+import { auth }        from '../firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { updatePINs }  from '../js/profile.js';
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) window.location.href = '../auth/login.html';
+});
+
+window.toggleVis = function(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isPass = input.type === 'password';
+  input.type = isPass ? 'text' : 'password';
+  btn.querySelector('i').className = isPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+};
+
+window.savePINs = async function() {
+  const sosPIN  = document.getElementById('input-sos-pin').value;
+  const fakePIN = document.getElementById('input-fake-pin').value;
+  const btn     = document.getElementById('btn-save');
+
+  if (!sosPIN || sosPIN.length < 4) {
+    showBanner('El PIN real debe tener al menos 4 dígitos.');
+    return;
+  }
+  if (fakePIN && fakePIN === sosPIN) {
+    showBanner('El PIN falso debe ser diferente al PIN real.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Guardando…';
+
+  try {
+    await updatePINs({ sosPIN, fakePIN: fakePIN || null });
+    window.location.href = '../map.html';
+  } catch (err) {
+    showBanner('Error al guardar. Inténtalo de nuevo.');
+    btn.disabled = false;
+    btn.textContent = 'Guardar PINs';
+  }
+};
+
+function showBanner(msg) {
+  const b = document.getElementById('error-banner');
+  b.style.display = 'flex';
+  document.getElementById('error-text').textContent = msg;
+}
+</script>
+</body>
+</html>

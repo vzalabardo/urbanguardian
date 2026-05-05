@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <title>Editar perfil — Urban Guardian</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .screen { display: flex; flex-direction: column; height: 100dvh; }
+    .screen-header {
+      display: flex; align-items: center; gap: var(--space-md);
+      padding: 0 var(--space-lg); height: 56px;
+      background: var(--bg-dark); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .btn-back {
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-main); cursor: pointer; font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+    .screen-title { font-size: 1rem; font-weight: 700; }
+    .screen-body { flex: 1; overflow-y: auto; padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-lg); }
+
+    .avatar-section {
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-md);
+      padding: var(--space-lg);
+    }
+    .avatar-wrap {
+      position: relative; width: 88px; height: 88px;
+    }
+    .avatar-circle {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: var(--primary-lt); border: 3px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 700; color: var(--primary);
+      overflow: hidden;
+    }
+    .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-edit-btn {
+      position: absolute; bottom: 0; right: 0;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--primary); border: 2px solid var(--bg-dark);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 0.7rem; cursor: pointer;
+    }
+    .avatar-name { font-size: 1.125rem; font-weight: 700; }
+    .avatar-email { font-size: 0.8125rem; color: var(--text-muted); }
+  </style>
+</head>
+<body class="mobile-frame">
+<div class="screen">
+
+  <header class="screen-header">
+    <button class="btn-back" onclick="history.back()">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <span class="screen-title">Editar perfil</span>
+  </header>
+
+  <div class="screen-body">
+
+    <div class="avatar-section">
+      <div class="avatar-wrap">
+        <div class="avatar-circle" id="avatar-display">
+          <span id="avatar-initials">?</span>
+        </div>
+        <label class="avatar-edit-btn" for="photo-input">
+          <i class="fa-solid fa-camera"></i>
+        </label>
+        <input type="file" id="photo-input" accept="image/*" style="display:none">
+      </div>
+      <div class="avatar-name" id="avatar-name">Cargando…</div>
+      <div class="avatar-email" id="avatar-email"></div>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label" for="input-name">Nombre completo</label>
+        <input type="text" class="form-input" id="input-name" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="input-phone">Teléfono</label>
+        <input type="tel" class="form-input" id="input-phone" placeholder="+34 600 000 000">
+      </div>
+    </div>
+
+    <div id="error-banner" class="error-banner" style="display:none">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span id="error-text"></span>
+    </div>
+
+    <button class="btn btn-primary btn-full btn-lg" id="btn-save" onclick="saveProfile()">
+      Guardar cambios
+    </button>
+
+  </div>
+</div>
+
+<script type="module">
+import { auth }        from '../firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getProfile, updateProfileInfo, uploadProfilePhoto } from '../js/profile.js';
+
+let currentUser = null;
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = '../auth/login.html'; return; }
+  currentUser = user;
+  const profile = await getProfile(user.uid);
+
+  const name  = profile?.displayName || user.displayName || '';
+  const email = profile?.email || user.email || '';
+  const photo = profile?.photoURL || user.photoURL;
+  const initials = name ? name.slice(0,2).toUpperCase() : '?';
+
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('avatar-name').textContent  = name;
+  document.getElementById('avatar-email').textContent = email;
+  document.getElementById('input-name').value  = name;
+  document.getElementById('input-phone').value = profile?.phone || '';
+
+  if (photo) {
+    document.getElementById('avatar-display').innerHTML = `<img src="${photo}" alt="">`;
+  }
+});
+
+document.getElementById('photo-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Subiendo foto…';
+  try {
+    const url = await uploadProfilePhoto(file);
+    document.getElementById('avatar-display').innerHTML = `<img src="${url}" alt="">`;
+    showError('Foto actualizada ✓', false);
+  } catch (err) {
+    showError('Error al subir la foto.');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Guardar cambios';
+});
+
+window.saveProfile = async function() {
+  const name  = document.getElementById('input-name').value.trim();
+  const phone = document.getElementById('input-phone').value.trim();
+  const btn   = document.getElementById('btn-save');
+
+  if (!name) { showError('El nombre es obligatorio.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Guardando…';
+
+  try {
+    await updateProfileInfo({ displayName: name, phone: phone || null });
+    window.location.href = '../map.html';
+  } catch (err) {
+    showError('Error al guardar. Inténtalo de nuevo.');
+    btn.disabled = false;
+    btn.textContent = 'Guardar cambios';
+  }
+};
+
+function showError(msg, isError = true) {
+  const banner = document.getElementById('error-banner');
+  const text   = document.getElementById('error-text');
+  banner.style.display = 'flex';
+  banner.style.borderColor = isError ? 'var(--danger)' : 'var(--safe)';
+  text.textContent = msg;
+}
+</script>
+</body>
+</html>

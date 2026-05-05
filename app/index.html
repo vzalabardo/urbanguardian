@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Urban Guardian</title>
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="mobile-frame">
+
+    <!-- ── Splash Screen ──────────────────────────────────── -->
+    <div class="splash-screen" id="splash">
+      <div class="splash-logo">
+        <div class="splash-logo-icon">
+          <i class="fa-solid fa-shield-halved" style="color:#fff;"></i>
+        </div>
+        <span class="splash-logo-text">Urban Guardian</span>
+      </div>
+      <p class="splash-tagline">Tu red de seguridad personal,<br>siempre contigo.</p>
+      <div class="splash-progress">
+        <div class="spinner spinner-lg" style="border-top-color:var(--primary);"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { auth } from './firebase-config.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+    // Wait for Firebase Auth to resolve, then route accordingly
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in → go to main map view (FASE 3)
+        // TODO: replace with actual map page when built
+        window.location.href = './map.html';
+      } else {
+        // No session → start onboarding flow
+        window.location.href = './auth/onboarding.html';
+      }
+    });
+
+    // Fallback: if Firebase config has placeholder values, skip to onboarding
+    setTimeout(() => {
+      const splash = document.getElementById('splash');
+      if (splash) {
+        window.location.href = './auth/onboarding.html';
+      }
+    }, 5000);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Guardian — App Screenshots</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* A4 Portrait: 210mm × 297mm at 96dpi = 794px × 1123px */
+        /* Reduced top/bottom for Word margins */
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        html, body {
+            width: 100%;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            color: #1a1a1a;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 20mm;
+            margin: 0 auto;
+            background: white;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+
+        .page:last-child {
+            page-break-after: auto;
+        }
+
+        /* Grid layout for screenshots */
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18mm;
+            margin-bottom: 20mm;
+        }
+
+        .screenshot-grid.single {
+            grid-template-columns: 1fr;
+            justify-items: center;
+        }
+
+        .screenshot-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .screenshot-frame {
+            width: 100%;
+            max-width: 280px;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 8px;
+        }
+
+        .screenshot-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .caption {
+            font-size: 11pt;
+            color: #2c3e50;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-top: 6px;
+            max-width: 280px;
+        }
+
+        .page-title {
+            font-size: 20pt;
+            font-weight: 700;
+            color: #020434;
+            margin-bottom: 6mm;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 12pt;
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 12mm;
+            font-weight: 400;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+
+        /* Screen preview */
+        @media screen {
+            body {
+                background: #e9ecef;
+                padding: 20px 0;
+            }
+            .page {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE 1: Title + First 2 screens -->
+    <div class="page">
+        <h1 class="page-title">Urban Guardian</h1>
+        <p class="page-subtitle">Mobile App Screenshots — User Interface</p>
+
+        <div class="screenshot-grid">
+            <div class="screenshot-item">
+                <div class="screenshot-frame">
+                    <img src="../phone_app_photos/inicio%20where%20are%20you%20going.JPG" alt="Start screen">
+                </div>
+                <p class="caption">Home screen: destination input for safe route calculation</p>
+            </div>
+
+            <div class="screenshot-item">
+                <div class="screenshot-frame">
+                    <img src="../phone_app_photos/ruta%20principal.JPG" alt="Main route">
+                </div>
+                <p class="caption">Safe route display with lighting and pedestrian flow data</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: Guardians + Report -->
+    <div class="page">
+        <div class="screenshot-grid">
+            <div class="screenshot-item">
+                <div class="screenshot-frame">
+                    <img src="../phone_app_photos/urban%20guardians%20local.JPG" alt="Urban Guardians">
+                </div>
+                <p class="caption">Guardian network: verified users available in your area</p>
+            </div>
+
+            <div class="screenshot-item">
+                <div class="screenshot-frame">
+                    <img src="../phone_app_photos/reportar%20incidente.JPG" alt="Report incident">
+                </div>
+                <p class="caption">Incident reporting: community-powered real-time map updates</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3: SOS screens -->
+    <div class="page">
+        <div class="screenshot-grid">
+            <div class="screenshot-item">
+                <div class="screenshot-frame">
+                    <img src="../phone_app_photos/pin%20sos%20mode.JPG" alt="PIN SOS">
+                </div>
+                <p class="caption">SOS mode: fake deactivation PIN for coercion scenarios</p>
+            </div>
+
+            <div class="screenshot-item">
+                <div class="screenshot-frame">
+                    <img src="../phone_app_photos/sos%20mode%20active.JPG" alt="SOS active">
+                </div>
+                <p class="caption">Active SOS: background recording and emergency alert protocol</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: Profile (centered) -->
+    <div class="page">
+        <div class="screenshot-grid single">
+            <div class="screenshot-item">
+                <div class="screenshot-frame">
+                    <img src="../phone_app_photos/profile%20page%20stats.JPG" alt="Profile">
+                </div>
+                <p class="caption">User profile: Guardian stats, achievements and community impact</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

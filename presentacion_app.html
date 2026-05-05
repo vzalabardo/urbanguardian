@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Guardian — App Screens</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-brand: #020434;
+            --green: #4ADE40;
+            --green-dim: rgba(74, 222, 64, 0.15);
+            --blue: #4A90E2;
+            --danger: #E74C3C;
+            --text: #FFFFFF;
+            --text-muted: rgba(255,255,255,0.55);
+        }
+
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #010318;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+        }
+
+        /* ===== 16:9 SLIDE WRAPPER ===== */
+        .slides-wrapper {
+            width: min(100vw, 177.78vh);
+            height: min(56.25vw, 100vh);
+            position: relative;
+            background: var(--bg-brand);
+            overflow: hidden;
+        }
+
+        /* ===== SLIDE BASE ===== */
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 7vh 8vw;
+            opacity: 0;
+            transform: translateX(60px);
+            pointer-events: none;
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        .slide.exit {
+            opacity: 0;
+            transform: translateX(-60px);
+        }
+
+        /* Ambient gradients */
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 18% 55%, rgba(74,222,64,0.06) 0%, transparent 55%),
+                radial-gradient(ellipse at 82% 28%, rgba(74,144,226,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        /* Subtle grid */
+        .slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+        .slide > * { position: relative; z-index: 1; }
+
+        /* ===== COMMON LABELS ===== */
+        .slide-number {
+            position: absolute;
+            top: 5vh; left: 6vw;
+            font-size: clamp(14px, 1.8vh, 20px);
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--green);
+            text-transform: uppercase;
+        }
+        .corner-logo {
+            position: absolute;
+            top: 4.5vh; right: 5.5vw;
+            height: clamp(24px, 3.5vh, 42px);
+            opacity: 0.35;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        .slide-title {
+            font-size: clamp(32px, 6vh, 72px);
+            font-weight: 800;
+            line-height: 1.1;
+            text-align: center;
+            margin-bottom: clamp(12px, 1.8vh, 24px);
+        }
+        .slide-title .hl {
+            background: linear-gradient(135deg, var(--green), #27ae60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .slide-title .hl-red {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide-sub {
+            font-size: clamp(16px, 2.2vh, 26px);
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 70%;
+            line-height: 1.6;
+            margin-bottom: clamp(16px, 2.5vh, 32px);
+        }
+
+        /* ===== COVER ===== */
+        .cover-logo {
+            height: clamp(60px, 12vh, 130px);
+            margin-bottom: clamp(12px, 2.2vh, 28px);
+            filter: drop-shadow(0 0 30px rgba(74,222,64,0.22));
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .cover-tagline {
+            font-size: clamp(14px, 2vh, 24px);
+            font-weight: 300;
+            color: var(--text-muted);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: clamp(12px, 2.5vh, 32px);
+        }
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--green-dim);
+            border: 1px solid rgba(74,222,64,0.25);
+            border-radius: 30px;
+            padding: clamp(8px, 1.2vh, 14px) clamp(18px, 2.5vw, 28px);
+            font-size: clamp(12px, 1.6vh, 18px);
+            font-weight: 600;
+            color: var(--green);
+        }
+
+        /* ===== PHONE MOCKUP ===== */
+        .phone {
+            position: relative;
+            background: #06071a;
+            border-radius: clamp(22px, 3.8vh, 46px);
+            border: 2px solid rgba(255,255,255,0.13);
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.04),
+                0 24px 64px rgba(0,0,0,0.55),
+                0 4px 16px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+        /* Dynamic Island / notch */
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 28%;
+            height: clamp(12px, 1.8vh, 22px);
+            background: #06071a;
+            border-radius: 0 0 14px 14px;
+            z-index: 3;
+        }
+        /* Side button hint */
+        .phone::after {
+            content: '';
+            position: absolute;
+            right: -3px; top: 22%;
+            width: 3px; height: 14%;
+            background: rgba(255,255,255,0.12);
+            border-radius: 2px;
+        }
+        .phone img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        /* — two-phone layout — */
+        .phone-sm {
+            height: clamp(240px, 52vh, 560px);
+            width: calc(clamp(240px, 52vh, 560px) * 0.46);
+        }
+        /* — single phone layout — */
+        .phone-lg {
+            height: clamp(280px, 64vh, 680px);
+            width: calc(clamp(280px, 64vh, 680px) * 0.46);
+        }
+
+        /* ===== TWO-PHONE ROW ===== */
+        .phones-row {
+            display: flex;
+            align-items: center;
+            gap: clamp(20px, 4vw, 60px);
+        }
+        .phone-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .phone-label {
+            margin-top: clamp(10px, 1.5vh, 18px);
+            font-size: clamp(13px, 1.7vh, 20px);
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+        .step-arrow {
+            font-size: clamp(20px, 3.5vh, 40px);
+            color: var(--green);
+            opacity: 0.75;
+            margin-bottom: clamp(18px, 2.8vh, 32px);
+        }
+
+        /* ===== CONTENT SPLIT (text + phone) ===== */
+        .content-split {
+            display: flex;
+            align-items: center;
+            gap: clamp(32px, 6vw, 90px);
+            width: 100%;
+            max-width: 92%;
+        }
+        .content-split.rev { flex-direction: row-reverse; }
+
+        .split-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .split-text .slide-title { text-align: left; }
+        .split-text .slide-sub {
+            text-align: left;
+            max-width: 100%;
+            margin-bottom: clamp(12px, 2vh, 24px);
+        }
+
+        /* Feature bullets */
+        .feat-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 1.6vh, 18px);
+        }
+        .feat-list li {
+            display: flex;
+            align-items: center;
+            gap: clamp(12px, 1.5vw, 18px);
+            font-size: clamp(14px, 1.8vh, 22px);
+            color: rgba(255,255,255,0.7);
+            line-height: 1.5;
+        }
+        .feat-dot {
+            width: clamp(32px, 4.2vh, 44px);
+            height: clamp(32px, 4.2vh, 44px);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(14px, 1.8vh, 20px);
+            flex-shrink: 0;
+        }
+
+        /* ===== SECTION DIVIDER LINE ===== */
+        .green-line {
+            width: clamp(40px, 5vw, 70px);
+            height: 4px;
+            background: linear-gradient(90deg, var(--green), transparent);
+            border-radius: 2px;
+            margin: clamp(8px, 1.2vh, 14px) 0;
+        }
+
+        /* ===== NAVIGATION (HIDDEN) ===== */
+        .nav-bar {
+            display: none;
+        }
+        .nav-dots { display: none; }
+        .nav-dot { display: none; }
+        .key-hint { display: none; }
+        .nav-arrows { display: none; }
+        .nav-arrow-btn { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="slides-wrapper" id="slides-wrapper">
+
+    <!-- ============================================================
+         SLIDE 1 — COVER
+    ============================================================ -->
+    <div class="slide active" data-slide="0">
+        <img src="logo-grande-horizontal.jpg" alt="Urban Guardian" class="cover-logo">
+        <p class="cover-tagline">App Walkthrough</p>
+        <h1 class="slide-title" style="margin-bottom:clamp(6px,1.2vh,14px);">
+            Discover the <span class="hl">user</span><br>experience
+        </h1>
+        <p style="font-size:clamp(9px,1.25vh,15px);color:var(--text-muted);margin-bottom:clamp(10px,2vh,26px);">
+            A journey through the main screens of the prototype
+        </p>
+        <div class="cover-badge">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            7 screens · Prototype v1.0
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         SLIDE 2 — DESTINATION + MAIN ROUTE
+    ============================================================ -->
+    <div class="slide" data-slide="1">
+        <span class="slide-number">01 · Navigation</span>
+        <img src="logo-grande-horizontal.jpg" alt="" class="corner-logo">
+
+        <h1 class="slide-title">Choose destination, <span class="hl">navigate safely</span></h1>
+        <p class="slide-sub">Enter where you're going and the app calculates the safest route.</p>
+
+        <div class="phones-row">
+            <div class="phone-col">
+                <div class="phone phone-sm">
+                    <img src="../phone_app_photos/inicio%20where%20are%20you%20going.JPG" alt="Start screen">
+                </div>
+                <p class="phone-label">Where are you going?</p>
+            </div>
+
+            <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+
+            <div class="phone-col">
+                <div class="phone phone-sm">
+                    <img src="../phone_app_photos/ruta%20principal.JPG" alt="Main route">
+                </div>
+                <p class="phone-label">Safest route</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         SLIDE 3 — URBAN GUARDIANS
+    ============================================================ -->
+    <div class="slide" data-slide="2">
+        <span class="slide-number">02 · Guardians</span>
+        <img src="logo-grande-horizontal.jpg" alt="" class="corner-logo">
+
+        <div class="content-split">
+            <div class="split-text">
+                <h1 class="slide-title"><span class="hl">Guardian</span> network<br>near you</h1>
+                <div class="green-line"></div>
+                <p class="slide-sub">Verified and active people in your area, ready to accompany you if needed.</p>
+                <ul class="feat-list">
+                    <li>
+                        <span class="feat-dot" style="background:rgba(74,222,64,0.12);color:var(--green);">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </span>
+                        Active Guardians visible on the map in real-time
+                    </li>
+                    <li>
+                        <span class="feat-dot" style="background:rgba(74,144,226,0.12);color:var(--blue);">
+                            <i class="fa-solid fa-user-check"></i>
+                        </span>
+                        Verified profiles rated by the community
+                    </li>
+                    <li>
+                        <span class="feat-dot" style="background:rgba(243,156,18,0.12);color:#F39C12;">
+                            <i class="fa-solid fa-bell"></i>
+                        </span>
+                        Request accompaniment with one tap
+                    </li>
+                </ul>
+            </div>
+            <div class="phone-col">
+                <div class="phone phone-lg">
+                    <img src="../phone_app_photos/urban%20guardians%20local.JPG" alt="Urban Guardians">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         SLIDE 4 — REPORT INCIDENT
+    ============================================================ -->
+    <div class="slide" data-slide="3">
+        <span class="slide-number">03 · Community</span>
+        <img src="logo-grande-horizontal.jpg" alt="" class="corner-logo">
+
+        <div class="content-split rev">
+            <div class="split-text">
+                <h1 class="slide-title">Report <span class="hl">incidents</span><br>in real-time</h1>
+                <div class="green-line"></div>
+                <p class="slide-sub">You also protect others. Flag risk zones and keep the map updated.</p>
+                <ul class="feat-list">
+                    <li>
+                        <span class="feat-dot" style="background:rgba(231,76,60,0.12);color:var(--danger);">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </span>
+                        Categories: robberies, dark areas, harassment and more
+                    </li>
+                    <li>
+                        <span class="feat-dot" style="background:rgba(74,222,64,0.12);color:var(--green);">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </span>
+                        Exact pin on the map with free description
+                    </li>
+                    <li>
+                        <span class="feat-dot" style="background:rgba(155,89,182,0.12);color:#9b59b6;">
+                            <i class="fa-solid fa-users"></i>
+                        </span>
+                        Community validates and reinforces each report
+                    </li>
+                </ul>
+            </div>
+            <div class="phone-col">
+                <div class="phone phone-lg">
+                    <img src="../phone_app_photos/reportar%20incidente.JPG" alt="Report incident">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         SLIDE 5 — SOS MODE
+    ============================================================ -->
+    <div class="slide" data-slide="4">
+        <span class="slide-number">04 · SOS</span>
+        <img src="logo-grande-horizontal.jpg" alt="" class="corner-logo">
+
+        <h1 class="slide-title">Discreet <span class="hl-red">SOS</span> mode</h1>
+        <p class="slide-sub">One tap activates the full protocol: background recording, GPS to trusted contacts and emergency alert.</p>
+
+        <div class="phones-row">
+            <div class="phone-col">
+                <div class="phone phone-sm">
+                    <img src="../phone_app_photos/pin%20sos%20mode.JPG" alt="PIN SOS">
+                </div>
+                <p class="phone-label">Fake deactivation PIN</p>
+            </div>
+
+            <div class="step-arrow" style="color:var(--danger);"><i class="fa-solid fa-chevron-right"></i></div>
+
+            <div class="phone-col">
+                <div class="phone phone-sm">
+                    <img src="../phone_app_photos/sos%20mode%20active.JPG" alt="SOS active">
+                </div>
+                <p class="phone-label">SOS active and in progress</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         SLIDE 6 — PROFILE & STATS
+    ============================================================ -->
+    <div class="slide" data-slide="5">
+        <span class="slide-number">05 · Profile</span>
+        <img src="logo-grande-horizontal.jpg" alt="" class="corner-logo">
+
+        <div class="content-split">
+            <div class="split-text">
+                <h1 class="slide-title">Your <span class="hl">impact</span><br>on the community</h1>
+                <div class="green-line"></div>
+                <p class="slide-sub">Every action counts. Your profile reflects your contribution and reputation as a Guardian.</p>
+                <ul class="feat-list">
+                    <li>
+                        <span class="feat-dot" style="background:rgba(74,222,64,0.12);color:var(--green);">
+                            <i class="fa-solid fa-star"></i>
+                        </span>
+                        Score, level and Guardian rank
+                    </li>
+                    <li>
+                        <span class="feat-dot" style="background:rgba(74,144,226,0.12);color:var(--blue);">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </span>
+                        History of routes, reports and accompaniments
+                    </li>
+                    <li>
+                        <span class="feat-dot" style="background:rgba(243,156,18,0.12);color:#F39C12;">
+                            <i class="fa-solid fa-trophy"></i>
+                        </span>
+                        Achievements unlocked by active participation
+                    </li>
+                </ul>
+            </div>
+            <div class="phone-col">
+                <div class="phone phone-lg">
+                    <img src="../phone_app_photos/profile%20page%20stats.JPG" alt="Profile and stats">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===== NAVIGATION BAR (HIDDEN - arrows still work) ===== -->
+    <div class="nav-bar">
+        <div class="nav-dots" id="nav-dots"></div>
+        <div class="key-hint">← → to navigate</div>
+        <div class="nav-arrows">
+            <button class="nav-arrow-btn" id="btn-prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="nav-arrow-btn" id="btn-next"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+</div><!-- /slides-wrapper -->
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('nav-dots');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    let current = 0;
+    const total = slides.length;
+
+    for (let i = 0; i < total; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', () => goTo(i));
+        dotsContainer.appendChild(dot);
+    }
+
+    function goTo(index) {
+        if (index < 0 || index >= total || index === current) return;
+        slides[current].classList.remove('active');
+        slides[current].classList.add('exit');
+        setTimeout(() => {
+            slides[current].classList.remove('exit');
+            current = index;
+            slides[current].classList.add('active');
+            updateDots();
+            updateArrows();
+        }, 100);
+    }
+
+    function updateDots() {
+        document.querySelectorAll('.nav-dot').forEach((d, i) => {
+            d.classList.toggle('active', i === current);
+        });
+    }
+
+    function updateArrows() {
+        btnPrev.disabled = current === 0;
+        btnNext.disabled = current === total - 1;
+    }
+
+    btnPrev.addEventListener('click', () => goTo(current - 1));
+    btnNext.addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+    });
+
+    updateArrows();
+</script>
+</body>
+</html>

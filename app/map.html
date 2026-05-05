@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Urban Guardian</title>
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  <style>
+    /* ── Layout ──────────────────────────────────────────────── */
+    .app-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    .main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-lg);
+      height: 56px;
+      background: var(--bg-dark);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .header-user { display: flex; flex-direction: column; }
+    .header-greeting { font-size: 0.8125rem; color: var(--text-muted); }
+    .header-name { font-size: 1rem; font-weight: 700; line-height: 1.2; }
+    .header-right { display: flex; align-items: center; gap: var(--space-sm); }
+    .notif-btn {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-full);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 0.875rem; position: relative;
+      cursor: pointer;
+    }
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      border-radius: 50%; background: var(--danger);
+      display: none;
+    }
+    .notif-dot.visible { display: block; }
+    .header-avatar {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-full);
+      background: var(--primary-lt);
+      border: 2px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary); font-size: 0.875rem; font-weight: 700;
+      cursor: pointer; overflow: hidden;
+    }
+    .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── Views ───────────────────────────────────────────────── */
+    .views-container { flex: 1; position: relative; overflow: hidden; }
+
+    .view {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .view.active { display: flex; }
+
+    /* ── MAP VIEW ────────────────────────────────────────────── */
+    #view-mapa {
+      overflow: hidden;
+    }
+    #map-container {
+      flex: 1;
+      width: 100%;
+      background: var(--bg-card);
+    }
+    .map-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-md);
+      color: var(--text-dim);
+      background: #1a2035;
+      text-align: center;
+      padding: var(--space-xl);
+    }
+    .map-placeholder i { font-size: 3rem; color: var(--primary); opacity: 0.4; }
+
+    /* Route search bar */
+    .route-bar {
+      position: absolute;
+      top: var(--space-md);
+      left: var(--space-md);
+      right: var(--space-md);
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-md);
+      padding: var(--space-sm);
+      box-shadow: var(--shadow-md);
+    }
+    .route-input-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .route-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .route-dot.origin { background: var(--primary); }
+    .route-dot.dest   { background: var(--danger); }
+    .route-input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      color: var(--text-main);
+      font-size: 0.875rem;
+      outline: none;
+    }
+    .route-input:focus { border-color: var(--primary); }
+    .route-divider { width: 1px; height: 16px; background: var(--border); margin-left: 4px; }
+    .btn-route {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .btn-route:active { background: var(--primary-dk); }
+
+    /* Route info pill */
+    .route-info {
+      display: none;
+      background: var(--bg-input);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      gap: var(--space-md);
+      align-items: center;
+    }
+    .route-info.visible { display: flex; }
+    .route-info-stat { display: flex; align-items: center; gap: 4px; }
+    .safety-score { font-weight: 700; }
+    .safety-score.high   { color: var(--safe); }
+    .safety-score.medium { color: var(--warning); }
+    .safety-score.low    { color: var(--danger); }
+
+    /* Map attribution tweak */
+    .mapboxgl-ctrl-attrib { font-size: 9px !important; }
+
+    /* ── REPORT VIEW ─────────────────────────────────────────── */
+    .report-content {
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    .incident-types {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-sm);
+    }
+    .incident-type-btn {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+    }
+    .incident-type-btn .icon { font-size: 1.5rem; }
+    .incident-type-btn .label { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); line-height: 1.2; }
+    .incident-type-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary-lt);
+    }
+    .incident-type-btn.selected .label { color: var(--primary); }
+
+    .severity-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .severity-label { font-size: 0.875rem; color: var(--text-muted); width: 36px; text-align: center; font-weight: 600; }
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(to right, var(--safe), var(--warning), var(--danger));
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--text-main);
+      border: 3px solid var(--primary);
+      cursor: pointer;
+    }
+
+    .location-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      background: var(--bg-input);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm) var(--space-md);
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    .location-badge i { color: var(--primary); }
+
+    /* ── GUARDIANS VIEW ──────────────────────────────────────── */
+    .guardians-content { padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-lg); }
+
+    .guardian-toggle-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .guardian-toggle-card.active-guardian {
+      border-color: var(--safe);
+      background: var(--safe-lt);
+    }
+    .guardian-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      background: var(--bg-input);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.375rem;
+      flex-shrink: 0;
+    }
+    .guardian-toggle-card.active-guardian .guardian-icon { background: rgba(46,204,113,0.2); color: var(--safe); }
+    .guardian-toggle-info { flex: 1; }
+    .guardian-toggle-info h4 { font-size: 1rem; }
+    .guardian-toggle-info p { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* Toggle switch */
+    .toggle-switch {
+      position: relative;
+      width: 48px; height: 26px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--bg-input);
+      border-radius: 13px;
+      transition: background var(--transition);
+      border: 1px solid var(--border);
+    }
+    .toggle-track::before {
+      content: '';
+      position: absolute;
+      height: 18px; width: 18px;
+      left: 3px; top: 3px;
+      background: var(--text-dim);
+      border-radius: 50%;
+      transition: all var(--transition);
+    }
+    .toggle-switch input:checked + .toggle-track { background: var(--safe); border-color: var(--safe); }
+    .toggle-switch input:checked + .toggle-track::before {
+      transform: translateX(22px);
+      background: #fff;
+    }
+
+    .guardians-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .guardian-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .guardian-item-avatar {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--primary-lt);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary); font-size: 1rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .guardian-item-info { flex: 1; }
+    .guardian-item-name { font-size: 0.9375rem; font-weight: 600; }
+    .guardian-item-dist { font-size: 0.8125rem; color: var(--text-muted); }
+    .guardian-item-badge {
+      font-size: 0.75rem; font-weight: 600;
+      background: var(--safe-lt); color: var(--safe);
+      padding: 3px 8px; border-radius: var(--radius-full);
+    }
+
+    /* ── PROFILE VIEW ────────────────────────────────────────── */
+    .profile-content { padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-lg); }
+
+    .profile-header-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .profile-avatar-lg {
+      width: 64px; height: 64px;
+      border-radius: var(--radius-full);
+      background: var(--primary-lt);
+      border: 3px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary); font-size: 1.5rem; font-weight: 700;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .profile-avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-size: 1.125rem; font-weight: 700; }
+    .profile-email { font-size: 0.8125rem; color: var(--text-muted); }
+    .profile-level { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 4px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-sm);
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stat-icon { font-size: 1.25rem; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); }
+
+    .settings-list { display: flex; flex-direction: column; gap: 2px; }
+    .settings-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .settings-item:hover { background: var(--bg-input); }
+    .settings-item-icon { width: 32px; color: var(--text-muted); text-align: center; }
+    .settings-item-label { flex: 1; font-size: 0.9375rem; }
+    .settings-item-arrow { color: var(--text-dim); font-size: 0.75rem; }
+    /* ── Mapbox controls offset (below route bar) ─────────── */
+    .mapboxgl-ctrl-top-right { top: 120px !important; }
+
+    /* ── Mapbox popup custom style ───────────────────────── */
+    .ug-popup .mapboxgl-popup-content {
+      background: var(--bg-card, #1e1e2e);
+      border: 1px solid var(--border, #2a2a3e);
+      border-radius: 12px;
+      padding: 0;
+      color: var(--text-main, #f0f0f0);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      min-width: 220px;
+    }
+    .ug-popup .mapboxgl-popup-close-button {
+      color: var(--text-muted, #888);
+      font-size: 1.1rem;
+      padding: 6px 10px;
+    }
+    .ug-popup .mapboxgl-popup-tip { border-top-color: var(--bg-card, #1e1e2e); }
+    .incident-popup { padding: 14px 16px; }
+    .incident-popup-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .incident-popup-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; flex-shrink: 0;
+    }
+    .incident-popup-title { font-size: 0.9375rem; font-weight: 700; }
+    .incident-popup-time  { font-size: 0.75rem; color: var(--text-muted, #888); margin-top: 1px; }
+    .incident-popup-sev {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.8125rem; color: var(--text-muted, #888); margin-bottom: 10px;
+    }
+    .sev-bar {
+      flex: 1; height: 4px; border-radius: 2px;
+      background: linear-gradient(to right, #F1C40F, #E67E22, #E74C3C);
+      position: relative;
+    }
+    .incident-popup-desc {
+      font-size: 0.8125rem; color: var(--text-muted,#888);
+      margin-bottom: 10px; line-height: 1.4;
+    }
+    .incident-popup-actions { display: flex; gap: 8px; }
+    .popup-btn {
+      flex: 1; padding: 7px 10px; border-radius: 8px; border: none;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .popup-btn:hover { opacity: 0.85; }
+    .popup-btn-confirm { background: rgba(46,204,113,0.15); color: #2ECC71; border: 1px solid rgba(46,204,113,0.3); }
+    .popup-btn-dispute { background: rgba(231,76,60,0.12); color: #E74C3C; border: 1px solid rgba(231,76,60,0.25); }
+    .guardian-popup { padding: 14px 16px; }
+    .guardian-popup-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .guardian-popup-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--primary-lt,rgba(108,99,255,0.15)); border: 2px solid var(--primary,#6C63FF);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; color: var(--primary,#6C63FF);
+    }
+    .guardian-popup-name { font-size: 0.9375rem; font-weight: 700; }
+    .guardian-popup-level { font-size: 0.75rem; color: var(--text-muted,#888); margin-top: 1px; }
+
+    /* ── Expandable settings panels ─────────────────────────── */
+    .settings-panel {
+      display: none;
+      padding: var(--space-md) var(--space-md) var(--space-md) 52px;
+      background: var(--bg-input);
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-panel.open { display: block; }
+    .settings-panel .form-group { margin-bottom: var(--space-md); }
+    .settings-panel .form-group:last-child { margin-bottom: 0; }
+    .contacts-item {
+      display: flex; align-items: center; gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .contacts-item:last-child { border-bottom: none; }
+    .contacts-item-info { flex: 1; }
+    .contacts-item-name { font-size: 0.875rem; font-weight: 600; }
+    .contacts-item-phone { font-size: 0.75rem; color: var(--text-muted); }
+    .contacts-item-del {
+      background: none; border: none; color: var(--danger);
+      cursor: pointer; padding: 4px; font-size: 1rem;
+    }
+
+    .settings-item.danger .settings-item-icon,
+    .settings-item.danger .settings-item-label { color: var(--danger); }
+
+    /* ── SOS OVERLAY ─────────────────────────────────────────── */
+    .sos-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--danger);
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xl);
+      animation: fadeIn 0.3s ease;
+    }
+    .sos-overlay.hidden { display: none; }
+
+    .sos-pulse {
+      position: relative;
+      width: 120px; height: 120px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sos-pulse-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.4);
+      animation: sosRing 1.8s ease-out infinite;
+    }
+    .sos-pulse-ring:nth-child(2) { animation-delay: 0.6s; }
+    .sos-pulse-ring:nth-child(3) { animation-delay: 1.2s; }
+    .sos-icon-circle {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 3px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; color: #fff;
+      position: relative; z-index: 1;
+    }
+
+    .sos-title { font-size: 1.75rem; font-weight: 800; color: #fff; text-align: center; }
+    .sos-subtitle { font-size: 1rem; color: rgba(255,255,255,0.75); text-align: center; }
+    .sos-timer { font-size: 1.25rem; font-weight: 700; color: rgba(255,255,255,0.9); }
+
+    .sos-pin-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+      width: 240px;
+    }
+    .sos-pin-input {
+      width: 100%;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.3em;
+      outline: none;
+    }
+    .sos-pin-input::placeholder { color: rgba(255,255,255,0.4); letter-spacing: normal; font-size: 0.9rem; font-weight: 400; }
+    .sos-pin-input:focus { border-color: #fff; background: rgba(255,255,255,0.2); }
+    .btn-sos-deactivate {
+      background: #fff;
+      color: var(--danger);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+    .sos-pin-error {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.875rem;
+      display: none;
+    }
+    .sos-pin-error.visible { display: block; }
+
+    @keyframes sosRing {
+      0%   { transform: scale(0.8); opacity: 0.8; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+
+    /* ── Bottom Nav ──────────────────────────────────────────── */
+    .nav-bottom {
+      height: 64px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-shrink: 0;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-tab {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 3px; padding: 6px 10px;
+      color: var(--text-dim); font-size: 0.625rem; font-weight: 600;
+      background: none; border: none; cursor: pointer;
+      transition: color var(--transition);
+      letter-spacing: 0.03em; text-transform: uppercase;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-tab i { font-size: 1.25rem; }
+    .nav-tab.active { color: var(--primary); }
+    .nav-sos-btn {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      background: var(--danger);
+      border: none;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2px; color: #fff;
+      font-size: 0.625rem; font-weight: 800;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      box-shadow: 0 0 0 5px var(--danger-lt), var(--shadow-md);
+      transition: transform var(--transition);
+      margin-bottom: 8px;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-sos-btn i { font-size: 1.125rem; }
+    .nav-sos-btn:active { transform: scale(0.92); }
+  </style>
+</head>
+<body>
+<div class="mobile-frame">
+<div class="app-layout">
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header class="main-header">
+    <div class="header-user">
+      <span class="header-greeting">Hola,</span>
+      <span class="header-name" id="header-name">...</span>
+    </div>
+    <div class="header-right">
+      <button class="notif-btn" id="incident-count-btn" onclick="showView('mapa')" style="display:none">
+        <i class="fa-solid fa-circle-exclamation" style="color:var(--warning)"></i>
+        <span class="notif-dot visible" id="incident-count-badge" style="background:var(--warning);font-size:0.55rem;width:16px;height:16px;display:flex;align-items:center;justify-content:center;top:2px;right:2px">0</span>
+      </button>
+      <button class="notif-btn" id="notif-btn" onclick="showView('notif')">
+        <i class="fa-solid fa-bell"></i>
+        <span class="notif-dot" id="notif-dot"></span>
+      </button>
+      <div class="header-avatar" id="header-avatar" onclick="showView('perfil')">
+        <span id="header-initials">?</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Views ──────────────────────────────────────────── -->
+  <div class="views-container">
+
+    <!-- MAP ─────────────────────────── -->
+    <div id="view-mapa" class="view active">
+
+      <div class="route-bar" id="route-bar">
+        <div class="route-input-row">
+          <span class="route-dot origin"></span>
+          <input class="route-input" id="input-origin" placeholder="Mi ubicación" readonly>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding-left:4px;">
+          <div class="route-divider"></div>
+        </div>
+        <div class="route-input-row">
+          <span class="route-dot dest"></span>
+          <input class="route-input" id="input-dest" placeholder="¿A dónde vas?">
+          <button class="btn-route" id="btn-calc-route">
+            <i class="fa-solid fa-route"></i> Ir
+          </button>
+        </div>
+        <div class="route-info" id="route-info">
+          <span class="route-info-stat"><i class="fa-solid fa-clock" style="color:var(--primary)"></i> <span id="route-duration">--</span></span>
+          <span class="route-info-stat"><i class="fa-solid fa-road" style="color:var(--text-muted)"></i> <span id="route-distance">--</span></span>
+          <span class="route-info-stat"><i class="fa-solid fa-shield-halved" style="color:var(--safe)"></i> <span class="safety-score" id="route-safety">--</span></span>
+          <button style="margin-left:auto;background:none;border:none;color:var(--text-dim);cursor:pointer;" onclick="clearCurrentRoute()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="map-container">
+        <div class="map-placeholder" id="map-placeholder">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <p style="font-weight:600;color:var(--text-muted);">Cargando mapa…</p>
+          <p class="text-xs text-dim">Configura tu Mapbox token en firebase-config.js</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- REPORTAR ────────────────────── -->
+    <div id="view-reportar" class="view">
+      <div class="report-content">
+        <div>
+          <h2>Reportar incidente</h2>
+          <p class="text-muted text-sm mt-sm">Ayuda a tu comunidad informando sobre situaciones de riesgo</p>
+        </div>
+
+        <div>
+          <p class="form-label mb-sm">Tipo de incidente</p>
+          <div class="incident-types" id="incident-types">
+            <button class="incident-type-btn" data-type="iluminacion" onclick="selectType(this)">
+              <span class="icon">💡</span><span class="label">Iluminación deficiente</span>
+            </button>
+            <button class="incident-type-btn" data-type="grupo" onclick="selectType(this)">
+              <span class="icon">👥</span><span class="label">Grupo intimidante</span>
+            </button>
+            <button class="incident-type-btn" data-type="robo" onclick="selectType(this)">
+              <span class="icon">🔪</span><span class="label">Robo / Atraco</span>
+            </button>
+            <button class="incident-type-btn" data-type="accidente" onclick="selectType(this)">
+              <span class="icon">🚗</span><span class="label">Accidente</span>
+            </button>
+            <button class="incident-type-btn" data-type="zona_peligrosa" onclick="selectType(this)">
+              <span class="icon">🚨</span><span class="label">Zona peligrosa</span>
+            </button>
+            <button class="incident-type-btn" data-type="otro" onclick="selectType(this)">
+              <span class="icon">⚠️</span><span class="label">Otro</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <p class="form-label mb-sm">Nivel de gravedad</p>
+          <div class="severity-row">
+            <span class="severity-label" id="severity-val">3</span>
+            <input type="range" id="severity-slider" min="1" max="5" value="3"
+              oninput="document.getElementById('severity-val').textContent = this.value">
+            <span style="font-size:0.75rem;color:var(--text-dim);">5 = máximo</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="incident-desc">Descripción (opcional)</label>
+          <textarea class="form-input" id="incident-desc" rows="3"
+            placeholder="Describe brevemente la situación…"
+            style="resize:none;"></textarea>
+        </div>
+
+        <div class="location-badge" id="report-location">
+          <i class="fa-solid fa-location-dot"></i>
+          <span id="report-coords">Obteniendo ubicación…</span>
+        </div>
+
+        <button class="btn btn-primary btn-full btn-lg" id="btn-report" onclick="submitReport()">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Enviar reporte
+        </button>
+      </div>
+    </div>
+
+    <!-- GUARDIANS ───────────────────── -->
+    <div id="view-guardians" class="view">
+      <div class="guardians-content">
+        <div>
+          <h2>Red de Guardians</h2>
+          <p class="text-muted text-sm mt-sm">Voluntarios activos que acompañan trayectos en tiempo real</p>
+        </div>
+
+        <div class="guardian-toggle-card" id="guardian-card">
+          <div class="guardian-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div class="guardian-toggle-info">
+            <h4 id="guardian-toggle-title">Activarme como Guardian</h4>
+            <p id="guardian-toggle-desc">Ayuda a otros usuarios cercanos</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="guardian-toggle" onchange="toggleGuardian(this.checked)">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div>
+          <p class="form-label mb-sm">Guardians activos cerca</p>
+          <div class="guardians-list" id="guardians-list">
+            <p class="text-muted text-sm" id="guardians-empty">Cargando guardians…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERFIL ──────────────────────── -->
+    <div id="view-perfil" class="view">
+      <div class="profile-content">
+        <div class="profile-header-card">
+          <div class="profile-avatar-lg" id="profile-avatar">
+            <span id="profile-initials">?</span>
+          </div>
+          <div>
+            <p class="profile-name" id="profile-name">Cargando…</p>
+            <p class="profile-email" id="profile-email"></p>
+            <p class="profile-level" id="profile-level">Guardian Nivel 1</p>
+          </div>
+        </div>
+
+        <div>
+          <p class="form-label mb-sm">Mis estadísticas</p>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-icon">🗺️</span>
+              <span class="stat-value" id="stat-routes">0</span>
+              <span class="stat-label">Rutas completadas</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">⚠️</span>
+              <span class="stat-value" id="stat-incidents">0</span>
+              <span class="stat-label">Incidentes reportados</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">🛡️</span>
+              <span class="stat-value" id="stat-help">0</span>
+              <span class="stat-label">Ayudas prestadas</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">🔔</span>
+              <span class="stat-value" id="stat-sos">0</span>
+              <span class="stat-label">Alertas SOS</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="form-label mb-sm">Configuración</p>
+          <div class="settings-list">
+
+            <!-- Editar perfil -->
+            <div class="settings-item" onclick="window.location.href='profile/edit-profile.html'">
+              <span class="settings-item-icon"><i class="fa-solid fa-user-pen"></i></span>
+              <span class="settings-item-label">Editar perfil</span>
+              <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
+            </div>
+
+            <!-- PINs -->
+            <div class="settings-item" onclick="window.location.href='profile/pins.html'">
+              <span class="settings-item-icon"><i class="fa-solid fa-key"></i></span>
+              <span class="settings-item-label">PINs de seguridad</span>
+              <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
+            </div>
+
+            <!-- Contactos de emergencia -->
+            <div class="settings-item" onclick="window.location.href='profile/contacts.html'">
+              <span class="settings-item-icon"><i class="fa-solid fa-user-group"></i></span>
+              <span class="settings-item-label">Contactos de emergencia</span>
+              <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
+            </div>
+
+            <!-- Cerrar sesión -->
+            <div class="settings-item danger" onclick="doLogout()">
+              <span class="settings-item-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
+              <span class="settings-item-label">Cerrar sesión</span>
+              <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /views-container -->
+
+  <!-- ── Bottom Nav ─────────────────────────────────────── -->
+  <nav class="nav-bottom">
+    <button class="nav-tab active" id="tab-mapa" onclick="showView('mapa')">
+      <i class="fa-solid fa-map"></i>
+      Mapa
+    </button>
+    <button class="nav-tab" id="tab-reportar" onclick="showView('reportar')">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      Reportar
+    </button>
+    <button class="nav-sos-btn" id="sos-btn" onclick="triggerSOSUI()">
+      <i class="fa-solid fa-bell"></i>
+      SOS
+    </button>
+    <button class="nav-tab" id="tab-guardians" onclick="showView('guardians')">
+      <i class="fa-solid fa-shield-halved"></i>
+      Guardians
+    </button>
+    <button class="nav-tab" id="tab-perfil" onclick="showView('perfil')">
+      <i class="fa-solid fa-user"></i>
+      Perfil
+    </button>
+  </nav>
+
+</div><!-- /app-layout -->
+</div><!-- /mobile-frame -->
+
+<!-- ── SOS Overlay ──────────────────────────────────────── -->
+<div class="sos-overlay hidden" id="sos-overlay">
+  <div class="sos-pulse">
+    <div class="sos-pulse-ring"></div>
+    <div class="sos-pulse-ring"></div>
+    <div class="sos-pulse-ring"></div>
+    <div class="sos-icon-circle">
+      <i class="fa-solid fa-bell"></i>
+    </div>
+  </div>
+  <div class="sos-title">ALERTA ACTIVA</div>
+  <div class="sos-subtitle">Permanece tranquilo/a.<br>Tu ubicación está siendo registrada.</div>
+  <div class="sos-timer" id="sos-timer">00:00</div>
+  <div class="sos-pin-form">
+    <input
+      class="sos-pin-input"
+      type="password"
+      id="sos-pin-input"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      maxlength="6"
+      placeholder="Introduce PIN para desactivar"
+      autocomplete="off"
+    >
+    <button class="btn-sos-deactivate" onclick="deactivateSOSUI()">
+      Desactivar alerta
+    </button>
+    <span class="sos-pin-error" id="sos-pin-error">PIN incorrecto. Inténtalo de nuevo.</span>
+  </div>
+</div>
+
+<script type="module">
+import { auth }                    from './firebase-config.js';
+import { onAuthStateChanged }      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { logout }                  from './js/auth.js';
+import { db }                        from './firebase-config.js';
+import { doc, setDoc, serverTimestamp }
+                                   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getProfile, incrementStat, updateProfileInfo, updatePINs, updateTrustedContacts }
+                                   from './js/profile.js';
+import { watchActiveIncidents, reportIncident, incidentsToGeoJSON,
+         confirmIncident, disputeIncident }
+                                   from './js/incidents.js';
+import { triggerSOS, deactivateWithPIN, isSOSActive, deactivateSOS }
+                                   from './js/sos.js';
+import { activateGuardian, deactivateGuardian, watchActiveGuardians, getActiveSessionId }
+                                   from './js/guardians.js';
+import { watchNotifications, countUnread }
+                                   from './js/notifications.js';
+import { initMap, setUserMarker, flyTo, getMap,
+         addIncidentMarkers, updateGuardianMarkers,
+         showPopup, closePopup }
+                                   from './js/map.js';
+import { MAPBOX_TOKEN }            from './firebase-config.js';
+import { fetchRoute, calcSafetyScore, drawRoute, clearRoute, saveRoute }
+                                   from './js/routing.js';
+
+// ── State ─────────────────────────────────────────────────
+let currentUser    = null;
+let userProfile    = null;
+let activeView     = 'mapa';
+let incidents      = [];
+let guardians      = [];
+let userLat        = null;
+let userLng        = null;
+let sosTimerInt    = null;
+let sosStartTime   = null;
+let unsubIncidents = null;
+let unsubGuardians = null;
+let unsubNotif     = null;
+
+// ── Auth guard ────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = 'auth/login.html';
+    return;
+  }
+  currentUser = user;
+  await ensureUserDoc(user);
+  await loadProfile();
+  initApp();
+});
+
+async function ensureUserDoc(user) {
+  try {
+    await setDoc(doc(db, 'users', user.uid), {
+      uid:         user.uid,
+      email:       user.email,
+      displayName: user.displayName ?? '',
+      createdAt:   serverTimestamp()
+    }, { merge: true });
+  } catch (e) {
+    console.warn('[map.html] ensureUserDoc:', e);
+  }
+}
+
+async function loadProfile() {
+  try {
+    userProfile = await getProfile(currentUser.uid);
+    renderProfileUI();
+  } catch (e) {
+    console.warn('[map.html] Could not load profile', e);
+  }
+}
+
+function renderProfileUI() {
+  const name     = userProfile?.displayName || currentUser.displayName || currentUser.email;
+  const email    = userProfile?.email       || currentUser.email;
+  const initials = name ? name.slice(0, 2).toUpperCase() : '?';
+  const photoURL = userProfile?.photoURL    || currentUser.photoURL;
+
+  document.getElementById('header-name').textContent    = name.split(' ')[0];
+  document.getElementById('header-initials').textContent = initials;
+  document.getElementById('profile-name').textContent   = name;
+  document.getElementById('profile-email').textContent  = email;
+  document.getElementById('profile-initials').textContent = initials;
+  document.getElementById('profile-level').textContent  =
+    `Guardian Nivel ${userProfile?.guardianLevel ?? 1} · ${userProfile?.guardianScore ?? 0} pts`;
+
+  if (photoURL) {
+    document.getElementById('header-avatar').innerHTML    = `<img src="${photoURL}" alt="">`;
+    document.getElementById('profile-avatar').innerHTML   = `<img src="${photoURL}" alt="">`;
+  }
+
+  const s = userProfile?.stats ?? {};
+  document.getElementById('stat-routes').textContent    = s.routesCompleted   ?? 0;
+  document.getElementById('stat-incidents').textContent = s.incidentsReported  ?? 0;
+  document.getElementById('stat-help').textContent      = s.helpProvided       ?? 0;
+  document.getElementById('stat-sos').textContent       = s.sosActivations     ?? 0;
+}
+
+// ── App init ──────────────────────────────────────────────
+function initApp() {
+  startGeolocation();
+  initMapbox();
+  startIncidentListener();
+  startGuardianListener();
+  startNotifListener();
+}
+
+// ── Geolocation ───────────────────────────────────────────
+function startGeolocation() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      document.getElementById('input-origin').value =
+        `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+      document.getElementById('report-coords').textContent =
+        `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+      if (getMap()) {
+        setUserMarker(userLat, userLng);
+        flyTo(userLat, userLng, 14);
+      }
+    },
+    () => {
+      document.getElementById('report-coords').textContent = 'Ubicación no disponible';
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+// ── Mapbox ────────────────────────────────────────────────
+function initMapbox() {
+  if (!MAPBOX_TOKEN || MAPBOX_TOKEN.startsWith('YOUR_')) {
+    console.warn('[map.html] Mapbox token not set — using placeholder');
+    return;
+  }
+
+  const container = document.getElementById('map-container');
+  container.innerHTML = '';
+
+  const map = initMap('map-container', {
+    center: [userLng ?? -3.7038, userLat ?? 40.4168],
+    zoom: 14
+  });
+
+  if (!map) return;
+
+  map.on('load', () => {
+    if (userLat) setUserMarker(userLat, userLng);
+    renderIncidentsOnMap();
+  });
+}
+
+// ── Incidents ─────────────────────────────────────────────
+function startIncidentListener() {
+  unsubIncidents = watchActiveIncidents((data) => {
+    incidents = data;
+    renderIncidentsOnMap();
+  });
+}
+
+const INCIDENT_TYPES = {
+  iluminacion:   { label: 'Iluminación deficiente', emoji: '💡' },
+  grupo:         { label: 'Grupo intimidante',       emoji: '👥' },
+  robo:          { label: 'Robo / Atraco',           emoji: '🔪' },
+  accidente:     { label: 'Accidente',               emoji: '🚗' },
+  zona_peligrosa:{ label: 'Zona peligrosa',          emoji: '🚨' },
+  otro:          { label: 'Otro',                    emoji: '⚠️' }
+};
+
+function sevColor(s) {
+  if (s >= 4) return '#E74C3C';
+  if (s >= 3) return '#E67E22';
+  return '#F1C40F';
+}
+
+function timeAgo(ts) {
+  if (!ts) return '';
+  const secs = Math.floor((Date.now() - ts) / 1000);
+  if (secs < 60)  return 'Hace un momento';
+  if (secs < 3600) return `Hace ${Math.floor(secs/60)} min`;
+  return `Hace ${Math.floor(secs/3600)} h`;
+}
+
+function renderIncidentsOnMap() {
+  const map = getMap();
+  if (!map || !map.isStyleLoaded()) return;
+  const geojson = incidentsToGeoJSON(incidents);
+
+  addIncidentMarkers(geojson, (props, lngLat) => {
+    const info    = INCIDENT_TYPES[props.type] || INCIDENT_TYPES.otro;
+    const color   = sevColor(props.severity);
+    const ago     = timeAgo(props.reportedAt);
+    const desc    = props.description ? `<p class="incident-popup-desc">${props.description}</p>` : '';
+    const html = `
+      <div class="incident-popup">
+        <div class="incident-popup-header">
+          <div class="incident-popup-icon" style="background:${color}22;color:${color}">${info.emoji}</div>
+          <div>
+            <div class="incident-popup-title">${info.label}</div>
+            <div class="incident-popup-time">${ago}</div>
+          </div>
+        </div>
+        <div class="incident-popup-sev">
+          <span>Gravedad ${props.severity}/5</span>
+          <div class="sev-bar"></div>
+        </div>
+        ${desc}
+        <div class="incident-popup-actions">
+          <button class="popup-btn popup-btn-confirm" onclick="confirmIncidentUI('${props.id}')">✓ Confirmar</button>
+          <button class="popup-btn popup-btn-dispute" onclick="disputeIncidentUI('${props.id}')">✗ Disputar</button>
+        </div>
+      </div>`;
+    showPopup(lngLat, html);
+  });
+
+  // Update header counter
+  const badge = document.getElementById('incident-count-badge');
+  const countBtn = document.getElementById('incident-count-btn');
+  if (badge && countBtn) {
+    badge.textContent = incidents.length;
+    countBtn.style.display = incidents.length ? '' : 'none';
+  }
+}
+
+window.confirmIncidentUI = async function(id) {
+  try {
+    await confirmIncident(id);
+    closePopup();
+    showToast('Incidente confirmado. Gracias.', 'success');
+  } catch (e) {
+    showToast('Error al confirmar.', 'error');
+  }
+};
+
+window.disputeIncidentUI = async function(id) {
+  try {
+    await disputeIncident(id);
+    closePopup();
+    showToast('Incidente disputado.', 'info');
+  } catch (e) {
+    showToast('Error al disputar.', 'error');
+  }
+};
+
+// ── Guardians ─────────────────────────────────────────────
+function startGuardianListener() {
+  unsubGuardians = watchActiveGuardians((data) => {
+    guardians = data.filter(g => g.id !== getActiveSessionId());
+    renderGuardiansList();
+    renderGuardiansOnMap();
+  });
+}
+
+function renderGuardiansOnMap() {
+  if (!getMap()) return;
+  updateGuardianMarkers(guardians, (g) => {
+    const name  = g.displayName || g.guardianId?.slice(0,8) || 'Guardian';
+    const init  = name.slice(0,2).toUpperCase();
+    const level = g.guardianLevel ?? 1;
+    const html = `
+      <div class="guardian-popup">
+        <div class="guardian-popup-header">
+          <div class="guardian-popup-avatar">${init}</div>
+          <div>
+            <div class="guardian-popup-name">${name}</div>
+            <div class="guardian-popup-level">Guardian Nivel ${level} · Activo ahora</div>
+          </div>
+        </div>
+      </div>`;
+    showPopup([g.currentLocation.lng, g.currentLocation.lat], html);
+  });
+}
+
+function renderGuardiansList() {
+  const list  = document.getElementById('guardians-list');
+  const empty = document.getElementById('guardians-empty');
+
+  if (guardians.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    empty.textContent   = 'No hay Guardians activos cerca ahora mismo.';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.innerHTML = guardians.map(g => {
+    const name = g.displayName || 'Guardian';
+    const init = name.slice(0, 2).toUpperCase();
+    return `
+      <div class="guardian-item">
+        <div class="guardian-item-avatar">${init}</div>
+        <div class="guardian-item-info">
+          <p class="guardian-item-name">${name}</p>
+          <p class="guardian-item-dist">Activo ahora</p>
+        </div>
+        <span class="guardian-item-badge">Activo</span>
+      </div>`;
+  }).join('');
+}
+
+// ── Notifications ─────────────────────────────────────────
+function startNotifListener() {
+  unsubNotif = watchNotifications((notifs) => {
+    const unread = countUnread(notifs);
+    document.getElementById('notif-dot').classList.toggle('visible', unread > 0);
+  });
+}
+
+// ── Navigation ────────────────────────────────────────────
+window.showView = function(viewId) {
+  if (viewId === 'notif') return; // TODO FASE 6
+
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+  const view = document.getElementById(`view-${viewId}`);
+  const tab  = document.getElementById(`tab-${viewId}`);
+  if (view) view.classList.add('active');
+  if (tab)  tab.classList.add('active');
+
+  activeView = viewId;
+};
+
+// ── Route calculation ─────────────────────────────────────
+window.clearCurrentRoute = function() {
+  clearRoute();
+  document.getElementById('route-info').classList.remove('visible');
+};
+
+document.getElementById('btn-calc-route').addEventListener('click', async () => {
+  const destVal = document.getElementById('input-dest').value.trim();
+  if (!destVal) {
+    document.getElementById('input-dest').focus();
+    return;
+  }
+  if (!userLat) { alert('Ubicación no disponible aún'); return; }
+
+  const btn = document.getElementById('btn-calc-route');
+  btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>';
+  btn.disabled  = true;
+
+  try {
+    // Simple geocoding via Mapbox
+    const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(destVal)}.json?access_token=${MAPBOX_TOKEN}&limit=1`;
+    const geo  = await fetch(geocodeUrl).then(r => r.json());
+    const feat = geo.features?.[0];
+    if (!feat) throw new Error('Destino no encontrado');
+
+    const [destLng, destLat] = feat.center;
+    const route = await fetchRoute(userLng, userLat, destLng, destLat);
+    const score = calcSafetyScore(route, incidents);
+
+    drawRoute(route, score >= 70 ? '#2ECC71' : score >= 40 ? '#F39C12' : '#E74C3C');
+    flyTo((userLat + destLat) / 2, (userLng + destLng) / 2, 13);
+
+    const mins = Math.round(route.duration / 60);
+    const km   = (route.distance / 1000).toFixed(1);
+    document.getElementById('route-duration').textContent = `${mins} min`;
+    document.getElementById('route-distance').textContent = `${km} km`;
+    const safetyEl = document.getElementById('route-safety');
+    safetyEl.textContent = `${score}%`;
+    safetyEl.className   = `safety-score ${score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low'}`;
+    document.getElementById('route-info').classList.add('visible');
+
+    await saveRoute({
+      origin:          { lat: userLat, lng: userLng },
+      destination:     { lat: destLat, lng: destLng, address: feat.place_name },
+      route, safetyScore: score,
+      nearbyIncidents: incidents.map(i => i.id)
+    });
+    await incrementStat('routesCompleted');
+
+  } catch (err) {
+    console.error('[route]', err);
+    alert('No se pudo calcular la ruta. Verifica el destino.');
+  }
+
+  btn.innerHTML = '<i class="fa-solid fa-route"></i> Ir';
+  btn.disabled  = false;
+});
+
+// ── Report ────────────────────────────────────────────────
+let selectedType = null;
+
+window.selectType = function(el) {
+  document.querySelectorAll('.incident-type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedType = el.dataset.type;
+};
+
+window.submitReport = async function() {
+  if (!selectedType) { alert('Selecciona el tipo de incidente'); return; }
+  if (!userLat)       { alert('Ubicación no disponible'); return; }
+
+  const btn = document.getElementById('btn-report');
+  btn.disabled  = true;
+  btn.innerHTML = '<span class="spinner" style="width:18px;height:18px;border-width:2px;"></span> Enviando…';
+
+  try {
+    const severity    = parseInt(document.getElementById('severity-slider').value);
+    const description = document.getElementById('incident-desc').value.trim();
+
+    await reportIncident({
+      type: selectedType, severity,
+      lat: userLat, lng: userLng,
+      description
+    });
+    await incrementStat('incidentsReported');
+
+    document.querySelectorAll('.incident-type-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('severity-slider').value = 3;
+    document.getElementById('severity-val').textContent = '3';
+    document.getElementById('incident-desc').value = '';
+    selectedType = null;
+
+    showView('mapa');
+    showToast('Incidente reportado correctamente', 'success');
+  } catch (err) {
+    console.error('[report]', err);
+    showToast('Error al enviar el reporte', 'error');
+  }
+
+  btn.disabled  = false;
+  btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Enviar reporte';
+};
+
+// ── Guardian toggle ───────────────────────────────────────
+window.toggleGuardian = async function(active) {
+  const card  = document.getElementById('guardian-card');
+  const title = document.getElementById('guardian-toggle-title');
+  const desc  = document.getElementById('guardian-toggle-desc');
+
+  try {
+    if (active) {
+      await activateGuardian();
+      card.classList.add('active-guardian');
+      title.textContent = 'Guardian activo';
+      desc.textContent  = 'Estás acompañando a tu comunidad';
+      showToast('Modo Guardian activado', 'success');
+    } else {
+      await deactivateGuardian();
+      card.classList.remove('active-guardian');
+      title.textContent = 'Activarme como Guardian';
+      desc.textContent  = 'Ayuda a otros usuarios cercanos';
+      showToast('Modo Guardian desactivado', 'info');
+    }
+  } catch (err) {
+    console.error('[guardian toggle]', err);
+    document.getElementById('guardian-toggle').checked = !active;
+  }
+};
+
+// ── SOS ───────────────────────────────────────────────────
+window.triggerSOSUI = async function() {
+  const overlay = document.getElementById('sos-overlay');
+  overlay.classList.remove('hidden');
+
+  try {
+    await triggerSOS();
+    await incrementStat('sosActivations');
+  } catch (err) {
+    console.error('[SOS]', err);
+  }
+
+  // Start timer
+  sosStartTime = Date.now();
+  sosTimerInt  = setInterval(updateSOSTimer, 1000);
+  updateSOSTimer();
+};
+
+function updateSOSTimer() {
+  const elapsed = Math.floor((Date.now() - sosStartTime) / 1000);
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('sos-timer').textContent = `${mm}:${ss}`;
+}
+
+window.deactivateSOSUI = async function() {
+  const pin    = document.getElementById('sos-pin-input').value;
+  const errEl  = document.getElementById('sos-pin-error');
+  errEl.classList.remove('visible');
+
+  try {
+    if (!pin) {
+      errEl.textContent = 'Introduce tu PIN para desactivar.';
+      errEl.classList.add('visible');
+      return;
+    }
+
+    const result = await deactivateWithPIN(pin);
+
+    if (result.fake) {
+      // Fake PIN: pretend to close but keep SOS active silently
+      hideSosOverlay();
+      return;
+    }
+
+    if (result.success) {
+      hideSosOverlay();
+      showToast('Alerta SOS desactivada', 'info');
+    } else {
+      errEl.textContent = 'PIN incorrecto. Inténtalo de nuevo.';
+      errEl.classList.add('visible');
+      document.getElementById('sos-pin-input').value = '';
+    }
+  } catch (err) {
+    console.error('[SOS deactivate]', err);
+  }
+};
+
+function hideSosOverlay() {
+  clearInterval(sosTimerInt);
+  document.getElementById('sos-overlay').classList.add('hidden');
+  document.getElementById('sos-pin-input').value = '';
+  document.getElementById('sos-pin-error').classList.remove('visible');
+}
+
+// ── Logout ────────────────────────────────────────────────
+window.doLogout = async function() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  if (unsubIncidents) unsubIncidents();
+  if (unsubGuardians) unsubGuardians();
+  if (unsubNotif)     unsubNotif();
+  await logout();
+  window.location.href = 'auth/login.html';
+};
+
+// ── Profile panels ────────────────────────────────────────
+window.togglePanel = function(panelId, arrowId) {
+  const panel = document.getElementById(panelId);
+  const arrow = document.getElementById(arrowId);
+  const isOpen = panel.classList.toggle('open');
+  if (arrow) {
+    arrow.className = isOpen
+      ? 'fa-solid fa-chevron-up settings-item-arrow'
+      : 'fa-solid fa-chevron-down settings-item-arrow';
+  }
+  if (isOpen && panelId === 'panel-perfil') {
+    document.getElementById('edit-name').value  = userProfile?.displayName || currentUser.displayName || '';
+    document.getElementById('edit-phone').value = userProfile?.phone || '';
+  }
+  if (isOpen && panelId === 'panel-contacts') renderContactsList();
+};
+
+window.saveProfileInfo = async function() {
+  const name  = document.getElementById('edit-name').value.trim();
+  const phone = document.getElementById('edit-phone').value.trim();
+  try {
+    await updateProfileInfo({ displayName: name || undefined, phone: phone || undefined });
+    userProfile = await getProfile(currentUser.uid);
+    renderProfileUI();
+    showToast('Perfil actualizado', 'success');
+  } catch (e) {
+    console.error(e);
+    showToast('Error al guardar perfil', 'error');
+  }
+};
+
+window.savePINs = async function() {
+  const sosPIN  = document.getElementById('edit-sos-pin').value;
+  const fakePIN = document.getElementById('edit-fake-pin').value;
+  if (!sosPIN) { showToast('El PIN real es obligatorio', 'error'); return; }
+  try {
+    await updatePINs({ sosPIN, fakePIN: fakePIN || null });
+    document.getElementById('edit-sos-pin').value  = '';
+    document.getElementById('edit-fake-pin').value = '';
+    showToast('PINs guardados', 'success');
+  } catch (e) {
+    console.error(e);
+    showToast('Error al guardar PINs', 'error');
+  }
+};
+
+let contactRows = [];
+function renderContactsList() {
+  contactRows = userProfile?.trustedContacts ? [...userProfile.trustedContacts] : [];
+  redrawContactsDOM();
+}
+function redrawContactsDOM() {
+  const list = document.getElementById('contacts-list');
+  if (!contactRows.length) {
+    list.innerHTML = '<p class="text-muted text-sm">Sin contactos añadidos.</p>';
+    return;
+  }
+  list.innerHTML = contactRows.map((c, i) => `
+    <div class="contacts-item">
+      <div class="contacts-item-info">
+        <div class="contacts-item-name">${c.name || '—'}</div>
+        <div class="contacts-item-phone">${c.phone || ''}</div>
+      </div>
+      <button class="contacts-item-del" onclick="removeContactRow(${i})">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    </div>`).join('');
+}
+window.addContactRow = function() {
+  const name  = prompt('Nombre del contacto:');
+  if (!name) return;
+  const phone = prompt('Teléfono (ej. +34 600 000 000):');
+  contactRows.push({ name: name.trim(), phone: (phone || '').trim() });
+  redrawContactsDOM();
+};
+window.removeContactRow = function(i) {
+  contactRows.splice(i, 1);
+  redrawContactsDOM();
+};
+window.saveContacts = async function() {
+  try {
+    await updateTrustedContacts(contactRows);
+    userProfile = await getProfile(currentUser.uid);
+    showToast('Contactos guardados', 'success');
+  } catch (e) {
+    console.error(e);
+    showToast('Error al guardar contactos', 'error');
+  }
+};
+
+// ── Toast helper ──────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container') || createToastContainer();
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<i class="fa-solid fa-${
+    type === 'success' ? 'circle-check' :
+    type === 'error'   ? 'circle-xmark' : 'circle-info'
+  }"></i> ${msg}`;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function createToastContainer() {
+  const el = document.createElement('div');
+  el.id = 'toast-container';
+  el.className = 'toast-container';
+  document.body.appendChild(el);
+  return el;
+}
+</script>
+</body>
+</html>

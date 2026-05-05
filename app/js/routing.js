@@ -1,0 +1,119 @@
+// ============================================================
+//  Urban Guardian — routing.js
+//  Responsibility: Mapbox Directions API + safe route scoring
+//  Covers: fetch route, penalize segments near incidents,
+//          render route on map, clear route
+// ============================================================
+
+import { MAPBOX_TOKEN }  from '../firebase-config.js';
+import { getMap }        from './map.js';
+import { db, auth }      from '../firebase-config.js';
+import { addDoc, collection, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const DIRECTIONS_BASE = 'https://api.mapbox.com/directions/v5/mapbox/walking';
+const ROUTE_SOURCE_ID = 'ug-route';
+
+// ── Fetch walking route from Mapbox Directions API ─────────
+export async function fetchRoute(originLng, originLat, destLng, destLat) {
+  const coords = `${originLng},${originLat};${destLng},${destLat}`;
+  const url = `${DIRECTIONS_BASE}/${coords}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_TOKEN}`;
+
+  const res  = await fetch(url);
+  const data = await res.json();
+
+  if (!data.routes || data.routes.length === 0) {
+    throw new Error('No route found');
+  }
+
+  return data.routes[0]; // { geometry, duration, distance, legs }
+}
+
+// ── Calculate a basic safety score for a route ─────────────
+// incidents: array from watchActiveIncidents
+// route: Mapbox route object with geometry.coordinates
+export function calcSafetyScore(route, incidents) {
+  if (!incidents || incidents.length === 0) return 100;
+
+  const coords     = route.geometry.coordinates; // [[lng, lat], ...]
+  const RADIUS_DEG = 0.002; // ~200m in degrees (rough approximation)
+  let   penalty    = 0;
+
+  for (const inc of incidents) {
+    const iLng = inc.location.lng;
+    const iLat = inc.location.lat;
+
+    for (const [lng, lat] of coords) {
+      const dist = Math.hypot(lng - iLng, lat - iLat);
+      if (dist < RADIUS_DEG) {
+        penalty += inc.severity * 2;
+        break; // count each incident once per route
+      }
+    }
+  }
+
+  return Math.max(0, Math.round(100 - penalty));
+}
+
+// ── Draw route on map ──────────────────────────────────────
+export function drawRoute(route, color = '#4A90E2') {
+  const map = getMap();
+  if (!map) return;
+
+  const geojson = {
+    type: 'Feature',
+    geometry: route.geometry
+  };
+
+  if (map.getSource(ROUTE_SOURCE_ID)) {
+    map.getSource(ROUTE_SOURCE_ID).setData(geojson);
+    return;
+  }
+
+  map.addSource(ROUTE_SOURCE_ID, { type: 'geojson', data: geojson });
+
+  map.addLayer({
+    id:     `${ROUTE_SOURCE_ID}-line`,
+    type:   'line',
+    source:  ROUTE_SOURCE_ID,
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: {
+      'line-color':   color,
+      'line-width':   5,
+      'line-opacity': 0.9
+    }
+  });
+}
+
+// ── Clear route from map ───────────────────────────────────
+export function clearRoute() {
+  const map = getMap();
+  if (!map) return;
+  if (map.getLayer(`${ROUTE_SOURCE_ID}-line`)) map.removeLayer(`${ROUTE_SOURCE_ID}-line`);
+  if (map.getSource(ROUTE_SOURCE_ID))          map.removeSource(ROUTE_SOURCE_ID);
+}
+
+// ── Save route to Firestore ────────────────────────────────
+export async function saveRoute({ origin, destination, route, safetyScore, nearbyIncidents }) {
+  const user = auth.currentUser;
+  if (!user) throw new Error('User not authenticated');
+
+  const ref = await addDoc(collection(db, 'routes'), {
+    userId:      user.uid,
+    origin,
+    destination,
+    routeType:   'safe',
+    waypoints:   route.geometry.coordinates,
+    distance:    route.distance,    // metres
+    duration:    route.duration,    // seconds
+    safetyScore,
+    startedAt:   serverTimestamp(),
+    completedAt: null,
+    status:      'planned',
+    nearbyIncidents: nearbyIncidents ?? [],
+    guardianRequested: false,
+    assignedGuardian:  null
+  });
+
+  return ref.id;
+}

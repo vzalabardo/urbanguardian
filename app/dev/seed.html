@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seed — Urban Guardian Dev</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { padding: var(--space-lg); max-width: 480px; margin: 0 auto; }
+    h1 { font-size: 1.25rem; margin-bottom: var(--space-lg); }
+    .seed-section { margin-bottom: var(--space-xl); }
+    .seed-section h2 { font-size: 0.875rem; color: var(--text-muted); margin-bottom: var(--space-md); text-transform: uppercase; letter-spacing: 0.05em; }
+    .log { background: var(--bg-input); border-radius: var(--radius-md); padding: var(--space-md); font-size: 0.8rem; font-family: monospace; color: var(--safe); min-height: 80px; white-space: pre-wrap; margin-top: var(--space-md); }
+    .log .err { color: var(--danger); }
+  </style>
+</head>
+<body>
+<h1>🌱 Seed de datos de prueba</h1>
+<p class="text-muted text-sm" style="margin-bottom:var(--space-xl)">Añade incidentes y guardians ficticios alrededor de Madrid para probar la app. Solo para desarrollo.</p>
+
+<div class="seed-section">
+  <h2>Incidentes de prueba</h2>
+  <p class="text-sm text-muted">Añade 8 incidentes distribuidos por el centro de Madrid con distintos tipos y gravedades.</p>
+  <button class="btn btn-primary btn-full" id="btn-incidents" onclick="seedIncidents()">
+    <i class="fa-solid fa-triangle-exclamation"></i> Añadir 8 incidentes
+  </button>
+</div>
+
+<div class="seed-section">
+  <h2>Guardians activos de prueba</h2>
+  <p class="text-sm text-muted">Añade 4 guardians ficticios cerca del centro de Madrid.</p>
+  <button class="btn btn-primary btn-full" id="btn-guardians" onclick="seedGuardians()">
+    <i class="fa-solid fa-shield-halved"></i> Añadir 4 guardians
+  </button>
+</div>
+
+<div class="seed-section">
+  <h2>Limpiar todos los datos de prueba</h2>
+  <button class="btn btn-full" style="background:var(--danger);color:#fff" onclick="clearSeedData()">
+    <i class="fa-solid fa-trash-can"></i> Eliminar datos de prueba
+  </button>
+</div>
+
+<div class="log" id="log">Esperando acción...</div>
+
+<script type="module">
+import { auth, db }    from '../firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import {
+  collection, addDoc, getDocs, deleteDoc, serverTimestamp, Timestamp, query, where
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+let currentUser = null;
+const log = (msg, err) => {
+  const el = document.getElementById('log');
+  el.innerHTML += `\n<span class="${err ? 'err' : ''}">${msg}</span>`;
+  el.scrollTop = el.scrollHeight;
+};
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) { window.location.href = '../auth/login.html'; return; }
+  currentUser = user;
+  log(`✓ Autenticado como ${user.email}`);
+});
+
+// ── Test incidents scattered around 41.39997, 2.13541 ──────
+const TEST_INCIDENTS = [
+  { lat: 41.4025, lng: 2.1380, type: 'iluminacion',    severity: 2, description: 'Farolas apagadas en toda la calle' },
+  { lat: 41.3975, lng: 2.1310, type: 'robo',           severity: 5, description: 'Varios robos reportados en la zona' },
+  { lat: 41.4010, lng: 2.1420, type: 'grupo',          severity: 3, description: 'Grupo de personas con actitud intimidante' },
+  { lat: 41.3950, lng: 2.1350, type: 'zona_peligrosa', severity: 4, description: 'Zona con historial de incidentes' },
+  { lat: 41.4040, lng: 2.1290, type: 'accidente',      severity: 3, description: 'Accidente de tráfico sin señalizar' },
+  { lat: 41.3985, lng: 2.1450, type: 'iluminacion',    severity: 1, description: null },
+  { lat: 41.4015, lng: 2.1200, type: 'otro',           severity: 2, description: 'Situación sospechosa cerca del parque' },
+  { lat: 41.3930, lng: 2.1380, type: 'robo',           severity: 4, description: 'Intento de robo de vehículo reportado' }
+];
+
+// ── Test guardian sessions ─────────────────────────────────
+const TEST_GUARDIANS = [
+  { name: 'Carlos M.',   lat: 41.4005, lng: 2.1360, level: 3, score: 450 },
+  { name: 'Laura G.',    lat: 41.4030, lng: 2.1280, level: 2, score: 210 },
+  { name: 'Ahmed R.',    lat: 41.3965, lng: 2.1400, level: 4, score: 820 },
+  { name: 'Isabel F.',   lat: 41.4050, lng: 2.1450, level: 1, score: 80  }
+];
+
+const SEED_TAG = '__seed__';
+
+window.seedIncidents = async function() {
+  const btn = document.getElementById('btn-incidents');
+  btn.disabled = true;
+  log('\n⏳ Añadiendo incidentes...');
+
+  try {
+    for (const inc of TEST_INCIDENTS) {
+      const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2h from now
+      await addDoc(collection(db, 'incidents'), {
+        reportedBy:  currentUser.uid,
+        type:        inc.type,
+        severity:    inc.severity,
+        description: inc.description,
+        location:    { lat: inc.lat, lng: inc.lng },
+        isActive:    true,
+        reportedAt:  serverTimestamp(),
+        expiresAt:   Timestamp.fromDate(expiresAt),
+        validations: { confirmed: 0, disputed: 0, confirmedBy: [], disputedBy: [] },
+        tags:        [SEED_TAG]
+      });
+      log(`  ✓ ${inc.type} (sev ${inc.severity}) @ ${inc.lat.toFixed(4)}, ${inc.lng.toFixed(4)}`);
+    }
+    log(`✅ ${TEST_INCIDENTS.length} incidentes añadidos. Recarga el mapa.`);
+  } catch (e) {
+    log(`❌ Error: ${e.message}`, true);
+  }
+  btn.disabled = false;
+};
+
+window.seedGuardians = async function() {
+  const btn = document.getElementById('btn-guardians');
+  btn.disabled = true;
+  log('\n⏳ Añadiendo guardians...');
+
+  try {
+    for (const g of TEST_GUARDIANS) {
+      await addDoc(collection(db, 'guardian_sessions'), {
+        guardianId:      currentUser.uid,
+        displayName:     g.name,
+        guardianLevel:   g.level,
+        guardianScore:   g.score,
+        startedAt:       serverTimestamp(),
+        endedAt:         null,
+        currentLocation: { lat: g.lat, lng: g.lng, accuracy: 15, timestamp: Timestamp.now() },
+        isAvailable:     true,
+        maxDistance:     1000,
+        activeRoute:     null,
+        helpRequests:    [],
+        tags:            [SEED_TAG]
+      });
+      log(`  ✓ ${g.name} (Nivel ${g.level}) @ ${g.lat.toFixed(4)}, ${g.lng.toFixed(4)}`);
+    }
+    log(`✅ ${TEST_GUARDIANS.length} guardians añadidos. Recarga el mapa.`);
+  } catch (e) {
+    log(`❌ Error: ${e.message}`, true);
+  }
+  btn.disabled = false;
+};
+
+window.clearSeedData = async function() {
+  if (!confirm('¿Eliminar todos los datos de prueba (__seed__)?')) return;
+  log('\n⏳ Eliminando datos de prueba...');
+
+  let deleted = 0;
+  try {
+    const incSnap = await getDocs(
+      query(collection(db, 'incidents'), where('tags', 'array-contains', SEED_TAG))
+    );
+    for (const d of incSnap.docs) { await deleteDoc(d.ref); deleted++; }
+
+    const gSnap = await getDocs(
+      query(collection(db, 'guardian_sessions'), where('tags', 'array-contains', SEED_TAG))
+    );
+    for (const d of gSnap.docs) { await deleteDoc(d.ref); deleted++; }
+
+    log(`✅ ${deleted} documentos eliminados.`);
+  } catch (e) {
+    log(`❌ Error: ${e.message}`, true);
+  }
+};
+</script>
+</body>
+</html>

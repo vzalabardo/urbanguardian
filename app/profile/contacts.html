@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <title>Contactos de emergencia — Urban Guardian</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .screen { display: flex; flex-direction: column; height: 100dvh; }
+    .screen-header {
+      display: flex; align-items: center; gap: var(--space-md);
+      padding: 0 var(--space-lg); height: 56px;
+      background: var(--bg-dark); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .btn-back {
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-main); cursor: pointer; font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+    .screen-title { font-size: 1rem; font-weight: 700; }
+    .screen-body { flex: 1; overflow-y: auto; padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-lg); }
+
+    .contact-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .contact-item {
+      display: flex; align-items: center; gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-item:last-child { border-bottom: none; }
+    .contact-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--primary-lt); border: 2px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; color: var(--primary);
+      flex-shrink: 0;
+    }
+    .contact-info { flex: 1; min-width: 0; }
+    .contact-name { font-size: 0.9375rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .contact-phone { font-size: 0.8125rem; color: var(--text-muted); margin-top: 1px; }
+    .contact-actions { display: flex; gap: var(--space-sm); }
+    .contact-btn {
+      width: 32px; height: 32px; border-radius: var(--radius-full);
+      background: var(--bg-input); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); cursor: pointer; font-size: 0.8125rem;
+      transition: all var(--transition);
+    }
+    .contact-btn:hover { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+    .add-form { display: none; flex-direction: column; gap: var(--space-md); }
+    .add-form.visible { display: flex; }
+
+    .empty-state {
+      text-align: center; padding: var(--space-xl);
+      color: var(--text-muted); font-size: 0.875rem;
+    }
+    .empty-state i { font-size: 2rem; color: var(--text-dim); display: block; margin-bottom: var(--space-md); }
+  </style>
+</head>
+<body class="mobile-frame">
+<div class="screen">
+
+  <header class="screen-header">
+    <button class="btn-back" onclick="history.back()">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <span class="screen-title">Contactos de emergencia</span>
+  </header>
+
+  <div class="screen-body">
+
+    <p class="text-sm text-muted">Estas personas serán notificadas cuando actives una alerta SOS o uses el PIN de coacción.</p>
+
+    <!-- Lista de contactos -->
+    <div id="contacts-container"></div>
+
+    <!-- Formulario añadir -->
+    <div class="card">
+      <div id="add-form" class="add-form">
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-input" id="new-name" placeholder="Ej. Mamá">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-input" id="new-phone" placeholder="+34 600 000 000">
+        </div>
+        <div style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm)">
+          <button class="btn btn-secondary" style="flex:1" onclick="cancelAdd()">Cancelar</button>
+          <button class="btn btn-primary" style="flex:1" onclick="confirmAdd()">Añadir</button>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-full" id="btn-add" onclick="showAddForm()">
+        <i class="fa-solid fa-user-plus"></i> Añadir contacto
+      </button>
+    </div>
+
+    <div id="error-banner" class="error-banner" style="display:none">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span id="error-text"></span>
+    </div>
+
+    <button class="btn btn-primary btn-full btn-lg" id="btn-save" onclick="saveContacts()">
+      Guardar contactos
+    </button>
+
+  </div>
+</div>
+
+<script type="module">
+import { auth }        from '../firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getProfile, updateTrustedContacts } from '../js/profile.js';
+
+let contacts = [];
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = '../auth/login.html'; return; }
+  const profile = await getProfile(user.uid);
+  contacts = profile?.trustedContacts ? [...profile.trustedContacts] : [];
+  renderContacts();
+});
+
+function renderContacts() {
+  const container = document.getElementById('contacts-container');
+  if (!contacts.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-user-group"></i>
+        Aún no tienes contactos de emergencia.<br>Añade al menos uno.
+      </div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div class="contact-card">
+      ${contacts.map((c, i) => `
+        <div class="contact-item">
+          <div class="contact-avatar">${(c.name||'?').slice(0,1).toUpperCase()}</div>
+          <div class="contact-info">
+            <div class="contact-name">${c.name || '—'}</div>
+            <div class="contact-phone">${c.phone || 'Sin teléfono'}</div>
+          </div>
+          <div class="contact-actions">
+            <button class="contact-btn" onclick="removeContact(${i})" title="Eliminar">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+window.showAddForm = function() {
+  document.getElementById('add-form').classList.add('visible');
+  document.getElementById('btn-add').style.display = 'none';
+  document.getElementById('new-name').focus();
+};
+
+window.cancelAdd = function() {
+  document.getElementById('add-form').classList.remove('visible');
+  document.getElementById('btn-add').style.display = '';
+  document.getElementById('new-name').value  = '';
+  document.getElementById('new-phone').value = '';
+};
+
+window.confirmAdd = function() {
+  const name  = document.getElementById('new-name').value.trim();
+  const phone = document.getElementById('new-phone').value.trim();
+  if (!name) { showBanner('El nombre es obligatorio.'); return; }
+  contacts.push({ name, phone });
+  renderContacts();
+  cancelAdd();
+};
+
+window.removeContact = function(i) {
+  contacts.splice(i, 1);
+  renderContacts();
+};
+
+window.saveContacts = async function() {
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Guardando…';
+  try {
+    await updateTrustedContacts(contacts);
+    window.location.href = '../map.html';
+  } catch (err) {
+    showBanner('Error al guardar. Inténtalo de nuevo.');
+    btn.disabled = false;
+    btn.textContent = 'Guardar contactos';
+  }
+};
+
+function showBanner(msg) {
+  const b = document.getElementById('error-banner');
+  b.style.display = 'flex';
+  document.getElementById('error-text').textContent = msg;
+}
+</script>
+</body>
+</html>

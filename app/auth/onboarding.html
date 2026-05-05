@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <title>Urban Guardian — Bienvenido</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ── Onboarding-specific styles ── */
+    .onboarding-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-lg);
+      padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom, 0));
+    }
+
+    .slides-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-lg);
+      text-align: center;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    .slide-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.75rem;
+    }
+
+    .slide-icon.blue   { background: var(--primary-lt);  color: var(--primary); }
+    .slide-icon.green  { background: var(--safe-lt);     color: var(--safe); }
+    .slide-icon.red    { background: var(--danger-lt);   color: var(--danger); }
+
+    .slide h2 {
+      font-size: 1.5rem;
+    }
+
+    .slide p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    .dots {
+      display: flex;
+      gap: var(--space-sm);
+      justify-content: center;
+      margin: var(--space-lg) 0;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--border-md);
+      transition: all var(--transition);
+    }
+
+    .dot.active {
+      width: 24px;
+      background: var(--primary);
+    }
+
+    .onboarding-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+  </style>
+</head>
+<body>
+<div class="mobile-frame">
+  <div class="onboarding-wrap">
+
+    <!-- Slides -->
+    <div class="slides-viewport">
+
+      <div class="slide active" id="slide-0">
+        <div class="slide-icon blue">
+          <i class="fa-solid fa-map-location-dot"></i>
+        </div>
+        <h2>Rutas seguras en tiempo real</h2>
+        <p>Calcula trayectos que evitan zonas con incidentes recientes reportados por la comunidad.</p>
+      </div>
+
+      <div class="slide" id="slide-1">
+        <div class="slide-icon green">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h2>Red de Guardians</h2>
+        <p>Actívate como Guardian para acompañar virtualmente a otros usuarios durante sus trayectos nocturnos.</p>
+      </div>
+
+      <div class="slide" id="slide-2">
+        <div class="slide-icon red">
+          <i class="fa-solid fa-bell-slash"></i>
+        </div>
+        <h2>SOS silencioso</h2>
+        <p>Activa una alerta discreta sin levantar sospechas. PIN falso para situaciones de coacción.</p>
+      </div>
+
+    </div>
+
+    <!-- Dots -->
+    <div class="dots">
+      <div class="dot active" id="dot-0"></div>
+      <div class="dot" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="onboarding-actions">
+      <button class="btn btn-primary btn-full btn-lg" id="btn-next">
+        Siguiente
+      </button>
+      <button class="btn btn-text btn-full" id="btn-skip" onclick="window.location.href='login.html'">
+        Omitir
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentSlide = 0;
+  const totalSlides = 3;
+
+  const btnNext = document.getElementById('btn-next');
+
+  btnNext.addEventListener('click', () => {
+    if (currentSlide < totalSlides - 1) {
+      goToSlide(currentSlide + 1);
+    } else {
+      window.location.href = 'login.html';
+    }
+  });
+
+  function goToSlide(index) {
+    document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+    document.getElementById(`dot-${currentSlide}`).classList.remove('active');
+
+    currentSlide = index;
+
+    document.getElementById(`slide-${currentSlide}`).classList.add('active');
+    document.getElementById(`dot-${currentSlide}`).classList.add('active');
+
+    if (currentSlide === totalSlides - 1) {
+      btnNext.textContent = 'Empezar';
+    }
+  }
+</script>
+</body>
+</html>
