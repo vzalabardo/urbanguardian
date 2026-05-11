@@ -45,17 +45,21 @@ export async function reportIncident({ type, severity, lat, lng, address, descri
 }
 
 // ── Real-time listener for active incidents ─────────────────
+// No Firestore filters — full client-side filtering to avoid any index issues.
 export function watchActiveIncidents(callback) {
-  const now = Timestamp.now();
-  const q = query(
-    collection(db, INCIDENTS_COL),
-    where('isActive', '==', true),
-    where('expiresAt', '>', now),
-    orderBy('expiresAt', 'asc')
-  );
-
-  return onSnapshot(q, (snapshot) => {
-    const incidents = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  return onSnapshot(collection(db, INCIDENTS_COL), (snapshot) => {
+    const cutoff = Date.now() - 48 * 60 * 60 * 1000;
+    const now    = Date.now();
+    const incidents = snapshot.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(i => {
+        if (i.isActive === false) return false;
+        const expMs = i.expiresAt?.toMillis?.()   ?? null;
+        const tsMs  = i.timestamp?.toMillis?.()   ?? i.reportedAt?.toMillis?.() ?? null;
+        if (expMs !== null) return expMs > now;
+        if (tsMs  !== null) return tsMs  > cutoff;
+        return true;
+      });
     callback(incidents);
   });
 }
@@ -64,7 +68,9 @@ export function watchActiveIncidents(callback) {
 export function incidentsToGeoJSON(incidents) {
   return {
     type: 'FeatureCollection',
-    features: incidents.map(inc => ({
+    features: incidents
+      .filter(inc => typeof inc.location?.lng === 'number' && typeof inc.location?.lat === 'number')
+      .map(inc => ({
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -79,6 +85,44 @@ export function incidentsToGeoJSON(incidents) {
       }
     }))
   };
+}
+
+// ── Real-time listener for historical incidents (heatmap) ───
+// Includes ALL incidents (active + expired) in the last `days` days.
+export function watchHistoricalIncidents(callback, days = 30) {
+  const cutoff = Timestamp.fromMillis(Date.now() - days * 24 * 60 * 60 * 1000);
+  const q = query(
+    collection(db, INCIDENTS_COL),
+    where('timestamp', '>', cutoff),
+    orderBy('timestamp', 'desc')
+  );
+  return onSnapshot(q, (snapshot) => {
+    const incidents = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    callback(incidents);
+  });
+}
+
+// ── Convert historical incidents to weighted GeoJSON for heatmap
+// weight = (severity / 5) × 2^(−daysSince / halfLifeDays)
+// halfLifeDays = 20  →  20 days → ×0.5, 30 days → ×0.35, 60 days → ×0.12
+export function historicalToHeatmapGeoJSON(incidents, halfLifeDays = 20) {
+  const now = Date.now();
+  const features = incidents.flatMap(inc => {
+    const ts       = inc.timestamp?.toMillis?.() ?? now;
+    const daysSince = (now - ts) / (1000 * 60 * 60 * 24);
+    const decay    = Math.pow(2, -daysSince / halfLifeDays);
+    const weight   = (inc.severity / 5) * decay;
+    if (weight < 0.005) return [];
+    return [{
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [inc.location.lng, inc.location.lat]
+      },
+      properties: { weight, severity: inc.severity }
+    }];
+  });
+  return { type: 'FeatureCollection', features };
 }
 
 // ── Validate (confirm) an incident ─────────────────────────

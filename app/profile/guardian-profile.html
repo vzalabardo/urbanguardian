@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <title>Perfil Guardian — Urban Guardian</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .screen { display: flex; flex-direction: column; height: 100dvh; background: var(--bg-dark); }
+
+    /* ── Header ── */
+    .screen-header {
+      display: flex; align-items: center; gap: var(--space-md);
+      padding: 0 var(--space-lg); height: 56px;
+      background: var(--bg-dark); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .btn-back {
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-main); cursor: pointer; font-size: 0.875rem; flex-shrink: 0;
+    }
+    .screen-title { font-size: 1rem; font-weight: 700; }
+
+    /* ── Scrollable body ── */
+    .screen-body { flex: 1; overflow-y: auto; padding-bottom: var(--space-xl); }
+
+    /* ── Hero banner ── */
+    .profile-hero {
+      background: linear-gradient(160deg, var(--primary-lt, rgba(108,99,255,0.18)) 0%, transparent 60%);
+      padding: var(--space-xl) var(--space-lg) var(--space-lg);
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+    .profile-avatar-wrap { position: relative; }
+    .profile-avatar {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: var(--primary-lt, rgba(108,99,255,0.15));
+      border: 3px solid var(--primary, #6C63FF);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; font-weight: 700; color: var(--primary, #6C63FF);
+      overflow: hidden;
+    }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .active-badge {
+      position: absolute; bottom: 4px; right: 4px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #2ECC71; border: 2px solid var(--bg-dark);
+    }
+    .profile-name { font-size: 1.25rem; font-weight: 800; text-align: center; }
+    .profile-email { font-size: 0.8125rem; color: var(--text-muted); }
+    .profile-level-row { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+    .level-badge {
+      padding: 3px 12px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 700;
+    }
+    .glvl-1 { background:rgba(46,204,113,0.15); color:#2ECC71; }
+    .glvl-2 { background:rgba(52,152,219,0.15); color:#3498DB; }
+    .glvl-3 { background:rgba(108,99,255,0.15); color:#6C63FF; }
+    .glvl-4 { background:rgba(230,126,34,0.15); color:#E67E22; }
+    .glvl-5 { background:rgba(231,76,60,0.15);  color:#E74C3C; }
+    .profile-score { font-size: 0.8125rem; color: var(--text-muted); }
+
+    /* ── Since badge ── */
+    .since-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 0.78rem; color: var(--text-muted);
+    }
+    .since-pill i { color: var(--primary, #6C63FF); }
+
+    /* ── Stats grid ── */
+    .stats-section { padding: var(--space-lg); }
+    .stats-section-title {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: var(--space-md);
+    }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card {
+      background: var(--bg-card); border-radius: var(--radius-lg);
+      padding: var(--space-md) var(--space-lg);
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-card-icon { font-size: 1.1rem; margin-bottom: 2px; }
+    .stat-card-val { font-size: 1.5rem; font-weight: 800; }
+    .stat-card-lbl { font-size: 0.72rem; color: var(--text-muted); }
+
+    /* ── Score card ── */
+    .score-card {
+      margin: 0 var(--space-lg); background: var(--bg-card);
+      border-radius: var(--radius-lg); padding: var(--space-lg);
+      display: flex; align-items: center; gap: var(--space-lg);
+      border-left: 4px solid var(--primary, #6C63FF);
+    }
+    .score-card-val { font-size: 2.2rem; font-weight: 800; color: var(--primary,#6C63FF); line-height:1; }
+    .score-card-lbl { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Action buttons ── */
+    .actions-section { padding: var(--space-lg); display: flex; flex-direction: column; gap: 10px; }
+    .btn-accompany {
+      width: 100%; padding: 14px; border-radius: var(--radius-lg);
+      background: var(--primary, #6C63FF); color: #fff;
+      border: none; font-size: 0.9375rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-accompany-outline {
+      width: 100%; padding: 13px; border-radius: var(--radius-lg);
+      background: transparent; color: var(--primary,#6C63FF);
+      border: 1.5px solid var(--primary,#6C63FF);
+      font-size: 0.9375rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    /* ── Skeleton / loading ── */
+    .skeleton {
+      background: var(--bg-card); border-radius: 8px; animation: pulse 1.4s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 0.5; } 50% { opacity: 1; }
+    }
+
+    /* ── Not found ── */
+    .not-found {
+      padding: var(--space-xl); text-align: center; color: var(--text-muted);
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-md);
+    }
+    .not-found i { font-size: 2.5rem; color: var(--text-dim); }
+  </style>
+</head>
+<body class="mobile-frame">
+<div class="screen">
+
+  <header class="screen-header">
+    <button class="btn-back" onclick="history.back()">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <span class="screen-title" id="header-title">Perfil Guardian</span>
+  </header>
+
+  <div class="screen-body" id="screen-body">
+    <!-- Populated by JS -->
+    <div style="padding:var(--space-xl);display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <div class="skeleton" style="width:88px;height:88px;border-radius:50%;"></div>
+      <div class="skeleton" style="width:140px;height:18px;"></div>
+      <div class="skeleton" style="width:90px;height:14px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { auth }             from '../firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getProfile }       from '../js/profile.js';
+
+const params    = new URLSearchParams(window.location.search);
+const targetUid = params.get('uid');
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = '../auth/login.html'; return; }
+  if (!targetUid) { renderNotFound('No se especificó ningún perfil.'); return; }
+  try {
+    const profile = await getProfile(targetUid);
+    if (!profile) { renderNotFound('Guardian no encontrado.'); return; }
+    renderProfile(profile);
+  } catch (e) {
+    console.error('[guardian-profile]', e);
+    renderNotFound('Error al cargar el perfil.');
+  }
+});
+
+function levelClass(level) {
+  return ['','glvl-1','glvl-2','glvl-3','glvl-4','glvl-5'][Math.min(level ?? 1, 5)] || 'glvl-1';
+}
+
+function levelLabel(level) {
+  const labels = ['','Recruta','Vigilante','Protector','Guardián','Élite'];
+  return labels[Math.min(level ?? 1, 5)] || 'Guardian';
+}
+
+function formatDate(ts) {
+  if (!ts) return 'Desconocido';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('es-ES', { year: 'numeric', month: 'long' });
+}
+
+function renderProfile(p) {
+  const name     = p.displayName || p.email?.split('@')[0] || 'Guardian';
+  const initials = name.slice(0, 2).toUpperCase();
+  const level    = p.guardianLevel ?? 1;
+  const score    = p.guardianScore ?? 0;
+  const lvlCls   = levelClass(level);
+  const lvlLbl   = levelLabel(level);
+  const since    = formatDate(p.createdAt);
+  const isActive = p.guardianActive === true;
+  const stats    = p.stats ?? {};
+
+  const avatarInner = p.photoURL
+    ? `<img src="${p.photoURL}" alt="${name}">`
+    : initials;
+
+  document.getElementById('header-title').textContent = name.split(' ')[0];
+
+  document.getElementById('screen-body').innerHTML = `
+    <!-- Hero -->
+    <div class="profile-hero">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar">${avatarInner}</div>
+        ${isActive ? '<div class="active-badge" title="Activo ahora"></div>' : ''}
+      </div>
+      <div class="profile-name">${name}</div>
+      ${p.email ? `<div class="profile-email">${p.email}</div>` : ''}
+      <div class="profile-level-row">
+        <span class="level-badge ${lvlCls}">Nivel ${level} · ${lvlLbl}</span>
+        ${isActive ? '<span style="font-size:0.75rem;color:#2ECC71;"><i class="fa-solid fa-circle" style="font-size:0.5rem;margin-right:3px;"></i>Activo ahora</span>' : ''}
+      </div>
+      <div class="since-pill">
+        <i class="fa-solid fa-calendar"></i>
+        Miembro desde ${since}
+      </div>
+    </div>
+
+    <!-- Score card -->
+    <div style="margin-top:var(--space-lg);">
+      <div class="score-card">
+        <div>
+          <div class="score-card-val">${score}</div>
+          <div class="score-card-lbl">Puntos Guardian</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:4px;">Progreso al siguiente nivel</div>
+          <div style="width:120px;height:6px;background:var(--bg-input);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${Math.min((score % 500)/5,100)}%;background:var(--primary,#6C63FF);border-radius:3px;transition:width 0.6s;"></div>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-dim);margin-top:3px;">${500 - (score % 500)} pts para Nivel ${level + 1}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="stats-section">
+      <div class="stats-section-title">Estadísticas</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-icon">🛣️</div>
+          <div class="stat-card-val">${stats.routesCompleted ?? 0}</div>
+          <div class="stat-card-lbl">Rutas completadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">⚠️</div>
+          <div class="stat-card-val">${stats.incidentsReported ?? 0}</div>
+          <div class="stat-card-lbl">Incidentes reportados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">🤝</div>
+          <div class="stat-card-val">${stats.helpProvided ?? 0}</div>
+          <div class="stat-card-lbl">Ayudas prestadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">🚨</div>
+          <div class="stat-card-val">${stats.sosActivations ?? 0}</div>
+          <div class="stat-card-lbl">Alertas SOS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-section">
+      <button class="btn-accompany" onclick="requestAccompany()">
+        <i class="fa-solid fa-shield-halved"></i>
+        Solicitar acompañamiento
+      </button>
+      <button class="btn-accompany-outline" onclick="history.back()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver al mapa
+      </button>
+    </div>
+  `;
+}
+
+function renderNotFound(msg) {
+  document.getElementById('screen-body').innerHTML = `
+    <div class="not-found">
+      <i class="fa-solid fa-user-slash"></i>
+      <p>${msg}</p>
+      <button class="btn btn-secondary" onclick="history.back()">Volver</button>
+    </div>`;
+}
+
+window.requestAccompany = function() {
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-info';
+  toast.innerHTML = `<i class="fa-solid fa-clock"></i> Función de acompañamiento próximamente 🚀`;
+  toast.style.cssText = [
+    'position:fixed','bottom:24px','left:50%','transform:translateX(-50%)',
+    'background:#1e1e2e','color:#fff','padding:12px 20px','border-radius:12px',
+    'font-size:0.875rem','box-shadow:0 4px 20px rgba(0,0,0,0.4)',
+    'z-index:9999','white-space:nowrap','border:1px solid rgba(108,99,255,0.3)'
+  ].join(';');
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+};
+</script>
+</body>
+</html>

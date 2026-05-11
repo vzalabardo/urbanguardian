@@ -93,7 +93,7 @@ window.seedIncidents = async function() {
 
   try {
     for (const inc of TEST_INCIDENTS) {
-      const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2h from now
+      const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48h from now
       await addDoc(collection(db, 'incidents'), {
         reportedBy:  currentUser.uid,
         type:        inc.type,
@@ -101,7 +101,7 @@ window.seedIncidents = async function() {
         description: inc.description,
         location:    { lat: inc.lat, lng: inc.lng },
         isActive:    true,
-        reportedAt:  serverTimestamp(),
+        timestamp:   serverTimestamp(),
         expiresAt:   Timestamp.fromDate(expiresAt),
         validations: { confirmed: 0, disputed: 0, confirmedBy: [], disputedBy: [] },
         tags:        [SEED_TAG]

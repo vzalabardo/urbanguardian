@@ -79,9 +79,29 @@
     #view-mapa {
       overflow: hidden;
     }
+    .map-fab-btn {
+      position: absolute;
+      bottom: 120px;
+      right: 12px;
+      z-index: 100;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-card, #1e1e2e);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .map-fab-btn:active { transform: scale(0.92); }
     #map-container {
       flex: 1;
       width: 100%;
+      position: relative;
       background: var(--bg-card);
     }
     .map-placeholder {
@@ -411,6 +431,44 @@
       padding: 6px 10px;
     }
     .ug-popup .mapboxgl-popup-tip { border-top-color: var(--bg-card, #1e1e2e); }
+    
+    /* ── Long-press action popup ───────────────────────── */
+    .action-popup { padding: 12px; }
+    .action-popup-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .action-popup-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .action-popup-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-popup-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .action-popup-btn i {
+      width: 18px;
+      text-align: center;
+    }
     .incident-popup { padding: 14px 16px; }
     .incident-popup-header {
       display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
@@ -444,16 +502,49 @@
     .popup-btn:hover { opacity: 0.85; }
     .popup-btn-confirm { background: rgba(46,204,113,0.15); color: #2ECC71; border: 1px solid rgba(46,204,113,0.3); }
     .popup-btn-dispute { background: rgba(231,76,60,0.12); color: #E74C3C; border: 1px solid rgba(231,76,60,0.25); }
-    .guardian-popup { padding: 14px 16px; }
-    .guardian-popup-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .guardian-popup { padding: 14px 16px; min-width: 220px; }
+    .guardian-popup-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
     .guardian-popup-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
+      width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
       background: var(--primary-lt,rgba(108,99,255,0.15)); border: 2px solid var(--primary,#6C63FF);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; font-weight: 700; color: var(--primary,#6C63FF);
+      font-size: 1.1rem; font-weight: 700; color: var(--primary,#6C63FF);
+      overflow: hidden;
     }
-    .guardian-popup-name { font-size: 0.9375rem; font-weight: 700; }
-    .guardian-popup-level { font-size: 0.75rem; color: var(--text-muted,#888); margin-top: 1px; }
+    .guardian-popup-avatar img { width:100%; height:100%; object-fit:cover; }
+    .guardian-popup-name { font-size: 0.9375rem; font-weight: 700; line-height: 1.2; }
+    .guardian-popup-meta { font-size: 0.72rem; color: var(--text-muted,#888); margin-top: 2px; }
+    .guardian-level-badge {
+      display: inline-block; padding: 1px 7px; border-radius: 20px;
+      font-size: 0.68rem; font-weight: 700; margin-right: 4px;
+    }
+    .glvl-1 { background:rgba(46,204,113,0.15); color:#2ECC71; }
+    .glvl-2 { background:rgba(52,152,219,0.15); color:#3498DB; }
+    .glvl-3 { background:rgba(108,99,255,0.15); color:#6C63FF; }
+    .glvl-4 { background:rgba(230,126,34,0.15); color:#E67E22; }
+    .glvl-5 { background:rgba(231,76,60,0.15);  color:#E74C3C; }
+    .guardian-popup-stats {
+      display: flex; gap: 8px; margin-bottom: 10px;
+    }
+    .guardian-popup-stat {
+      flex: 1; background: var(--bg-dark,#121212); border-radius: 8px;
+      padding: 6px 8px; text-align: center;
+    }
+    .guardian-popup-stat-val { font-size: 0.9rem; font-weight: 700; color: var(--primary,#6C63FF); }
+    .guardian-popup-stat-lbl { font-size: 0.62rem; color: var(--text-muted,#888); margin-top: 1px; }
+    .guardian-popup-actions { display: flex; flex-direction: column; gap: 6px; }
+    .guardian-popup-btn {
+      width: 100%; padding: 8px; border-radius: 8px; border: none;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .guardian-popup-btn-primary {
+      background: var(--primary,#6C63FF); color: #fff;
+    }
+    .guardian-popup-btn-secondary {
+      background: rgba(108,99,255,0.12); color: var(--primary,#6C63FF);
+      border: 1px solid rgba(108,99,255,0.3);
+    }
 
     /* ── Expandable settings panels ─────────────────────────── */
     .settings-panel {
@@ -676,6 +767,12 @@
           <p class="text-xs text-dim">Configura tu Mapbox token en firebase-config.js</p>
         </div>
       </div>
+      <button id="btn-heatmap-toggle"
+              class="map-fab-btn"
+              title="Ocultar mapa de calor"
+              onclick="toggleHeatmap()">
+        🌡️
+      </button>
 
     </div>
 
@@ -917,7 +1014,8 @@ import { doc, setDoc, serverTimestamp }
 import { getProfile, incrementStat, updateProfileInfo, updatePINs, updateTrustedContacts }
                                    from './js/profile.js';
 import { watchActiveIncidents, reportIncident, incidentsToGeoJSON,
-         confirmIncident, disputeIncident }
+         confirmIncident, disputeIncident,
+         watchHistoricalIncidents, historicalToHeatmapGeoJSON }
                                    from './js/incidents.js';
 import { triggerSOS, deactivateWithPIN, isSOSActive, deactivateSOS }
                                    from './js/sos.js';
@@ -927,7 +1025,8 @@ import { watchNotifications, countUnread }
                                    from './js/notifications.js';
 import { initMap, setUserMarker, flyTo, getMap,
          addIncidentMarkers, updateGuardianMarkers,
-         showPopup, closePopup }
+         showPopup, closePopup,
+         updateHeatmapLayer, setHeatmapVisibility }
                                    from './js/map.js';
 import { MAPBOX_TOKEN }            from './firebase-config.js';
 import { fetchRoute, calcSafetyScore, drawRoute, clearRoute, saveRoute }
@@ -937,8 +1036,10 @@ import { fetchRoute, calcSafetyScore, drawRoute, clearRoute, saveRoute }
 let currentUser    = null;
 let userProfile    = null;
 let activeView     = 'mapa';
-let incidents      = [];
-let guardians      = [];
+let incidents           = [];
+let historicalIncidents = [];
+let guardians           = [];
+let heatmapVisible      = true;
 let userLat        = null;
 let userLng        = null;
 let sosTimerInt    = null;
@@ -1012,6 +1113,7 @@ function initApp() {
   startGeolocation();
   initMapbox();
   startIncidentListener();
+  startHistoricalListener();
   startGuardianListener();
   startNotifListener();
 }
@@ -1056,9 +1158,14 @@ function initMapbox() {
 
   if (!map) return;
 
-  map.on('load', () => {
+  map.once('idle', () => {
+    console.log('[map] idle fired — incidents:', incidents.length, 'guardians:', guardians.length);
+    map.resize();
     if (userLat) setUserMarker(userLat, userLng);
+    renderHeatmap();
     renderIncidentsOnMap();
+    renderGuardiansOnMap();
+    setupLongPress(map);
   });
 }
 
@@ -1066,9 +1173,35 @@ function initMapbox() {
 function startIncidentListener() {
   unsubIncidents = watchActiveIncidents((data) => {
     incidents = data;
+    console.log('[incidents] received:', data.length, 'map loaded:', getMap()?.isStyleLoaded());
     renderIncidentsOnMap();
   });
 }
+
+let unsubHistorical = null;
+function startHistoricalListener() {
+  unsubHistorical = watchHistoricalIncidents((data) => {
+    historicalIncidents = data;
+    renderHeatmap();
+  });
+}
+
+function renderHeatmap() {
+  const map = getMap();
+  if (!map || !map.isStyleLoaded()) return;
+  const geojson = historicalToHeatmapGeoJSON(historicalIncidents);
+  updateHeatmapLayer(geojson);
+}
+
+window.toggleHeatmap = function() {
+  heatmapVisible = !heatmapVisible;
+  setHeatmapVisibility(heatmapVisible);
+  const btn = document.getElementById('btn-heatmap-toggle');
+  if (btn) {
+    btn.title = heatmapVisible ? 'Ocultar mapa de calor' : 'Mostrar mapa de calor';
+    btn.style.opacity = heatmapVisible ? '1' : '0.45';
+  }
+};
 
 const INCIDENT_TYPES = {
   iluminacion:   { label: 'Iluminación deficiente', emoji: '💡' },
@@ -1094,8 +1227,7 @@ function timeAgo(ts) {
 }
 
 function renderIncidentsOnMap() {
-  const map = getMap();
-  if (!map || !map.isStyleLoaded()) return;
+  if (!getMap()) return;
   const geojson = incidentsToGeoJSON(incidents);
 
   addIncidentMarkers(geojson, (props, lngLat) => {
@@ -1158,28 +1290,74 @@ window.disputeIncidentUI = async function(id) {
 function startGuardianListener() {
   unsubGuardians = watchActiveGuardians((data) => {
     guardians = data.filter(g => g.id !== getActiveSessionId());
+    console.log('[guardians] received:', guardians.length, 'map loaded:', getMap()?.isStyleLoaded());
     renderGuardiansList();
     renderGuardiansOnMap();
   });
 }
 
+function guardianActiveTime(startedAt) {
+  if (!startedAt) return 'Activo ahora';
+  const ms = Date.now() - (startedAt?.toMillis?.() ?? startedAt);
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1)  return 'Activo ahora';
+  if (mins < 60) return `Activo hace ${mins} min`;
+  return `Activo hace ${Math.floor(mins/60)} h`;
+}
+
+function guardianLevelColor(level) {
+  return ['','glvl-1','glvl-2','glvl-3','glvl-4','glvl-5'][Math.min(level,5)] || 'glvl-1';
+}
+
 function renderGuardiansOnMap() {
-  if (!getMap()) return;
-  updateGuardianMarkers(guardians, (g) => {
-    const name  = g.displayName || g.guardianId?.slice(0,8) || 'Guardian';
-    const init  = name.slice(0,2).toUpperCase();
-    const level = g.guardianLevel ?? 1;
+  if (!getMap()) return; // mapInstance must exist; style-load handled inside
+  updateGuardianMarkers(guardians, (props, lngLat) => {
+    const name   = props.displayName || 'Guardian';
+    const init   = name.slice(0,2).toUpperCase();
+    const level  = props.guardianLevel ?? 1;
+    const score  = props.guardianScore ?? 0;
+    const lvlCls = guardianLevelColor(level);
+    const activeStr = guardianActiveTime(
+      props.startedAtMs ? { toMillis: () => props.startedAtMs } : null
+    );
+    const uid    = props.guardianId ?? '';
+    const avatarInner = props.photoURL
+      ? `<img src="${props.photoURL}" alt="">`
+      : init;
     const html = `
       <div class="guardian-popup">
         <div class="guardian-popup-header">
-          <div class="guardian-popup-avatar">${init}</div>
+          <div class="guardian-popup-avatar">${avatarInner}</div>
           <div>
             <div class="guardian-popup-name">${name}</div>
-            <div class="guardian-popup-level">Guardian Nivel ${level} · Activo ahora</div>
+            <div class="guardian-popup-meta">
+              <span class="guardian-level-badge ${lvlCls}">Nivel ${level}</span>
+              ${activeStr}
+            </div>
           </div>
         </div>
+        <div class="guardian-popup-stats">
+          <div class="guardian-popup-stat">
+            <div class="guardian-popup-stat-val">${score}</div>
+            <div class="guardian-popup-stat-lbl">Puntos</div>
+          </div>
+          <div class="guardian-popup-stat">
+            <div class="guardian-popup-stat-val">Nv ${level}</div>
+            <div class="guardian-popup-stat-lbl">Guardian</div>
+          </div>
+        </div>
+        <div class="guardian-popup-actions">
+          <button class="guardian-popup-btn guardian-popup-btn-primary"
+            onclick="window.open('../profile/guardian-profile.html?uid=${uid}','_self')">
+            <i class="fa-solid fa-user"></i> Ver perfil completo
+          </button>
+          <button class="guardian-popup-btn guardian-popup-btn-secondary"
+            onclick="showToast('Función de acompañamiento próximamente 🚀','info')">
+            <i class="fa-solid fa-shield-halved"></i> Solicitar acompañamiento
+          </button>
+        </div>
       </div>`;
-    showPopup([g.currentLocation.lng, g.currentLocation.lat], html);
+    showPopup(lngLat, html);
   });
 }
 
@@ -1231,6 +1409,15 @@ window.showView = function(viewId) {
   if (tab)  tab.classList.add('active');
 
   activeView = viewId;
+
+  if (viewId === 'mapa') {
+    const map = getMap();
+    if (map) {
+      map.resize();
+      renderIncidentsOnMap();
+      renderGuardiansOnMap();
+    }
+  }
 };
 
 // ── Route calculation ─────────────────────────────────────
@@ -1291,6 +1478,171 @@ document.getElementById('btn-calc-route').addEventListener('click', async () => 
   btn.disabled  = false;
 });
 
+// ── Long-press to report ─────────────────────────────────
+let longPressLat = null;
+let longPressLng = null;
+
+let longPressMarker = null;
+
+function setupLongPress(map) {
+  let pressTimer = null;
+  let pressStart = null;
+
+  map.on('mousedown', (e) => {
+    pressStart = { x: e.point.x, y: e.point.y };
+    pressTimer = setTimeout(() => {
+      const { lng, lat } = e.lngLat;
+      longPressLat = lat;
+      longPressLng = lng;
+      showLongPressPopup(map, lng, lat);
+    }, 800); // 800ms long-press
+  });
+
+  map.on('mouseup', () => {
+    if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+  });
+
+  map.on('mousemove', (e) => {
+    if (pressTimer && pressStart) {
+      const dx = e.point.x - pressStart.x;
+      const dy = e.point.y - pressStart.y;
+      if (Math.sqrt(dx*dx + dy*dy) > 10) {
+        clearTimeout(pressTimer);
+        pressTimer = null;
+      }
+    }
+  });
+
+  // Touch support
+  map.on('touchstart', (e) => {
+    if (e.originalEvent.touches.length !== 1) return;
+    const touch = e.originalEvent.touches[0];
+    pressStart = { x: touch.clientX, y: touch.clientY };
+    pressTimer = setTimeout(() => {
+      const { lng, lat } = e.lngLat;
+      longPressLat = lat;
+      longPressLng = lng;
+      showLongPressPopup(map, lng, lat);
+    }, 800);
+  });
+
+  map.on('touchend', () => {
+    if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+  });
+
+  map.on('touchmove', (e) => {
+    if (pressTimer && pressStart && e.originalEvent.touches.length === 1) {
+      const touch = e.originalEvent.touches[0];
+      const dx = touch.clientX - pressStart.x;
+      const dy = touch.clientY - pressStart.y;
+      if (Math.sqrt(dx*dx + dy*dy) > 10) {
+        clearTimeout(pressTimer);
+        pressTimer = null;
+      }
+    }
+  });
+}
+
+function showLongPressPopup(map, lng, lat) {
+  // Remove previous marker if exists
+  if (longPressMarker) longPressMarker.remove();
+
+  // Create pin marker
+  const el = document.createElement('div');
+  el.style.cssText = 'width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+  el.innerHTML = '<i class="fa-solid fa-location-dot" style="color:#6C63FF;font-size:30px;"></i>';
+  
+  // Make pin clickable to reopen popup
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openLongPressActionsPopup(lng, lat);
+  });
+  
+  longPressMarker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+    .setLngLat([lng, lat])
+    .addTo(map);
+
+  // Open popup above pin
+  openLongPressActionsPopup(lng, lat);
+}
+
+function openLongPressActionsPopup(lng, lat) {
+  const html = `
+    <div class="action-popup">
+      <div class="action-popup-title">¿Qué deseas hacer?</div>
+      <div class="action-popup-buttons">
+        <button class="action-popup-btn" onclick="reportAtLongPress()">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Reportar incidencia
+        </button>
+        <button class="action-popup-btn" onclick="routeToLongPress()">
+          <i class="fa-solid fa-route"></i>
+          Cómo llegar
+        </button>
+      </div>
+    </div>
+  `;
+  const popup = showPopup([lng, lat], html);
+  if (popup) popup.options.offset = [0, -40]; // Open above pin
+}
+
+window.reportAtLongPress = function() {
+  if (longPressMarker) longPressMarker.remove();
+  showToast('Ubicación seleccionada. Reporta el incidente.', 'info');
+  showView('reportar');
+};
+
+window.routeToLongPress = function() {
+  if (!userLat || !longPressLat) {
+    showToast('Ubicación no disponible', 'error');
+    return;
+  }
+  if (longPressMarker) longPressMarker.remove();
+  
+  // Calculate route to long-press location
+  calculateRouteToCoords(longPressLat, longPressLng);
+  longPressLat = null;
+  longPressLng = null;
+};
+
+async function calculateRouteToCoords(destLat, destLng) {
+  if (!userLat) {
+    showToast('Ubicación no disponible', 'error');
+    return;
+  }
+
+  try {
+    const route = await fetchRoute(userLng, userLat, destLng, destLat);
+    if (!route) throw new Error('No se pudo calcular la ruta');
+
+    drawRoute(route);
+
+    const distKm  = (route.distance / 1000).toFixed(1);
+    const durMins = Math.ceil(route.duration / 60);
+    const score   = calculateSafetyScore(route, incidents);
+
+    document.getElementById('route-dist').textContent = `${distKm} km`;
+    document.getElementById('route-time').textContent = `${durMins} min`;
+    const safetyEl = document.getElementById('route-safety');
+    safetyEl.textContent = `${score}%`;
+    safetyEl.className   = `safety-score ${score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low'}`;
+    document.getElementById('route-info').classList.add('visible');
+
+    await saveRoute({
+      origin:          { lat: userLat, lng: userLng },
+      destination:     { lat: destLat, lng: destLng, address: 'Ubicación seleccionada' },
+      route, safetyScore: score,
+      nearbyIncidents: incidents.map(i => i.id)
+    });
+    await incrementStat('routesCompleted');
+
+    showToast('Ruta calculada correctamente', 'success');
+  } catch (err) {
+    console.error('[route]', err);
+    showToast('No se pudo calcular la ruta', 'error');
+  }
+}
+
 // ── Report ────────────────────────────────────────────────
 let selectedType = null;
 
@@ -1302,7 +1654,12 @@ window.selectType = function(el) {
 
 window.submitReport = async function() {
   if (!selectedType) { alert('Selecciona el tipo de incidente'); return; }
-  if (!userLat)       { alert('Ubicación no disponible'); return; }
+
+  // Use long-press location if available, otherwise user location
+  const reportLat = longPressLat ?? userLat;
+  const reportLng = longPressLng ?? userLng;
+
+  if (!reportLat) { alert('Ubicación no disponible'); return; }
 
   const btn = document.getElementById('btn-report');
   btn.disabled  = true;
@@ -1314,7 +1671,7 @@ window.submitReport = async function() {
 
     await reportIncident({
       type: selectedType, severity,
-      lat: userLat, lng: userLng,
+      lat: reportLat, lng: reportLng,
       description
     });
     await incrementStat('incidentsReported');
@@ -1324,6 +1681,8 @@ window.submitReport = async function() {
     document.getElementById('severity-val').textContent = '3';
     document.getElementById('incident-desc').value = '';
     selectedType = null;
+    longPressLat = null;
+    longPressLng = null;
 
     showView('mapa');
     showToast('Incidente reportado correctamente', 'success');
@@ -1430,9 +1789,10 @@ function hideSosOverlay() {
 // ── Logout ────────────────────────────────────────────────
 window.doLogout = async function() {
   if (!confirm('¿Cerrar sesión?')) return;
-  if (unsubIncidents) unsubIncidents();
-  if (unsubGuardians) unsubGuardians();
-  if (unsubNotif)     unsubNotif();
+  if (unsubIncidents)  unsubIncidents();
+  if (unsubHistorical) unsubHistorical();
+  if (unsubGuardians)  unsubGuardians();
+  if (unsubNotif)      unsubNotif();
   await logout();
   window.location.href = 'auth/login.html';
 };
