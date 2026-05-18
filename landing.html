@@ -333,6 +333,8 @@
       position: relative;
       z-index: 10;
       max-width: 680px;
+      transform-style: preserve-3d;
+      will-change: transform;
     }
     
     .hero-badge {
@@ -570,8 +572,8 @@
     .bento-card-large {
       grid-column: span 2;
       grid-row: span 2;
-      min-height: 420px;
-      padding-bottom: 200px;
+      min-height: 460px;
+      padding-bottom: 230px;
     }
     
     .bento-card-large .feature-tags {
@@ -634,9 +636,10 @@
     .mini-map {
       position: absolute;
       bottom: 20px;
+      left: 20px;
       right: 20px;
-      width: 200px;
-      height: 150px;
+      width: auto;
+      height: 195px;
       background: rgba(0, 0, 0, 0.3);
       border-radius: var(--radius-md);
       border: 1px solid var(--border);
@@ -1105,9 +1108,9 @@
         <a href="#features" class="nav-link">Features</a>
         <a href="#target" class="nav-link">Who It's For</a>
         <a href="#pricing" class="nav-link">Pricing</a>
-        <a href="https://urbanguardian.org" class="btn btn-primary">
+        <a href="https://urbanguardian.org/app/" class="btn btn-primary">
           <i class="fa-solid fa-rocket"></i>
-          Join the Beta
+          Get Early Access
         </a>
       </div>
     </div>
@@ -1131,7 +1134,7 @@
       <div class="hero-content">
         <div class="hero-badge reveal">
           <span class="hero-badge-dot"></span>
-          Open Private Beta
+          Product Concept
         </div>
         
         <h1 class="hero-title reveal">
@@ -1145,9 +1148,9 @@
         </p>
         
         <div class="hero-ctas reveal">
-          <a href="https://urbanguardian.org" class="btn btn-primary">
+          <a href="https://urbanguardian.org/app/" class="btn btn-primary">
             <i class="fa-solid fa-rocket"></i>
-            Join the Private Beta
+            Explore the Concept
           </a>
           <a href="#features" class="btn btn-secondary">
             <i class="fa-solid fa-play"></i>
@@ -1378,7 +1381,7 @@
             <li class="pricing-feature-locked"><i class="fa-solid fa-lock"></i> Discreet SOS Protocol</li>
             <li class="pricing-feature-locked"><i class="fa-solid fa-lock"></i> Live Guardian Accompaniment</li>
           </ul>
-          <a href="https://urbanguardian.org" class="btn btn-secondary pricing-btn">
+          <a href="https://urbanguardian.org/app/" class="btn btn-secondary pricing-btn">
             Create Free Account
           </a>
         </div>
@@ -1398,7 +1401,7 @@
             <li><i class="fa-solid fa-check"></i> Unlimited Family Geolocation</li>
             <li><i class="fa-solid fa-check"></i> 24/7 Verified Safe Havens Maps</li>
           </ul>
-          <a href="https://urbanguardian.org" class="btn btn-safe-cta pricing-btn">
+          <a href="https://urbanguardian.org/app/" class="btn btn-safe-cta pricing-btn">
             Start 1-Month Free Trial
           </a>
         </div>
@@ -1508,6 +1511,51 @@
       console.log('New subscriber:', email);
     }
     
+    // ── 3D MOUSE PARALLAX ON HERO ──────────────────────────
+    (function() {
+      const heroSection = document.querySelector('.hero');
+      const heroContent = document.querySelector('.hero-content');
+      const heroGlow   = document.querySelector('.hero-glow');
+      if (!heroSection || !heroContent) return;
+
+      let targetX = 0, targetY = 0;
+      let currentX = 0, currentY = 0;
+      let rafId = null;
+
+      heroSection.addEventListener('mousemove', (e) => {
+        const rect = heroSection.getBoundingClientRect();
+        const xRatio = (e.clientX - rect.left)  / rect.width  - 0.5;
+        const yRatio = (e.clientY - rect.top)   / rect.height - 0.5;
+        targetX = yRatio * -3;   // rotateX: mouse up → tilt back
+        targetY = xRatio *  3;   // rotateY: mouse right → tilt right
+        if (!rafId) rafId = requestAnimationFrame(animate);
+      });
+
+      heroSection.addEventListener('mouseleave', () => {
+        targetX = 0;
+        targetY = 0;
+        if (!rafId) rafId = requestAnimationFrame(animate);
+      });
+
+      function animate() {
+        currentX += (targetX - currentX) * 0.07;
+        currentY += (targetY - currentY) * 0.07;
+
+        heroContent.style.transform =
+          `perspective(1100px) rotateX(${currentX.toFixed(3)}deg) rotateY(${currentY.toFixed(3)}deg)`;
+
+        if (heroGlow) {
+          heroGlow.style.transform =
+            `translate(${(currentY * 6).toFixed(1)}px, ${(-currentX * 6).toFixed(1)}px)`;
+        }
+
+        const stillMoving =
+          Math.abs(targetX - currentX) > 0.005 ||
+          Math.abs(targetY - currentY) > 0.005;
+        rafId = stillMoving ? requestAnimationFrame(animate) : null;
+      }
+    })();
+
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
