@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Urban Guardian — La noche te pertenece</title>
-  <meta name="description" content="La primera red de prevención urbana para trabajadores nocturnos, riders y estudiantes. Seguridad preventiva, no reactiva.">
+  <title>Urban Guardian — Walk Home Without Fear</title>
+  <meta name="description" content="The first preventive urban safety network. Real-time safe routing, silent SOS, and a Guardian network ready to walk with you.">
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -545,7 +545,7 @@
     .bento-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(3, 200px);
+      grid-auto-rows: minmax(200px, auto);
       gap: 20px;
     }
     
@@ -570,6 +570,12 @@
     .bento-card-large {
       grid-column: span 2;
       grid-row: span 2;
+      min-height: 420px;
+      padding-bottom: 200px;
+    }
+    
+    .bento-card-large .feature-tags {
+      margin-top: 16px;
     }
     
     .bento-card-medium {
@@ -661,16 +667,15 @@
     }
     
     .sos-demo {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      padding: 16px 24px;
+      padding: 12px 16px;
       background: rgba(231, 76, 60, 0.15);
       border: 1px solid rgba(231, 76, 60, 0.3);
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       gap: 12px;
+      margin-top: 16px;
+      align-self: flex-start;
     }
     
     .sos-demo-icon {
@@ -888,6 +893,142 @@
       transform: translateY(-2px);
     }
     
+    /* ── PRICING SECTION ──────────────────────────────────── */
+    .pricing {
+      padding: 120px 0;
+      position: relative;
+      background: linear-gradient(180deg, transparent 0%, rgba(46, 204, 113, 0.02) 50%, transparent 100%);
+    }
+    
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    
+    .pricing-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 36px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all var(--transition-smooth);
+    }
+    
+    .pricing-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-soft);
+    }
+    
+    .pricing-card-featured {
+      border-color: var(--safe);
+      box-shadow: 0 0 40px var(--safe-glow);
+    }
+    
+    .pricing-card-featured:hover {
+      box-shadow: 0 0 60px var(--safe-glow), var(--shadow-soft);
+    }
+    
+    .pricing-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--safe);
+      color: #000;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      border-radius: 100px;
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+    
+    .pricing-tier {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    
+    .pricing-price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 28px;
+    }
+    
+    .pricing-amount {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+    
+    .pricing-period {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+    
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 32px;
+      flex: 1;
+    }
+    
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    
+    .pricing-features li i {
+      font-size: 0.8125rem;
+      flex-shrink: 0;
+      width: 16px;
+    }
+    
+    .pricing-features li i.fa-check { color: var(--safe); }
+    .pricing-features li i.fa-lock  { color: var(--text-dim); }
+    
+    .pricing-feature-locked {
+      opacity: 0.35;
+      text-decoration: line-through;
+      text-decoration-color: rgba(255,255,255,0.2);
+    }
+    
+    .pricing-btn {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .btn-safe-cta {
+      background: linear-gradient(135deg, var(--safe), #27ae60);
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 4px 20px var(--safe-glow);
+    }
+    
+    .btn-safe-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--safe-glow);
+      color: #000;
+    }
+    
     /* ── RESPONSIVE ───────────────────────────────────────── */
     @media (max-width: 1024px) {
       .bento-grid {
@@ -932,6 +1073,10 @@
         min-height: 280px;
       }
       
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+      
       .email-form {
         flex-direction: column;
       }
@@ -956,12 +1101,13 @@
       </a>
       
       <div class="nav-links">
-        <a href="#problem" class="nav-link">El Problema</a>
+        <a href="#problem" class="nav-link">The Problem</a>
         <a href="#features" class="nav-link">Features</a>
-        <a href="#target" class="nav-link">Para Quién</a>
-        <a href="#join" class="btn btn-primary">
+        <a href="#target" class="nav-link">Who It's For</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        <a href="https://urbanguardian.org" class="btn btn-primary">
           <i class="fa-solid fa-rocket"></i>
-          Únete a la Beta
+          Join the Beta
         </a>
       </div>
     </div>
@@ -985,42 +1131,42 @@
       <div class="hero-content">
         <div class="hero-badge reveal">
           <span class="hero-badge-dot"></span>
-          Beta Privada Abierta
+          Open Private Beta
         </div>
         
         <h1 class="hero-title reveal">
-          La noche te pertenece.<br>
-          <span class="text-gradient">Recupera tu ciudad.</span>
+          Walk home without fear.<br>
+          <span class="text-gradient">The city is yours.</span>
         </h1>
         
         <p class="hero-subtitle reveal">
-          La primera red de prevención urbana para trabajadores nocturnos, riders y estudiantes. 
-          No reaccionamos al peligro, <strong>lo evitamos</strong>.
+          Real-time safe routing, preventive alerts, and a Guardian network ready to walk with you.
+          Because <strong>no one should feel afraid to walk alone.</strong>
         </p>
         
         <div class="hero-ctas reveal">
-          <a href="#join" class="btn btn-primary">
+          <a href="https://urbanguardian.org" class="btn btn-primary">
             <i class="fa-solid fa-rocket"></i>
-            Únete a la Beta Privada
+            Join the Private Beta
           </a>
           <a href="#features" class="btn btn-secondary">
             <i class="fa-solid fa-play"></i>
-            Ver cómo funciona
+            See how it works
           </a>
         </div>
         
         <div class="hero-stats reveal">
           <div class="hero-stat">
             <span class="hero-stat-value">2,400+</span>
-            <span class="hero-stat-label">Rutas seguras trazadas</span>
+            <span class="hero-stat-label">Safe routes mapped</span>
           </div>
           <div class="hero-stat">
             <span class="hero-stat-value">850+</span>
-            <span class="hero-stat-label">Guardians activos</span>
+            <span class="hero-stat-label">Active Guardians</span>
           </div>
           <div class="hero-stat">
             <span class="hero-stat-value">12</span>
-            <span class="hero-stat-label">Ciudades disponibles</span>
+            <span class="hero-stat-label">Cities available</span>
           </div>
         </div>
       </div>
@@ -1036,8 +1182,8 @@
             <div class="problem-icon">
               <i class="fa-solid fa-bolt"></i>
             </div>
-            <h4>Ruta más rápida</h4>
-            <p>8 min · 1.2km · Zona oscura</p>
+            <h4>Fastest Route</h4>
+            <p>8 min · 1.2km · Dark area</p>
           </div>
           
           <div class="problem-arrow">
@@ -1048,22 +1194,22 @@
             <div class="problem-icon">
               <i class="fa-solid fa-shield-heart"></i>
             </div>
-            <h4>Ruta Urban Guardian</h4>
-            <p>12 min · 1.8km · Iluminada + Guardians</p>
+            <h4>Urban Guardian Route</h4>
+            <p>12 min · 1.8km · Lit + Active Guardians</p>
           </div>
         </div>
         
         <div class="problem-text reveal-left">
           <h2>
-            ¿Por qué elegir la ruta más <span style="color: #E74C3C;">rápida</span> si no es la más <span style="color: var(--safe);">segura</span>?
+            Why choose the <span style="color: #E74C3C;">fastest</span> route if it isn't the <span style="color: var(--safe);">safest</span>?
           </h2>
           <p>
-            Las apps de navegación tradicionales solo ven el asfalto. Nosotros vemos la <strong>iluminación</strong>, 
-            la <strong>presencia humana</strong>, los <strong>incidentes históricos</strong> y los <strong>Guardians activos</strong> en tiempo real.
+            Traditional navigation apps only see the road. We see <strong>lighting conditions</strong>,
+            <strong>human presence</strong>, <strong>historic incidents</strong>, and <strong>active Guardians</strong> in real time.
           </p>
           <p style="margin-top: 20px;">
-            Calculamos rutas basándonos en seguridad percibida, no solo en tiempo. 
-            Porque llegar 5 minutos tarde es mejor que no llegar.
+            We calculate routes based on perceived safety, not just time.
+            Because arriving 5 minutes late is better than not arriving at all.
           </p>
         </div>
       </div>
@@ -1076,11 +1222,11 @@
       <div class="section-header reveal">
         <div class="section-label">
           <i class="fa-solid fa-wand-magic-sparkles"></i>
-          Tecnología Preventiva
+          Preventive Technology
         </div>
-        <h2 class="section-title">Tres armas secretas.<br>Una sola app.</h2>
+        <h2 class="section-title">Three secret weapons.<br>One single app.</h2>
         <p class="section-subtitle">
-          Diseñadas para quienes mueven la ciudad cuando el sol se pone.
+          Built for those who move the city when the sun goes down.
         </p>
       </div>
       
@@ -1090,16 +1236,16 @@
           <div class="bento-icon">
             <i class="fa-solid fa-map-location-dot"></i>
           </div>
-          <h3>El Mapa Vivo</h3>
+          <h3>The Live Map</h3>
           <p>
-            La ciudad se pinta sola. Micro-incidentes reportados por la comunidad en tiempo real. 
-            Zonas calientes, iluminación deficiente, grupos intimidantes. 
-            Todo visible antes de que cruces la esquina.
+            The city paints itself. Micro-incidents reported by the community in real time.
+            Hot zones, poor lighting, intimidating groups.
+            All visible before you turn the corner.
           </p>
           <div class="feature-tags">
-            <span class="feature-tag">Heatmap en tiempo real</span>
-            <span class="feature-tag">Reportes verificados</span>
-            <span class="feature-tag">Alertas geolocalizadas</span>
+            <span class="feature-tag">Real-time heatmap</span>
+            <span class="feature-tag">Verified reports</span>
+            <span class="feature-tag">Geolocated alerts</span>
           </div>
           <div class="mini-map">
             <div class="mini-map-dot" style="top: 30%; left: 40%;"></div>
@@ -1114,21 +1260,21 @@
           <div class="bento-icon bento-icon-green">
             <i class="fa-solid fa-fingerprint"></i>
           </div>
-          <h3>SOS Silencioso</h3>
+          <h3>Discreet SOS Protocol</h3>
           <p>
-            Sin pánico, sin llamar la atención. Un Long-Press discreto graba audio en segundo plano 
-            y alerta a tu red de confianza con tu ubicación exacta.
+            No panic, no drawing attention. A discreet long-press silently records audio in the background
+            and alerts your trusted network with your exact location.
           </p>
           <div class="feature-tags">
-            <span class="feature-tag">Grabación silenciosa</span>
-            <span class="feature-tag">Alerta a contactos</span>
+            <span class="feature-tag">Silent recording</span>
+            <span class="feature-tag">Alerts contacts</span>
           </div>
           <div class="sos-demo">
             <div class="sos-demo-icon">
               <i class="fa-solid fa-microphone"></i>
             </div>
             <div>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">Grabando...</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Recording...</div>
               <div style="font-size: 0.875rem; font-weight: 600; color: #E74C3C;">00:42</div>
             </div>
           </div>
@@ -1139,14 +1285,14 @@
           <div class="bento-icon bento-icon-orange">
             <i class="fa-solid fa-store"></i>
           </div>
-          <h3>Refugios Verificados</h3>
+          <h3>Verified Safe Havens</h3>
           <p>
-            Farmacias, gasolineras y locales 24h a un toque. Lugares seguros donde sabes que 
-            te recibirán si necesitas ayuda o solo un momento de paz.
+            Pharmacies, petrol stations, and 24h shops at a tap. Safe places where you know
+            you'll be welcomed if you need help or just a moment of calm.
           </p>
           <div class="feature-tags">
-            <span class="feature-tag">Abiertos 24h</span>
-            <span class="feature-tag">Verificados por la comunidad</span>
+            <span class="feature-tag">Open 24h</span>
+            <span class="feature-tag">Community-verified</span>
           </div>
         </div>
       </div>
@@ -1159,46 +1305,102 @@
       <div class="section-header reveal">
         <div class="section-label">
           <i class="fa-solid fa-users"></i>
-          Diseñado para ti
+          Built for you
         </div>
-        <h2 class="section-title">¿Para quién es Urban Guardian?</h2>
+        <h2 class="section-title">Who is Urban Guardian for?</h2>
         <p class="section-subtitle">
-          Tres perfiles, una misma necesidad: moverse seguros por la ciudad.
+          Three profiles, one shared need: moving safely through the city.
         </p>
       </div>
       
       <div class="target-grid">
         <div class="target-card reveal">
           <div class="target-icon">
-            <i class="fa-solid fa-user-nurse"></i>
+            <i class="fa-solid fa-person-dress"></i>
           </div>
-          <h3>Trabajadores Nocturnos</h3>
+          <h3>Women Walking Alone</h3>
           <p>
-            Enfermeras, vigilantes, personal de limpieza. Quienes mantienen la ciudad 
-            funcionando mientras otros duermen. Volvemos tu trayecto a casa más seguro.
+            Reclaim your independence. Navigate avoiding dark spots and rely on a silent SOS
+            if you feel followed.
           </p>
         </div>
         
         <div class="target-card reveal">
           <div class="target-icon">
-            <i class="fa-solid fa-bicycle"></i>
+            <i class="fa-solid fa-children"></i>
           </div>
-          <h3>Riders & Delivery</h3>
+          <h3>Worried Parents</h3>
           <p>
-            La última milla no debería ser la más peligrosa. Optimizamos tus rutas 
-            considerando seguridad, no solo distancia. Más entregas, menos riesgos.
+            Total peace of mind. Track your children's live location and receive instant alerts
+            if they enter unverified zones.
           </p>
         </div>
         
         <div class="target-card reveal">
           <div class="target-icon">
-            <i class="fa-solid fa-graduation-cap"></i>
+            <i class="fa-solid fa-moon"></i>
           </div>
-          <h3>Estudiantes</h3>
+          <h3>Night Workers &amp; Riders</h3>
           <p>
-            Campus periféricos, bibliotecas hasta tarde, transportes públicos irregulares. 
-            La universidad ya es difícil. Tu seguridad no debería serlo.
+            Don't let the safety tax affect your income. Deliver and commute safely during
+            the most vulnerable hours.
           </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PRICING ──────────────────────────────────────────── -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">
+          <i class="fa-solid fa-tag"></i>
+          Simple Pricing
+        </div>
+        <h2 class="section-title">Protection that fits your life.</h2>
+        <p class="section-subtitle">
+          Start free. Upgrade when you need more.
+        </p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Basic -->
+        <div class="pricing-card reveal">
+          <div class="pricing-tier">Basic</div>
+          <div class="pricing-price">
+            <span class="pricing-amount">Free</span>
+          </div>
+          <ul class="pricing-features">
+            <li><i class="fa-solid fa-check"></i> Live Community Heatmap</li>
+            <li><i class="fa-solid fa-check"></i> Safe-Route Navigation</li>
+            <li><i class="fa-solid fa-check"></i> Report Micro-Incidents</li>
+            <li class="pricing-feature-locked"><i class="fa-solid fa-lock"></i> Discreet SOS Protocol</li>
+            <li class="pricing-feature-locked"><i class="fa-solid fa-lock"></i> Live Guardian Accompaniment</li>
+          </ul>
+          <a href="https://urbanguardian.org" class="btn btn-secondary pricing-btn">
+            Create Free Account
+          </a>
+        </div>
+
+        <!-- Premium -->
+        <div class="pricing-card pricing-card-featured reveal">
+          <div class="pricing-badge">MOST POPULAR</div>
+          <div class="pricing-tier">Premium</div>
+          <div class="pricing-price">
+            <span class="pricing-amount">€5</span>
+            <span class="pricing-period">/ month</span>
+          </div>
+          <ul class="pricing-features">
+            <li><i class="fa-solid fa-check"></i> Everything in Basic</li>
+            <li><i class="fa-solid fa-check"></i> <strong>Discreet SOS Protocol</strong></li>
+            <li><i class="fa-solid fa-check"></i> <strong>Live Guardian Accompaniment</strong></li>
+            <li><i class="fa-solid fa-check"></i> Unlimited Family Geolocation</li>
+            <li><i class="fa-solid fa-check"></i> 24/7 Verified Safe Havens Maps</li>
+          </ul>
+          <a href="https://urbanguardian.org" class="btn btn-safe-cta pricing-btn">
+            Start 1-Month Free Trial
+          </a>
         </div>
       </div>
     </div>
@@ -1208,8 +1410,8 @@
   <section class="footer-cta" id="join">
     <div class="footer-cta-glow"></div>
     <div class="container">
-      <h2 class="reveal">Únete a la revolución de la seguridad urbana</h2>
-      <p class="reveal">Acceso anticipado gratuito. Sé de los primeros en probar Urban Guardian.</p>
+      <h2 class="reveal">Join the urban safety revolution</h2>
+      <p class="reveal">Free early access. Be among the first to experience Urban Guardian.</p>
       
       <form class="email-form reveal" onsubmit="handleSubscribe(event)">
         <input 
@@ -1221,12 +1423,12 @@
         >
         <button type="submit" class="btn btn-primary">
           <i class="fa-solid fa-paper-plane"></i>
-          Apuntarme
+          Get Early Access
         </button>
       </form>
       
       <div id="form-success" style="display: none; padding: 16px 24px; background: rgba(46, 204, 113, 0.15); border: 1px solid var(--safe); border-radius: var(--radius-md); color: var(--safe);">
-        <i class="fa-solid fa-check-circle"></i> ¡Estás dentro! Te contactaremos pronto.
+        <i class="fa-solid fa-check-circle"></i> You're in! We'll reach out soon.
       </div>
     </div>
   </section>
@@ -1242,9 +1444,9 @@
       </div>
       
       <div class="footer-links">
-        <a href="#" class="footer-link">Privacidad</a>
-        <a href="#" class="footer-link">Términos</a>
-        <a href="#" class="footer-link">Contacto</a>
+        <a href="#" class="footer-link">Privacy</a>
+        <a href="#" class="footer-link">Terms</a>
+        <a href="#" class="footer-link">Contact</a>
       </div>
       
       <div class="footer-social">
