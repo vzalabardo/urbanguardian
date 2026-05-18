@@ -16,7 +16,7 @@ const db = getFirestore();
 // TEMPORAL MVP - API key hardcoded (will be deleted after demo)
 const resend = new Resend('re_hZNGtniq_BsRHWovGJuFkEP75byhRx28m');
 const FROM_EMAIL = 'UrbanGuardian <onboarding@resend.dev>';
-const TRACKING_URL = 'https://vzalabardo.github.io/urbanguardian/app/track';
+const TRACKING_URL = 'https://urbanguardian.org/track';
 
 // ── Helper: Send Email ────────────────────────────────────
 async function sendEmail(to, subject, htmlContent) {

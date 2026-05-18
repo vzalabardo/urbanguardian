@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <title>Tracking SOS — Urban Guardian</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet' />
+</head>
+<body>
+  <div id="app">
+    <div id="loading-screen">
+      <div class="spinner"></div>
+      <p>Cargando ubicación...</p>
+    </div>
+
+    <div id="error-screen" style="display: none;">
+      <div class="error-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h2>Alerta no encontrada</h2>
+      <p>El enlace de tracking no es válido o la alerta ha sido eliminada.</p>
+    </div>
+
+    <div id="main-screen" style="display: none;">
+      <!-- Header -->
+      <div class="header">
+        <div class="status-badge" id="status-badge">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span id="status-text">Cargando...</span>
+        </div>
+        <div class="header-info">
+          <h1 id="user-name">—</h1>
+          <p id="timestamp">—</p>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div id="map"></div>
+
+      <!-- Info Panel -->
+      <div class="info-panel">
+        <div class="info-row">
+          <div class="info-label">
+            <i class="fa-solid fa-location-dot"></i>
+            Precisión GPS
+          </div>
+          <div class="info-value" id="accuracy">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="fa-solid fa-clock"></i>
+            Activada hace
+          </div>
+          <div class="info-value" id="elapsed-time">—</div>
+        </div>
+        <div id="deactivation-info" style="display: none;">
+          <div class="info-row">
+            <div class="info-label">
+              <i class="fa-solid fa-circle-check"></i>
+              Desactivada hace
+            </div>
+            <div class="info-value" id="deactivated-time">—</div>
+          </div>
+          <div class="info-row" id="deactivation-type-row" style="display: none;">
+            <div class="info-label">
+              <i class="fa-solid fa-shield-halved"></i>
+              Tipo
+            </div>
+            <div class="info-value" id="deactivation-type">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Log -->
+      <div class="activity-log">
+        <h3><i class="fa-solid fa-list"></i> Registro de actividad</h3>
+        <div id="activity-list"></div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <img src="../logo-grande-horizontal-blanco.jpg" alt="Urban Guardian" class="footer-logo">
+        <p>Sistema de alertas de emergencia</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // Firebase config (same as main app)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2vGV52wDwLiHyEqVTIQqMhaZ4Tcdr1iU",
+      authDomain: "urbanguardian-ab1c9.firebaseapp.com",
+      projectId: "urbanguardian-ab1c9",
+      storageBucket: "urbanguardian-ab1c9.firebasestorage.app",
+      messagingSenderId: "344676317857",
+      appId: "1:344676317857:web:5f22fb7ce7b5ebad198ee0",
+      measurementId: "G-Q6SRTGD7PD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const MAPBOX_TOKEN = "pk.eyJ1IjoidnphbGFiYXJkbyIsImEiOiJjbW9zaGx5NjYyczNrMnhzYTI3MThuMWliIn0._D9f-GVn-0GMBsqqDmRtXg";
+
+    // Get alert ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const alertId = urlParams.get('id');
+
+    if (!alertId) {
+      showError();
+    } else {
+      loadAlert(alertId);
+    }
+
+    let map = null;
+    let marker = null;
+    let activityLog = [];
+
+    async function loadAlert(alertId) {
+      try {
+        const alertRef = doc(db, 'sos_alerts', alertId);
+        const alertSnap = await getDoc(alertRef);
+
+        if (!alertSnap.exists()) {
+          showError();
+          return;
+        }
+
+        const alertData = alertSnap.data();
+        
+        // Get user data
+        const userRef = doc(db, 'users', alertData.userId);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.exists() ? userSnap.data() : {};
+
+        // Initialize UI
+        initializeUI(alertData, userData);
+        initializeMap(alertData.location);
+        updateActivityLog(alertData);
+
+        // Listen for real-time updates (for future live tracking)
+        onSnapshot(alertRef, (snapshot) => {
+          if (snapshot.exists()) {
+            const updatedData = snapshot.data();
+            updateStatus(updatedData);
+            updateActivityLog(updatedData);
+          }
+        });
+
+      } catch (error) {
+        console.error('Error loading alert:', error);
+        showError();
+      }
+    }
+
+    function initializeUI(alertData, userData) {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('main-screen').style.display = 'block';
+
+      const userName = userData.displayName || 'Usuario';
+      document.getElementById('user-name').textContent = userName;
+
+      const triggeredAt = alertData.triggeredAt?.toDate() || new Date();
+      document.getElementById('timestamp').textContent = formatTimestamp(triggeredAt);
+
+      const accuracy = alertData.location?.accuracy;
+      document.getElementById('accuracy').textContent = accuracy 
+        ? `±${Math.round(accuracy)} metros` 
+        : 'No disponible';
+
+      updateStatus(alertData);
+      startElapsedTimer(triggeredAt);
+    }
+
+    function initializeMap(location) {
+      if (!location || !location.lat || !location.lng) {
+        document.getElementById('map').innerHTML = '<div class="map-error">Ubicación no disponible</div>';
+        return;
+      }
+
+      mapboxgl.accessToken = MAPBOX_TOKEN;
+      map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/dark-v11',
+        center: [location.lng, location.lat],
+        zoom: 16
+      });
+
+      // Add marker
+      const el = document.createElement('div');
+      el.className = 'custom-marker';
+      el.innerHTML = '<i class="fa-solid fa-location-dot"></i>';
+
+      marker = new mapboxgl.Marker(el)
+        .setLngLat([location.lng, location.lat])
+        .addTo(map);
+
+      // Add accuracy circle
+      if (location.accuracy) {
+        map.on('load', () => {
+          map.addSource('accuracy-circle', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [location.lng, location.lat]
+              }
+            }
+          });
+
+          map.addLayer({
+            id: 'accuracy-circle',
+            type: 'circle',
+            source: 'accuracy-circle',
+            paint: {
+              'circle-radius': {
+                stops: [
+                  [0, 0],
+                  [20, metersToPixelsAtMaxZoom(location.accuracy, location.lat)]
+                ],
+                base: 2
+              },
+              'circle-color': '#FF6B6B',
+              'circle-opacity': 0.2,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#FF6B6B',
+              'circle-stroke-opacity': 0.5
+            }
+          });
+        });
+      }
+    }
+
+    function updateStatus(alertData) {
+      const statusBadge = document.getElementById('status-badge');
+      const statusText = document.getElementById('status-text');
+
+      if (alertData.status === 'active') {
+        statusBadge.className = 'status-badge status-active';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle"></i><span>Alerta activa</span>';
+      } else if (alertData.status === 'deactivated') {
+        const isFakePin = alertData.deactivationType === 'fake_pin';
+        statusBadge.className = isFakePin ? 'status-badge status-warning' : 'status-badge status-resolved';
+        statusBadge.innerHTML = isFakePin 
+          ? '<i class="fa-solid fa-triangle-exclamation"></i><span>Posible coacción</span>'
+          : '<i class="fa-solid fa-circle-check"></i><span>Alerta desactivada</span>';
+
+        // Show deactivation info
+        document.getElementById('deactivation-info').style.display = 'block';
+        if (alertData.deactivatedAt) {
+          const deactivatedAt = alertData.deactivatedAt.toDate();
+          document.getElementById('deactivated-time').textContent = formatElapsed(deactivatedAt);
+        }
+
+        if (isFakePin) {
+          document.getElementById('deactivation-type-row').style.display = 'flex';
+          document.getElementById('deactivation-type').textContent = 'PIN de coacción usado';
+        }
+      }
+    }
+
+    function updateActivityLog(alertData) {
+      const list = document.getElementById('activity-list');
+      const events = [];
+
+      if (alertData.triggeredAt) {
+        events.push({
+          time: alertData.triggeredAt.toDate(),
+          icon: 'fa-bell',
+          text: 'Alerta SOS activada',
+          type: 'danger'
+        });
+      }
+
+      if (alertData.notifiedContacts && alertData.notifiedContacts.length > 0) {
+        events.push({
+          time: new Date(alertData.lastNotificationAt || alertData.triggeredAt?.toDate()),
+          icon: 'fa-paper-plane',
+          text: `${alertData.notifiedContacts.length} contacto(s) notificado(s)`,
+          type: 'info'
+        });
+      }
+
+      if (alertData.status === 'deactivated' && alertData.deactivatedAt) {
+        const isFakePin = alertData.deactivationType === 'fake_pin';
+        events.push({
+          time: alertData.deactivatedAt.toDate(),
+          icon: isFakePin ? 'fa-triangle-exclamation' : 'fa-circle-check',
+          text: isFakePin ? 'Desactivada con PIN de coacción' : 'Alerta desactivada',
+          type: isFakePin ? 'warning' : 'success'
+        });
+      }
+
+      // Sort by time (newest first)
+      events.sort((a, b) => b.time - a.time);
+
+      list.innerHTML = events.map(event => `
+        <div class="activity-item activity-${event.type}">
+          <div class="activity-icon">
+            <i class="fa-solid ${event.icon}"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-text">${event.text}</div>
+            <div class="activity-time">${formatTimestamp(event.time)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function startElapsedTimer(startTime) {
+      function update() {
+        document.getElementById('elapsed-time').textContent = formatElapsed(startTime);
+      }
+      update();
+      setInterval(update, 1000);
+    }
+
+    function formatTimestamp(date) {
+      return new Intl.DateTimeFormat('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }).format(date);
+    }
+
+    function formatElapsed(startTime) {
+      const now = new Date();
+      const diff = Math.floor((now - startTime) / 1000);
+      
+      if (diff < 60) return `${diff}s`;
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ${diff % 60}s`;
+      const hours = Math.floor(diff / 3600);
+      const mins = Math.floor((diff % 3600) / 60);
+      return `${hours}h ${mins}m`;
+    }
+
+    function metersToPixelsAtMaxZoom(meters, latitude) {
+      return meters / 0.075 / Math.cos(latitude * Math.PI / 180);
+    }
+
+    function showError() {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('error-screen').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
