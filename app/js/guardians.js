@@ -7,7 +7,7 @@
 
 import { db, auth }  from '../firebase-config.js';
 import {
-  collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
+  collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDoc,
   onSnapshot, query, where, serverTimestamp, Timestamp, GeoPoint
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
@@ -111,7 +111,14 @@ export function getActiveSessionId() {
   return activeSessionId;
 }
 
-// ── Helper: geolocation promise wrapper ───────────────────
+// ── Fetch full profile for a guardian ──────────────────
+export async function getGuardianProfile(guardianId) {
+  if (!guardianId) return null;
+  const snap = await getDoc(doc(db, USERS_COL, guardianId));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
+// ── Helper: geolocation promise wrapper ───────────────
 function getCurrentPosition() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {

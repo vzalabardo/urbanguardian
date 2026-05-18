@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urban Guardian — La noche te pertenece</title>
+  <meta name="description" content="La primera red de prevención urbana para trabajadores nocturnos, riders y estudiantes. Seguridad preventiva, no reactiva.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    /* ── DESIGN TOKENS ───────────────────────────────────── */
+    :root {
+      --bg-deep: #0a0a0c;
+      --bg-dark: #101014;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-glass: rgba(255, 255, 255, 0.06);
+      
+      --primary: #6C63FF;
+      --primary-glow: rgba(108, 99, 255, 0.4);
+      --safe: #2ECC71;
+      --safe-glow: rgba(46, 204, 113, 0.4);
+      --accent-blue: #4A90E2;
+      
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.5);
+      --text-dim: rgba(255, 255, 255, 0.35);
+      
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.15);
+      
+      --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 40px var(--primary-glow);
+      
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 28px;
+      
+      --transition-fast: 0.2s ease;
+      --transition-smooth: 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+      --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* ── UTILITIES ─────────────────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .text-gradient {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .glass-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-smooth);
+    }
+    
+    .glass-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-soft), 0 0 60px rgba(108, 99, 255, 0.1);
+    }
+    
+    /* ── ANIMATIONS ────────────────────────────────────────── */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px var(--safe-glow); }
+      50% { box-shadow: 0 0 40px var(--safe-glow), 0 0 60px var(--safe-glow); }
+    }
+    
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes draw-line {
+      0% { stroke-dashoffset: 1000; }
+      100% { stroke-dashoffset: 0; }
+    }
+    
+    .animate-float {
+      animation: float 4s ease-in-out infinite;
+    }
+    
+    /* ── SCROLL REVEAL ───────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: all var(--transition-slow);
+    }
+    
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-40px);
+      transition: all var(--transition-slow);
+    }
+    
+    .reveal-left.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all var(--transition-slow);
+    }
+    
+    .reveal-scale.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    /* ── NAVIGATION ───────────────────────────────────────── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 20px 0;
+      transition: all var(--transition-smooth);
+    }
+    
+    .nav.scrolled {
+      background: rgba(10, 10, 12, 0.8);
+      backdrop-filter: blur(20px);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .nav-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    
+    .nav-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+    
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      transition: color var(--transition-fast);
+    }
+    
+    .nav-link:hover {
+      color: var(--text-primary);
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: var(--radius-md);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all var(--transition-smooth);
+      border: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+      color: white;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--primary-glow), 0 0 40px rgba(108, 99, 255, 0.3);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-glass);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
+    /* ── HERO SECTION ─────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding: 120px 0 80px;
+      overflow: hidden;
+    }
+    
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    
+    .hero-grid {
+      position: absolute;
+      inset: -50%;
+      background-image: 
+        linear-gradient(rgba(108, 99, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108, 99, 255, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      transform: perspective(500px) rotateX(60deg);
+      animation: grid-move 20s linear infinite;
+    }
+    
+    @keyframes grid-move {
+      0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+      100% { transform: perspective(500px) rotateX(60deg) translateY(60px); }
+    }
+    
+    .hero-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+      top: 20%;
+      right: 10%;
+      filter: blur(60px);
+      animation: float 8s ease-in-out infinite;
+    }
+    
+    .hero-safe-route {
+      position: absolute;
+      bottom: 20%;
+      left: 10%;
+      width: 400px;
+      height: 200px;
+    }
+    
+    .hero-safe-route svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .route-line {
+      stroke: var(--safe);
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: draw-line 3s ease-out forwards, pulse-glow 2s ease-in-out infinite 3s;
+      filter: drop-shadow(0 0 8px var(--safe));
+    }
+    
+    .route-dot {
+      fill: var(--safe);
+      filter: drop-shadow(0 0 10px var(--safe));
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      max-width: 680px;
+    }
+    
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+    
+    .hero-badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--safe);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+    
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .hero-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .hero-stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .hero-stat-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    
+    /* ── PROBLEM SECTION ──────────────────────────────────── */
+    .problem {
+      padding: 120px 0;
+      position: relative;
+    }
+    
+    .problem-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    
+    .problem-visual {
+      position: relative;
+      height: 400px;
+    }
+    
+    .problem-card {
+      position: absolute;
+      padding: 24px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    
+    .problem-card-fast {
+      top: 20%;
+      left: 0;
+      border-color: rgba(231, 76, 60, 0.3);
+    }
+    
+    .problem-card-safe {
+      bottom: 20%;
+      right: 0;
+      border-color: var(--safe);
+      animation: pulse-glow 3s infinite;
+    }
+    
+    .problem-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+    
+    .problem-card-fast .problem-icon {
+      background: rgba(231, 76, 60, 0.15);
+      color: #E74C3C;
+    }
+    
+    .problem-card-safe .problem-icon {
+      background: var(--safe-glow);
+      color: var(--safe);
+    }
+    
+    .problem-card h4 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    
+    .problem-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    
+    .problem-arrow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      color: var(--primary);
+    }
+    
+    .problem-text h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      line-height: 1.3;
+    }
+    
+    .problem-text p {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    
+    /* ── BENTO GRID SECTION ───────────────────────────────── */
+    .features {
+      padding: 120px 0;
+      position: relative;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.875rem;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+    
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    
+    .section-subtitle {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 200px);
+      gap: 20px;
+    }
+    
+    .bento-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition-smooth);
+    }
+    
+    .bento-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+    }
+    
+    .bento-card-large {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    
+    .bento-card-medium {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+    
+    .bento-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+    
+    .bento-icon-green {
+      background: linear-gradient(135deg, var(--safe), #27ae60);
+    }
+    
+    .bento-icon-orange {
+      background: linear-gradient(135deg, #E67E22, #d35400);
+    }
+    
+    .bento-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    
+    .bento-card-large h3 {
+      font-size: 1.75rem;
+    }
+    
+    .bento-card p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    
+    .bento-visual {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 60%;
+      height: 60%;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    .mini-map {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 200px;
+      height: 150px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    
+    .mini-map-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--safe);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--safe);
+    }
+    
+    .heat-spot {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle, rgba(231, 76, 60, 0.6) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: heat-pulse 3s infinite;
+    }
+    
+    @keyframes heat-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.3); opacity: 0.3; }
+    }
+    
+    .sos-demo {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      background: rgba(231, 76, 60, 0.15);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .sos-demo-icon {
+      width: 40px;
+      height: 40px;
+      background: #E74C3C;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 1s infinite;
+    }
+    
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 20px;
+    }
+    
+    .feature-tag {
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    /* ── TARGET SECTION ────────────────────────────────────── */
+    .target {
+      padding: 120px 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(108, 99, 255, 0.03) 50%, transparent 100%);
+    }
+    
+    .target-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    
+    .target-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 32px;
+      text-align: center;
+      transition: all var(--transition-smooth);
+    }
+    
+    .target-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-8px);
+    }
+    
+    .target-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    
+    .target-card:nth-child(2) .target-icon {
+      background: linear-gradient(135deg, var(--safe), #27ae60);
+    }
+    
+    .target-card:nth-child(3) .target-icon {
+      background: linear-gradient(135deg, #E67E22, #d35400);
+    }
+    
+    .target-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    
+    .target-card p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    
+    /* ── FOOTER CTA ───────────────────────────────────────── */
+    .footer-cta {
+      padding: 120px 0 80px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .footer-cta-glow {
+      position: absolute;
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(ellipse, var(--primary-glow) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    
+    .footer-cta h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    
+    .footer-cta > p {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      position: relative;
+    }
+    
+    .email-form {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto 64px;
+      position: relative;
+    }
+    
+    .email-input {
+      flex: 1;
+      padding: 16px 24px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 1rem;
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+    
+    .email-input:focus {
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .email-input::placeholder {
+      color: var(--text-dim);
+    }
+    
+    /* ── FOOTER ───────────────────────────────────────────── */
+    .footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+    
+    .footer-links {
+      display: flex;
+      gap: 32px;
+    }
+    
+    .footer-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color var(--transition-fast);
+    }
+    
+    .footer-link:hover {
+      color: var(--text-primary);
+    }
+    
+    .footer-social {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .social-link {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+    }
+    
+    .social-link:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+    
+    /* ── RESPONSIVE ───────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+      }
+      
+      .bento-card-large {
+        grid-column: span 2;
+        grid-row: span 2;
+        min-height: 400px;
+      }
+      
+      .problem-content {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      
+      .target-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .hero-stats {
+        flex-direction: column;
+        gap: 24px;
+      }
+      
+      .bento-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .bento-card-large,
+      .bento-card-medium {
+        grid-column: span 1;
+        grid-row: span 1;
+        min-height: 280px;
+      }
+      
+      .email-form {
+        flex-direction: column;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAVIGATION ───────────────────────────────────────── -->
+  <nav class="nav" id="nav">
+    <div class="container nav-content">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        Urban Guardian
+      </a>
+      
+      <div class="nav-links">
+        <a href="#problem" class="nav-link">El Problema</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#target" class="nav-link">Para Quién</a>
+        <a href="#join" class="btn btn-primary">
+          <i class="fa-solid fa-rocket"></i>
+          Únete a la Beta
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO SECTION ─────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-grid"></div>
+      <div class="hero-glow"></div>
+      <div class="hero-safe-route">
+        <svg viewBox="0 0 400 200">
+          <path class="route-line" d="M 50 150 Q 150 50, 200 100 T 350 50" />
+          <circle class="route-dot" cx="50" cy="150" r="6" />
+          <circle class="route-dot" cx="350" cy="50" r="8" />
+        </svg>
+      </div>
+    </div>
+    
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge reveal">
+          <span class="hero-badge-dot"></span>
+          Beta Privada Abierta
+        </div>
+        
+        <h1 class="hero-title reveal">
+          La noche te pertenece.<br>
+          <span class="text-gradient">Recupera tu ciudad.</span>
+        </h1>
+        
+        <p class="hero-subtitle reveal">
+          La primera red de prevención urbana para trabajadores nocturnos, riders y estudiantes. 
+          No reaccionamos al peligro, <strong>lo evitamos</strong>.
+        </p>
+        
+        <div class="hero-ctas reveal">
+          <a href="#join" class="btn btn-primary">
+            <i class="fa-solid fa-rocket"></i>
+            Únete a la Beta Privada
+          </a>
+          <a href="#features" class="btn btn-secondary">
+            <i class="fa-solid fa-play"></i>
+            Ver cómo funciona
+          </a>
+        </div>
+        
+        <div class="hero-stats reveal">
+          <div class="hero-stat">
+            <span class="hero-stat-value">2,400+</span>
+            <span class="hero-stat-label">Rutas seguras trazadas</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">850+</span>
+            <span class="hero-stat-label">Guardians activos</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">12</span>
+            <span class="hero-stat-label">Ciudades disponibles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROBLEM SECTION ─────────────────────────────────── -->
+  <section class="problem" id="problem">
+    <div class="container">
+      <div class="problem-content">
+        <div class="problem-visual reveal-scale">
+          <div class="problem-card problem-card-fast">
+            <div class="problem-icon">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <h4>Ruta más rápida</h4>
+            <p>8 min · 1.2km · Zona oscura</p>
+          </div>
+          
+          <div class="problem-arrow">
+            <i class="fa-solid fa-arrow-right"></i>
+          </div>
+          
+          <div class="problem-card problem-card-safe animate-float">
+            <div class="problem-icon">
+              <i class="fa-solid fa-shield-heart"></i>
+            </div>
+            <h4>Ruta Urban Guardian</h4>
+            <p>12 min · 1.8km · Iluminada + Guardians</p>
+          </div>
+        </div>
+        
+        <div class="problem-text reveal-left">
+          <h2>
+            ¿Por qué elegir la ruta más <span style="color: #E74C3C;">rápida</span> si no es la más <span style="color: var(--safe);">segura</span>?
+          </h2>
+          <p>
+            Las apps de navegación tradicionales solo ven el asfalto. Nosotros vemos la <strong>iluminación</strong>, 
+            la <strong>presencia humana</strong>, los <strong>incidentes históricos</strong> y los <strong>Guardians activos</strong> en tiempo real.
+          </p>
+          <p style="margin-top: 20px;">
+            Calculamos rutas basándonos en seguridad percibida, no solo en tiempo. 
+            Porque llegar 5 minutos tarde es mejor que no llegar.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BENTO GRID FEATURES ─────────────────────────────── -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          Tecnología Preventiva
+        </div>
+        <h2 class="section-title">Tres armas secretas.<br>Una sola app.</h2>
+        <p class="section-subtitle">
+          Diseñadas para quienes mueven la ciudad cuando el sol se pone.
+        </p>
+      </div>
+      
+      <div class="bento-grid">
+        <!-- Large Card: Mapa Vivo -->
+        <div class="bento-card bento-card-large reveal">
+          <div class="bento-icon">
+            <i class="fa-solid fa-map-location-dot"></i>
+          </div>
+          <h3>El Mapa Vivo</h3>
+          <p>
+            La ciudad se pinta sola. Micro-incidentes reportados por la comunidad en tiempo real. 
+            Zonas calientes, iluminación deficiente, grupos intimidantes. 
+            Todo visible antes de que cruces la esquina.
+          </p>
+          <div class="feature-tags">
+            <span class="feature-tag">Heatmap en tiempo real</span>
+            <span class="feature-tag">Reportes verificados</span>
+            <span class="feature-tag">Alertas geolocalizadas</span>
+          </div>
+          <div class="mini-map">
+            <div class="mini-map-dot" style="top: 30%; left: 40%;"></div>
+            <div class="mini-map-dot" style="top: 60%; left: 70%;"></div>
+            <div class="heat-spot" style="top: 40%; left: 30%;"></div>
+            <div class="heat-spot" style="top: 70%; left: 60%; animation-delay: 1s;"></div>
+          </div>
+        </div>
+        
+        <!-- Medium Card: SOS Silencioso -->
+        <div class="bento-card bento-card-medium reveal">
+          <div class="bento-icon bento-icon-green">
+            <i class="fa-solid fa-fingerprint"></i>
+          </div>
+          <h3>SOS Silencioso</h3>
+          <p>
+            Sin pánico, sin llamar la atención. Un Long-Press discreto graba audio en segundo plano 
+            y alerta a tu red de confianza con tu ubicación exacta.
+          </p>
+          <div class="feature-tags">
+            <span class="feature-tag">Grabación silenciosa</span>
+            <span class="feature-tag">Alerta a contactos</span>
+          </div>
+          <div class="sos-demo">
+            <div class="sos-demo-icon">
+              <i class="fa-solid fa-microphone"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Grabando...</div>
+              <div style="font-size: 0.875rem; font-weight: 600; color: #E74C3C;">00:42</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Medium Card: Refugios Verificados -->
+        <div class="bento-card bento-card-medium reveal">
+          <div class="bento-icon bento-icon-orange">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <h3>Refugios Verificados</h3>
+          <p>
+            Farmacias, gasolineras y locales 24h a un toque. Lugares seguros donde sabes que 
+            te recibirán si necesitas ayuda o solo un momento de paz.
+          </p>
+          <div class="feature-tags">
+            <span class="feature-tag">Abiertos 24h</span>
+            <span class="feature-tag">Verificados por la comunidad</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TARGET AUDIENCE ─────────────────────────────────── -->
+  <section class="target" id="target">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">
+          <i class="fa-solid fa-users"></i>
+          Diseñado para ti
+        </div>
+        <h2 class="section-title">¿Para quién es Urban Guardian?</h2>
+        <p class="section-subtitle">
+          Tres perfiles, una misma necesidad: moverse seguros por la ciudad.
+        </p>
+      </div>
+      
+      <div class="target-grid">
+        <div class="target-card reveal">
+          <div class="target-icon">
+            <i class="fa-solid fa-user-nurse"></i>
+          </div>
+          <h3>Trabajadores Nocturnos</h3>
+          <p>
+            Enfermeras, vigilantes, personal de limpieza. Quienes mantienen la ciudad 
+            funcionando mientras otros duermen. Volvemos tu trayecto a casa más seguro.
+          </p>
+        </div>
+        
+        <div class="target-card reveal">
+          <div class="target-icon">
+            <i class="fa-solid fa-bicycle"></i>
+          </div>
+          <h3>Riders & Delivery</h3>
+          <p>
+            La última milla no debería ser la más peligrosa. Optimizamos tus rutas 
+            considerando seguridad, no solo distancia. Más entregas, menos riesgos.
+          </p>
+        </div>
+        
+        <div class="target-card reveal">
+          <div class="target-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <h3>Estudiantes</h3>
+          <p>
+            Campus periféricos, bibliotecas hasta tarde, transportes públicos irregulares. 
+            La universidad ya es difícil. Tu seguridad no debería serlo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER CTA ───────────────────────────────────────── -->
+  <section class="footer-cta" id="join">
+    <div class="footer-cta-glow"></div>
+    <div class="container">
+      <h2 class="reveal">Únete a la revolución de la seguridad urbana</h2>
+      <p class="reveal">Acceso anticipado gratuito. Sé de los primeros en probar Urban Guardian.</p>
+      
+      <form class="email-form reveal" onsubmit="handleSubscribe(event)">
+        <input 
+          type="email" 
+          class="email-input" 
+          placeholder="tu@email.com" 
+          required
+          id="email-input"
+        >
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-paper-plane"></i>
+          Apuntarme
+        </button>
+      </form>
+      
+      <div id="form-success" style="display: none; padding: 16px 24px; background: rgba(46, 204, 113, 0.15); border: 1px solid var(--safe); border-radius: var(--radius-md); color: var(--safe);">
+        <i class="fa-solid fa-check-circle"></i> ¡Estás dentro! Te contactaremos pronto.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ───────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-logo">
+        <div class="nav-logo-icon" style="width: 32px; height: 32px; font-size: 0.875rem;">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        Urban Guardian
+      </div>
+      
+      <div class="footer-links">
+        <a href="#" class="footer-link">Privacidad</a>
+        <a href="#" class="footer-link">Términos</a>
+        <a href="#" class="footer-link">Contacto</a>
+      </div>
+      
+      <div class="footer-social">
+        <a href="#" class="social-link">
+          <i class="fa-brands fa-twitter"></i>
+        </a>
+        <a href="#" class="social-link">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a href="#" class="social-link">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── JAVASCRIPT ───────────────────────────────────────── -->
+  <script>
+    // Navigation scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+    
+    // Scroll reveal animation
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+    
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => {
+      observer.observe(el);
+    });
+    
+    // Email form handler
+    function handleSubscribe(e) {
+      e.preventDefault();
+      const email = document.getElementById('email-input').value;
+      const successMsg = document.getElementById('form-success');
+      const form = document.querySelector('.email-form');
+      
+      // Simulate API call
+      form.style.display = 'none';
+      successMsg.style.display = 'block';
+      
+      // Here you would typically send to your backend
+      console.log('New subscriber:', email);
+    }
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

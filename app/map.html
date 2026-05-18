@@ -546,6 +546,112 @@
       border: 1px solid rgba(108,99,255,0.3);
     }
 
+    /* ── Help / Necesito Ayuda Button ────────────────────────── */
+    .help-btn {
+      position: fixed;
+      bottom: 90px;
+      right: var(--space-md);
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--safe, #2ECC71), #27ae60);
+      border: none;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2px; color: #fff;
+      font-size: 0.625rem; font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4), var(--shadow-md);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 50;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .help-btn i { font-size: 1.25rem; }
+    .help-btn:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3); }
+    .help-btn.hidden { display: none; }
+
+    /* ── Help Modal (Nearby Guardians) ────────────────────── */
+    .help-modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 150;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .help-modal-backdrop.open { opacity: 1; pointer-events: auto; }
+    .help-modal {
+      background: var(--bg-dark);
+      border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 500px;
+      max-height: 80vh;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .help-modal-backdrop.open .help-modal { transform: translateY(0); }
+    .help-modal-header {
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .help-modal-title { font-size: 1.125rem; font-weight: 700; }
+    .help-modal-subtitle { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; }
+    .help-modal-close {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--bg-input);
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .help-modal-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-md);
+    }
+    .nearby-guardian-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+      display: flex; align-items: center; gap: var(--space-md);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .nearby-guardian-item:hover { background: var(--bg-input); }
+    .nearby-guardian-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--primary-lt);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.125rem; font-weight: 700; color: var(--primary);
+      overflow: hidden; flex-shrink: 0;
+    }
+    .nearby-guardian-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .nearby-guardian-info { flex: 1; }
+    .nearby-guardian-name { font-size: 0.9375rem; font-weight: 600; }
+    .nearby-guardian-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+    .nearby-guardian-dist {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--safe-lt); color: var(--safe);
+      padding: 4px 10px; border-radius: 12px;
+      font-size: 0.75rem; font-weight: 600;
+    }
+    .help-empty-state {
+      text-align: center; padding: var(--space-xl);
+      color: var(--text-muted);
+    }
+    .help-empty-state i { font-size: 3rem; margin-bottom: var(--space-md); opacity: 0.5; }
+    .help-loading {
+      display: flex; align-items: center; justify-content: center;
+      gap: var(--space-sm); padding: var(--space-xl);
+      color: var(--text-muted);
+    }
+
     /* ── Expandable settings panels ─────────────────────────── */
     .settings-panel {
       display: none;
@@ -702,6 +808,112 @@
     }
     .nav-sos-btn i { font-size: 1.125rem; }
     .nav-sos-btn:active { transform: scale(0.92); }
+
+    /* ── Necesito Ayuda Button ─────────────────────────────── */
+    .help-btn {
+      position: fixed;
+      bottom: 90px;
+      right: var(--space-md);
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--safe, #2ECC71), #27ae60);
+      border: none;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2px; color: #fff;
+      font-size: 0.625rem; font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4), var(--shadow-md);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 50;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .help-btn i { font-size: 1.25rem; }
+    .help-btn:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3); }
+    .help-btn.hidden { display: none; }
+
+    /* ── Help Modal (Nearby Guardians) ────────────────────── */
+    .help-modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 150;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .help-modal-backdrop.open { opacity: 1; pointer-events: auto; }
+    .help-modal {
+      background: var(--bg-dark);
+      border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 500px;
+      max-height: 80vh;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .help-modal-backdrop.open .help-modal { transform: translateY(0); }
+    .help-modal-header {
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .help-modal-title { font-size: 1.125rem; font-weight: 700; }
+    .help-modal-subtitle { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; }
+    .help-modal-close {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--bg-input);
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .help-modal-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-md);
+    }
+    .nearby-guardian-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+      display: flex; align-items: center; gap: var(--space-md);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .nearby-guardian-item:hover { background: var(--bg-input); }
+    .nearby-guardian-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--primary-lt);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.125rem; font-weight: 700; color: var(--primary);
+      overflow: hidden; flex-shrink: 0;
+    }
+    .nearby-guardian-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .nearby-guardian-info { flex: 1; }
+    .nearby-guardian-name { font-size: 0.9375rem; font-weight: 600; }
+    .nearby-guardian-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+    .nearby-guardian-dist {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--safe-lt); color: var(--safe);
+      padding: 4px 10px; border-radius: 12px;
+      font-size: 0.75rem; font-weight: 600;
+    }
+    .help-empty-state {
+      text-align: center; padding: var(--space-xl);
+      color: var(--text-muted);
+    }
+    .help-empty-state i { font-size: 3rem; margin-bottom: var(--space-md); opacity: 0.5; }
+    .help-loading {
+      display: flex; align-items: center; justify-content: center;
+      gap: var(--space-sm); padding: var(--space-xl);
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
@@ -774,7 +986,29 @@
         🌡️
       </button>
 
-    </div>
+      <!-- ── Necesito Ayuda Button (inside map view) ───────────────────────────── -->
+      <button class="help-btn" id="help-btn" onclick="showHelpModal()">
+        <i class="fa-solid fa-hand-holding-heart"></i>
+        Ayuda
+      </button>
+
+      <!-- ── Help Modal (Nearby Guardians) ─────────────────── -->
+      <div class="help-modal-backdrop" id="help-modal-backdrop" onclick="closeHelpModal()">
+        <div class="help-modal" onclick="event.stopPropagation()">
+          <div class="help-modal-header">
+            <div>
+              <div class="help-modal-title"><i class="fa-solid fa-hand-holding-heart" style="color:var(--safe);margin-right:6px;"></i>Guardians cercanos</div>
+              <div class="help-modal-subtitle">Solicita acompañamiento a un guardian activo</div>
+            </div>
+            <button class="help-modal-close" onclick="closeHelpModal()"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="help-modal-content" id="help-modal-content">
+            <div class="help-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Buscando guardians...</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /view-mapa -->
 
     <!-- REPORTAR ────────────────────── -->
     <div id="view-reportar" class="view">
@@ -973,6 +1207,17 @@
 </div><!-- /app-layout -->
 </div><!-- /mobile-frame -->
 
+    <!-- ── Guardian Profile Sheet ──────────────────────────── -->
+<div class="guardian-sheet-backdrop" id="guardian-sheet-backdrop" onclick="closeGuardianProfile()">
+  <div class="guardian-sheet" id="guardian-sheet" onclick="event.stopPropagation()">
+    <div class="guardian-sheet-handle"></div>
+    <button class="guardian-sheet-close" onclick="closeGuardianProfile()"><i class="fa-solid fa-xmark"></i></button>
+    <div id="guardian-sheet-content">
+      <div class="gs-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Cargando perfil...</div>
+    </div>
+  </div>
+</div>
+
 <!-- ── SOS Overlay ──────────────────────────────────────── -->
 <div class="sos-overlay hidden" id="sos-overlay">
   <div class="sos-pulse">
@@ -1019,7 +1264,7 @@ import { watchActiveIncidents, reportIncident, incidentsToGeoJSON,
                                    from './js/incidents.js';
 import { triggerSOS, deactivateWithPIN, isSOSActive, deactivateSOS }
                                    from './js/sos.js';
-import { activateGuardian, deactivateGuardian, watchActiveGuardians, getActiveSessionId }
+import { activateGuardian, deactivateGuardian, watchActiveGuardians, getActiveSessionId, getGuardianProfile }
                                    from './js/guardians.js';
 import { watchNotifications, countUnread }
                                    from './js/notifications.js';
@@ -1310,12 +1555,13 @@ function guardianLevelColor(level) {
 }
 
 function renderGuardiansOnMap() {
-  if (!getMap()) return; // mapInstance must exist; style-load handled inside
+  if (!getMap()) return;
   updateGuardianMarkers(guardians, (props, lngLat) => {
     const name   = props.displayName || 'Guardian';
     const init   = name.slice(0,2).toUpperCase();
     const level  = props.guardianLevel ?? 1;
     const score  = props.guardianScore ?? 0;
+    const stats  = props.stats ?? {};
     const lvlCls = guardianLevelColor(level);
     const activeStr = guardianActiveTime(
       props.startedAtMs ? { toMillis: () => props.startedAtMs } : null
@@ -1342,18 +1588,22 @@ function renderGuardiansOnMap() {
             <div class="guardian-popup-stat-lbl">Puntos</div>
           </div>
           <div class="guardian-popup-stat">
-            <div class="guardian-popup-stat-val">Nv ${level}</div>
-            <div class="guardian-popup-stat-lbl">Guardian</div>
+            <div class="guardian-popup-stat-val">${stats.helpProvided ?? 0}</div>
+            <div class="guardian-popup-stat-lbl">Ayudas</div>
+          </div>
+          <div class="guardian-popup-stat">
+            <div class="guardian-popup-stat-val">${stats.incidentsReported ?? 0}</div>
+            <div class="guardian-popup-stat-lbl">Reportes</div>
           </div>
         </div>
         <div class="guardian-popup-actions">
           <button class="guardian-popup-btn guardian-popup-btn-primary"
-            onclick="window.open('../profile/guardian-profile.html?uid=${uid}','_self')">
+            onclick="window.location.href='guardian/profile.html?id=${uid}&request=true'">
             <i class="fa-solid fa-user"></i> Ver perfil completo
           </button>
           <button class="guardian-popup-btn guardian-popup-btn-secondary"
-            onclick="showToast('Función de acompañamiento próximamente 🚀','info')">
-            <i class="fa-solid fa-shield-halved"></i> Solicitar acompañamiento
+            onclick="window.location.href='guardian/profile.html?id=${uid}&request=true'">
+            <i class="fa-solid fa-hand-holding-hand"></i> Solicitar acompañamiento
           </button>
         </div>
       </div>`;
@@ -1376,16 +1626,233 @@ function renderGuardiansList() {
   list.innerHTML = guardians.map(g => {
     const name = g.displayName || 'Guardian';
     const init = name.slice(0, 2).toUpperCase();
+    const photoHTML = g.photoURL
+      ? `<img src="${g.photoURL}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : init;
     return `
-      <div class="guardian-item">
-        <div class="guardian-item-avatar">${init}</div>
+      <div class="guardian-item" style="cursor:pointer;" onclick="showGuardianProfile('${g.guardianId}')">
+        <div class="guardian-item-avatar">${photoHTML}</div>
         <div class="guardian-item-info">
           <p class="guardian-item-name">${name}</p>
-          <p class="guardian-item-dist">Activo ahora</p>
+          <p class="guardian-item-dist">Nivel ${g.guardianLevel ?? 1} · Activo ahora</p>
         </div>
         <span class="guardian-item-badge">Activo</span>
       </div>`;
   }).join('');
+}
+
+// ── Guardian Profile Sheet ────────────────────────────────
+window.showGuardianProfile = async function(guardianId) {
+  if (!guardianId) return;
+  closePopup();
+
+  const backdrop = document.getElementById('guardian-sheet-backdrop');
+  const content  = document.getElementById('guardian-sheet-content');
+  content.innerHTML = `<div class="gs-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Cargando perfil...</div>`;
+  backdrop.classList.add('open');
+
+  try {
+    const p = await getGuardianProfile(guardianId);
+    if (!p) {
+      content.innerHTML = `<div class="gs-loading">No se encontró el perfil.</div>`;
+      return;
+    }
+
+    const name     = p.displayName || 'Guardian';
+    const initials = name.slice(0, 2).toUpperCase();
+    const email    = p.email || '';
+    const level    = p.guardianLevel ?? 1;
+    const score    = p.guardianScore ?? 0;
+    const stats    = p.stats ?? {};
+    const avatarInner = p.photoURL
+      ? `<img src="${p.photoURL}" alt="">`
+      : initials;
+
+    const createdDate = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('es-ES', { year: 'numeric', month: 'long' }) : '';
+
+    content.innerHTML = `
+      <div class="gs-header">
+        <div class="gs-avatar">${avatarInner}</div>
+        <div class="gs-name">${name}</div>
+        ${email ? `<div class="gs-email">${email}</div>` : ''}
+        <div class="gs-level-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+          Guardian Nivel ${level} &middot; ${score} pts
+        </div>
+      </div>
+
+      <div class="gs-stats">
+        <div class="gs-stat-card">
+          <span class="gs-stat-val">${stats.routesCompleted ?? 0}</span>
+          <span class="gs-stat-lbl">Rutas</span>
+        </div>
+        <div class="gs-stat-card">
+          <span class="gs-stat-val">${stats.incidentsReported ?? 0}</span>
+          <span class="gs-stat-lbl">Reportes</span>
+        </div>
+        <div class="gs-stat-card">
+          <span class="gs-stat-val">${stats.helpProvided ?? 0}</span>
+          <span class="gs-stat-lbl">Ayudas</span>
+        </div>
+        <div class="gs-stat-card">
+          <span class="gs-stat-val">${stats.sosActivations ?? 0}</span>
+          <span class="gs-stat-lbl">SOS</span>
+        </div>
+      </div>
+
+      <div class="gs-section">
+        <div class="gs-section-title">Actividad</div>
+        <div class="gs-activity-item">
+          <div class="gs-activity-icon" style="background:var(--safe-lt);color:var(--safe);">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <div class="gs-activity-text">Guardian activo ahora</div>
+            <div class="gs-activity-sub">Disponible para acompa\u00f1ar trayectos</div>
+          </div>
+        </div>
+        ${(stats.helpProvided ?? 0) > 0 ? `
+        <div class="gs-activity-item">
+          <div class="gs-activity-icon" style="background:var(--primary-lt);color:var(--primary);">
+            <i class="fa-solid fa-hands-helping"></i>
+          </div>
+          <div>
+            <div class="gs-activity-text">${stats.helpProvided} ayudas prestadas</div>
+            <div class="gs-activity-sub">Voluntario verificado</div>
+          </div>
+        </div>` : ''}
+        ${(stats.incidentsReported ?? 0) > 0 ? `
+        <div class="gs-activity-item">
+          <div class="gs-activity-icon" style="background:var(--warning-lt);color:var(--warning);">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <div class="gs-activity-text">${stats.incidentsReported} incidentes reportados</div>
+            <div class="gs-activity-sub">Contribuye a la seguridad de la comunidad</div>
+          </div>
+        </div>` : ''}
+        ${createdDate ? `
+        <div class="gs-activity-item">
+          <div class="gs-activity-icon" style="background:var(--bg-input);color:var(--text-muted);">
+            <i class="fa-solid fa-calendar"></i>
+          </div>
+          <div>
+            <div class="gs-activity-text">Miembro desde ${createdDate}</div>
+            <div class="gs-activity-sub">Urban Guardian</div>
+          </div>
+        </div>` : ''}
+      </div>
+    `;
+  } catch (err) {
+    console.error('[showGuardianProfile]', err);
+    content.innerHTML = `<div class="gs-loading">Error al cargar el perfil.</div>`;
+  }
+};
+
+window.closeGuardianProfile = function() {
+  document.getElementById('guardian-sheet-backdrop').classList.remove('open');
+};
+
+// ── Help / Necesito Ayuda ─────────────────────────────────
+window.showHelpModal = function() {
+  if (!userLat || !userLng) {
+    showToast('Espera a obtener tu ubicación primero', 'error');
+    return;
+  }
+  
+  const backdrop = document.getElementById('help-modal-backdrop');
+  const content = document.getElementById('help-modal-content');
+  content.innerHTML = '<div class="help-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Buscando guardians...</div>';
+  backdrop.classList.add('open');
+  
+  renderNearbyGuardians();
+};
+
+window.closeHelpModal = function() {
+  document.getElementById('help-modal-backdrop').classList.remove('open');
+};
+
+function renderNearbyGuardians() {
+  const content = document.getElementById('help-modal-content');
+  
+  // Filter out current user and inactive guardians
+  const availableGuardians = guardians.filter(g => 
+    g.guardianId !== currentUser?.uid && 
+    g.currentLocation?.lat && g.currentLocation?.lng
+  );
+  
+  if (!availableGuardians.length) {
+    content.innerHTML = `
+      <div class="help-empty-state">
+        <i class="fa-solid fa-shield-halved"></i>
+        <p>No hay guardians activos cerca</p>
+        <p style="font-size:0.75rem;margin-top:8px;">Intenta más tarde o usa el botón SOS para emergencias</p>
+      </div>`;
+    return;
+  }
+  
+  // Calculate distances and sort
+  const guardiansWithDist = availableGuardians.map(g => {
+    const dist = haversineDistance(userLat, userLng, g.currentLocation.lat, g.currentLocation.lng);
+    return { ...g, distance: dist };
+  }).filter(g => g.distance < 5000) // Within 5km
+    .sort((a, b) => a.distance - b.distance);
+  
+  if (!guardiansWithDist.length) {
+    content.innerHTML = `
+      <div class="help-empty-state">
+        <i class="fa-solid fa-person-walking-arrow-right"></i>
+        <p>No hay guardians dentro de 5 km</p>
+        <p style="font-size:0.75rem;margin-top:8px;">Intenta más tarde o amplía tu búsqueda</p>
+      </div>`;
+    return;
+  }
+  
+  content.innerHTML = guardiansWithDist.map(g => {
+    const name = g.displayName || 'Guardian';
+    const init = name.slice(0, 2).toUpperCase();
+    const distText = g.distance < 1000 
+      ? `${Math.round(g.distance)} m` 
+      : `${(g.distance / 1000).toFixed(1)} km`;
+    const level = g.guardianLevel || 1;
+    const score = g.guardianScore || 0;
+    const photoHTML = g.photoURL
+      ? `<img src="${g.photoURL}" alt="">`
+      : init;
+    
+    return `
+      <div class="nearby-guardian-item" onclick="openGuardianProfile('${g.guardianId}')">
+        <div class="nearby-guardian-avatar">${photoHTML}</div>
+        <div class="nearby-guardian-info">
+          <div class="nearby-guardian-name">${name}</div>
+          <div class="nearby-guardian-meta">Nivel ${level} · ${score} pts</div>
+        </div>
+        <div class="nearby-guardian-dist">
+          <i class="fa-solid fa-location-arrow"></i> ${distText}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openGuardianProfile = function(guardianId) {
+  window.location.href = `guardian/profile.html?id=${guardianId}&request=true`;
+};
+
+// Haversine formula for distance calculation
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // Earth radius in meters
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+  
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  
+  return R * c; // Distance in meters
 }
 
 // ── Notifications ─────────────────────────────────────────

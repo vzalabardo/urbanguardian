@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <title>Perfil del Guardian - Urban Guardian</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ── Layout ──────────────────────────────────────────────── */
+    .profile-layout {
+      min-height: 100dvh;
+      background: var(--bg-dark, #121212);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-lg);
+      height: 56px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .profile-header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .btn-back {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--bg-input);
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .btn-share {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--bg-input);
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+
+    /* ── Hero Card ───────────────────────────────────────────── */
+    .hero-card {
+      background: linear-gradient(135deg, var(--primary-dk, #357ABD) 0%, var(--primary, #4A90E2) 100%);
+      padding: var(--space-xl) var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+      position: relative;
+    }
+    .hero-avatar {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 4px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; font-weight: 700; color: #fff;
+      overflow: hidden;
+    }
+    .hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+    }
+    .hero-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(46,204,113,0.3); color: #fff;
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 0.8125rem; font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+    .hero-status::before {
+      content: '';
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--safe, #2ECC71);
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* ── Level Badge ─────────────────────────────────────────── */
+    .level-section {
+      background: var(--bg-card);
+      padding: var(--space-lg);
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-sm);
+      border-bottom: 1px solid var(--border);
+    }
+    .level-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--primary-lt); color: var(--primary);
+      padding: 8px 16px; border-radius: 24px;
+      font-size: 0.875rem; font-weight: 700;
+    }
+    .level-progress {
+      width: 100%; max-width: 280px;
+      height: 6px; border-radius: 3px;
+      background: var(--bg-input);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .level-progress-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--safe));
+      transition: width 0.3s ease;
+    }
+    .level-text {
+      font-size: 0.75rem; color: var(--text-muted);
+    }
+
+    /* ── Stats Grid ──────────────────────────────────────────── */
+    .stats-section {
+      padding: var(--space-lg);
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-sm);
+    }
+    .stat-box {
+      background: var(--bg-input);
+      border-radius: 12px;
+      padding: var(--space-md) var(--space-sm);
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .stat-icon { font-size: 1.25rem; }
+    .stat-value { font-size: 1.375rem; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 0.625rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; text-align: center; }
+
+    /* ── Action Buttons ────────────────────────────────────── */
+    .action-section {
+      padding: var(--space-lg);
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: var(--space-sm);
+    }
+    .btn-primary-action {
+      width: 100%;
+      padding: 14px var(--space-lg);
+      border-radius: var(--radius-lg, 12px);
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-primary-action:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary-action:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+    }
+    .btn-secondary-action {
+      width: 100%;
+      padding: 12px var(--space-lg);
+      border-radius: var(--radius-lg, 12px);
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-secondary-action:hover { background: var(--border); }
+
+    /* ── Solicitud Banner ──────────────────────────────────── */
+    .request-banner {
+      background: var(--safe-lt);
+      border: 1px solid var(--safe);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg);
+      margin: var(--space-md) var(--space-lg) 0;
+      display: flex; align-items: center; gap: var(--space-md);
+    }
+    .request-banner i { color: var(--safe); font-size: 1.25rem; }
+    .request-banner-text { flex: 1; }
+    .request-banner-title { font-weight: 600; font-size: 0.9375rem; }
+    .request-banner-sub { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; }
+    .btn-cancel-request {
+      background: var(--danger-lt); color: var(--danger);
+      border: none; border-radius: 8px;
+      padding: 6px 12px; font-size: 0.75rem; font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ── Badges Section ─────────────────────────────────────── */
+    .section {
+      padding: var(--space-lg);
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: var(--space-md);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm);
+    }
+    .badge-card {
+      background: var(--bg-input);
+      border-radius: 12px;
+      padding: var(--space-md);
+      display: flex; align-items: center; gap: var(--space-sm);
+    }
+    .badge-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--primary-lt);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .badge-info { flex: 1; }
+    .badge-name { font-size: 0.8125rem; font-weight: 600; }
+    .badge-desc { font-size: 0.6875rem; color: var(--text-muted); margin-top: 2px; }
+    .badge-beta {
+      font-size: 0.625rem;
+      background: var(--warning-lt); color: var(--warning);
+      padding: 2px 6px; border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* ── Reviews Section ────────────────────────────────────── */
+    .review-card {
+      background: var(--bg-input);
+      border-radius: 12px;
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+    .review-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-sm);
+    }
+    .reviewer {
+      display: flex; align-items: center; gap: var(--space-sm);
+    }
+    .reviewer-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--primary-lt);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; color: var(--primary);
+    }
+    .reviewer-name { font-size: 0.875rem; font-weight: 600; }
+    .review-stars {
+      display: flex; gap: 2px;
+      color: var(--warning, #F39C12);
+      font-size: 0.75rem;
+    }
+    .review-text {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .review-date {
+      font-size: 0.6875rem;
+      color: var(--text-dim);
+      margin-top: var(--space-sm);
+    }
+    .reviews-beta-note {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--warning-lt); color: var(--warning);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: 8px;
+      font-size: 0.8125rem;
+      margin-bottom: var(--space-md);
+    }
+
+    /* ── Toast ──────────────────────────────────────────────── */
+    .toast-container {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .toast {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-size: 0.875rem;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+    }
+    .toast-success { border-color: var(--safe); color: var(--safe); }
+    .toast-error { border-color: var(--danger); color: var(--danger); }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ── Loading State ──────────────────────────────────────── */
+    .loading-container {
+      min-height: 100dvh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: var(--space-lg);
+      color: var(--text-muted);
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loading-screen" class="loading-container">
+  <div class="spinner"></div>
+  <p>Cargando perfil...</p>
+</div>
+
+<!-- Profile Content (hidden initially) -->
+<div id="profile-content" class="profile-layout" style="display:none;">
+  
+  <!-- Header -->
+  <header class="profile-header">
+    <button class="btn-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+    <h1>Perfil del Guardian</h1>
+    <button class="btn-share" onclick="shareProfile()"><i class="fa-solid fa-share-nodes"></i></button>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero-card">
+    <div class="hero-avatar" id="hero-avatar">
+      <span id="hero-initials">GU</span>
+    </div>
+    <div class="hero-name" id="hero-name">Guardian</div>
+    <div class="hero-status">Activo ahora</div>
+  </div>
+
+  <!-- Level -->
+  <div class="level-section">
+    <div class="level-badge">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span id="level-text">Nivel 1</span>
+    </div>
+    <div class="level-progress">
+      <div class="level-progress-fill" id="level-progress" style="width: 25%"></div>
+    </div>
+    <div class="level-text"><span id="score-text">0</span> puntos de Guardian</div>
+  </div>
+
+  <!-- Solicitud Banner (conditional) -->
+  <div id="request-banner" class="request-banner" style="display:none;">
+    <i class="fa-solid fa-hand-holding-heart"></i>
+    <div class="request-banner-text">
+      <div class="request-banner-title">Solicitud enviada</div>
+      <div class="request-banner-sub">Has solicitado acompañamiento</div>
+    </div>
+    <button class="btn-cancel-request" onclick="cancelRequest()">Cancelar</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span class="stat-icon">🗺️</span>
+        <span class="stat-value" id="stat-routes">0</span>
+        <span class="stat-label">Rutas</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-icon">⚠️</span>
+        <span class="stat-value" id="stat-incidents">0</span>
+        <span class="stat-label">Reportes</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-icon">🛡️</span>
+        <span class="stat-value" id="stat-help">0</span>
+        <span class="stat-label">Ayudas</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-icon">🔔</span>
+        <span class="stat-value" id="stat-sos">0</span>
+        <span class="stat-label">SOS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-section">
+    <button id="btn-acompanar" class="btn-primary-action" onclick="requestAccompaniment()">
+      <i class="fa-solid fa-hand-holding-hand"></i>
+      Solicitar acompañamiento
+    </button>
+    <button class="btn-secondary-action" onclick="sendMessage()">
+      <i class="fa-solid fa-message"></i>
+      Enviar mensaje
+    </button>
+  </div>
+
+  <!-- Badges -->
+  <div class="section">
+    <div class="section-title"><i class="fa-solid fa-medal"></i> Logros</div>
+    <div class="badges-grid" id="badges-grid">
+      <!-- Badges injected by JS -->
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="section">
+    <div class="section-title"><i class="fa-solid fa-star"></i> Valoraciones</div>
+    <div class="reviews-beta-note">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Sistema de valoraciones en pruebas - Datos de demostración</span>
+    </div>
+    <div id="reviews-list">
+      <!-- Reviews injected by JS -->
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { auth, db } from '../firebase-config.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { doc, getDoc, setDoc, serverTimestamp, collection, addDoc, deleteDoc, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getGuardianProfile } from '../js/guardians.js';
+
+// ── State ─────────────────────────────────────────────────
+let currentUser = null;
+let guardianId = null;
+let guardianProfile = null;
+let activeRequestId = null;
+
+// ── Mock Data ─────────────────────────────────────────────
+const MOCK_REVIEWS = [
+  { user: "Ana M.", initials: "AM", rating: 5, text: "Me acompañó hasta casa a las 2 de la mañana. Muy amable y me sentí segura todo el trayecto.", date: "Hace 2 días" },
+  { user: "Carlos R.", initials: "CR", rating: 5, text: "Servicio rápido y profesional. Se nota que le importa la comunidad.", date: "Hace 5 días" },
+  { user: "Laura S.", initials: "LS", rating: 4, text: "Buen guardian, aunque tardó un poco en llegar al punto de encuentro.", date: "Hace 1 semana" },
+  { user: "Miguel T.", initials: "MT", rating: 5, text: "Excelente persona. Me ayudó a llevar las compras y me acompañó todo el camino.", date: "Hace 2 semanas" },
+  { user: "Sofia G.", initials: "SG", rating: 5, text: "Super confiable! Ya me ha acompañado 3 veces. Recomendado 100%", date: "Hace 3 semanas" }
+];
+
+const BADGES_CONFIG = [
+  { id: 'verified', icon: '🛡️', name: 'Guardian Verificado', desc: 'Perfil verificado por Urban Guardian', condition: (p) => true },
+  { id: 'star', icon: '⭐', name: 'Guardian Estrella', desc: 'Más de 100 puntos acumulados', condition: (p) => (p.guardianScore || 0) > 100 },
+  { id: 'helper', icon: '🤝', name: 'Mano Amiga', desc: 'Ha ayudado a más de 5 personas', condition: (p) => (p.stats?.helpProvided || 0) > 5 },
+  { id: 'reporter', icon: '📢', name: 'Reportero Activo', desc: 'Ha reportado más de 3 incidentes', condition: (p) => (p.stats?.incidentsReported || 0) > 3 },
+  { id: 'routes', icon: '🗺️', name: 'Explorador', desc: 'Ha completado más de 10 rutas', condition: (p) => (p.stats?.routesCompleted || 0) > 10 },
+  { id: 'sos', icon: '🚨', name: 'Ángel Guardián', desc: 'Ha respondido a alertas SOS', condition: (p) => (p.stats?.helpProvided || 0) > 0 && (p.guardianScore || 0) > 50 }
+];
+
+// ── Init ──────────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = '../auth/login.html?redirect=' + encodeURIComponent(window.location.href);
+    return;
+  }
+  currentUser = user;
+  
+  // Get guardian ID from URL
+  const params = new URLSearchParams(window.location.search);
+  guardianId = params.get('id');
+  const hasRequest = params.get('request') === 'true';
+  
+  if (!guardianId) {
+    showError('No se especificó un guardian');
+    return;
+  }
+  
+  await loadProfile();
+  
+  if (hasRequest) {
+    await checkExistingRequest();
+  }
+  
+  // Show content
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('profile-content').style.display = 'flex';
+});
+
+// ── Load Profile ──────────────────────────────────────────
+async function loadProfile() {
+  try {
+    guardianProfile = await getGuardianProfile(guardianId);
+    
+    if (!guardianProfile) {
+      showError('No se encontró el perfil del guardian');
+      return;
+    }
+    
+    renderProfile();
+    renderBadges();
+    renderReviews();
+  } catch (err) {
+    console.error('[loadProfile]', err);
+    showError('Error al cargar el perfil');
+  }
+}
+
+function renderProfile() {
+  const p = guardianProfile;
+  const name = p.displayName || 'Guardian';
+  const initials = name.slice(0, 2).toUpperCase();
+  const level = p.guardianLevel || 1;
+  const score = p.guardianScore || 0;
+  const stats = p.stats || {};
+  
+  // Hero
+  document.getElementById('hero-name').textContent = name;
+  document.getElementById('hero-initials').textContent = initials;
+  
+  if (p.photoURL) {
+    document.getElementById('hero-avatar').innerHTML = `<img src="${p.photoURL}" alt="">`;
+  }
+  
+  // Level
+  document.getElementById('level-text').textContent = `Guardian Nivel ${level}`;
+  document.getElementById('score-text').textContent = score;
+  
+  // Progress to next level (mock calculation)
+  const nextLevel = level * 100;
+  const progress = Math.min((score / nextLevel) * 100, 100);
+  document.getElementById('level-progress').style.width = `${progress}%`;
+  
+  // Stats
+  document.getElementById('stat-routes').textContent = stats.routesCompleted || 0;
+  document.getElementById('stat-incidents').textContent = stats.incidentsReported || 0;
+  document.getElementById('stat-help').textContent = stats.helpProvided || 0;
+  document.getElementById('stat-sos').textContent = stats.sosActivations || 0;
+}
+
+function renderBadges() {
+  const grid = document.getElementById('badges-grid');
+  const earned = BADGES_CONFIG.filter(b => b.condition(guardianProfile));
+  
+  grid.innerHTML = earned.map(badge => `
+    <div class="badge-card">
+      <div class="badge-icon">${badge.icon}</div>
+      <div class="badge-info">
+        <div class="badge-name">${badge.name}</div>
+        <div class="badge-desc">${badge.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderReviews() {
+  const list = document.getElementById('reviews-list');
+  
+  list.innerHTML = MOCK_REVIEWS.map(r => {
+    const stars = Array(5).fill(0).map((_, i) => 
+      `<i class="fa-${i < r.rating ? 'solid' : 'regular'} fa-star"></i>`
+    ).join('');
+    
+    return `
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer">
+            <div class="reviewer-avatar">${r.initials}</div>
+            <span class="reviewer-name">${r.user}</span>
+          </div>
+          <div class="review-stars">${stars}</div>
+        </div>
+        <div class="review-text">${r.text}</div>
+        <div class="review-date">${r.date}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Actions ───────────────────────────────────────────────
+window.requestAccompaniment = async function() {
+  const btn = document.getElementById('btn-acompanar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;display:inline-block;"></span> Enviando...';
+  
+  try {
+    // Save help request to Firestore
+    const requestRef = await addDoc(collection(db, 'help_requests'), {
+      requesterId: currentUser.uid,
+      requesterName: currentUser.displayName || 'Usuario',
+      guardianId: guardianId,
+      guardianName: guardianProfile.displayName || 'Guardian',
+      status: 'pending',
+      type: 'accompaniment',
+      createdAt: serverTimestamp(),
+      location: null // Could be filled with current location
+    });
+    
+    activeRequestId = requestRef.id;
+    
+    // Show banner
+    document.getElementById('request-banner').style.display = 'flex';
+    
+    // Update button
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Solicitud enviada';
+    btn.style.background = 'var(--safe)';
+    
+    showToast('Solicitud enviada al guardian', 'success');
+  } catch (err) {
+    console.error('[requestAccompaniment]', err);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-hand-holding-hand"></i> Solicitar acompañamiento';
+    showToast('Error al enviar la solicitud', 'error');
+  }
+};
+
+window.cancelRequest = async function() {
+  if (!activeRequestId) return;
+  
+  try {
+    await deleteDoc(doc(db, 'help_requests', activeRequestId));
+    activeRequestId = null;
+    
+    document.getElementById('request-banner').style.display = 'none';
+    
+    const btn = document.getElementById('btn-acompanar');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-hand-holding-hand"></i> Solicitar acompañamiento';
+    btn.style.background = '';
+    
+    showToast('Solicitud cancelada', 'info');
+  } catch (err) {
+    console.error('[cancelRequest]', err);
+    showToast('Error al cancelar', 'error');
+  }
+};
+
+async function checkExistingRequest() {
+  try {
+    const q = query(
+      collection(db, 'help_requests'),
+      where('requesterId', '==', currentUser.uid),
+      where('guardianId', '==', guardianId),
+      where('status', '==', 'pending')
+    );
+    
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+      activeRequestId = snapshot.docs[0].id;
+      document.getElementById('request-banner').style.display = 'flex';
+      
+      const btn = document.getElementById('btn-acompanar');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Solicitud enviada';
+      btn.style.background = 'var(--safe)';
+    }
+  } catch (err) {
+    console.error('[checkExistingRequest]', err);
+  }
+}
+
+window.sendMessage = function() {
+  showToast('Mensajería próximamente disponible', 'info');
+};
+
+window.goBack = function() {
+  window.location.href = '../map.html';
+};
+
+window.shareProfile = async function() {
+  const url = window.location.href.split('?')[0] + '?id=' + guardianId;
+  
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: `Perfil de ${guardianProfile?.displayName || 'Guardian'} - Urban Guardian`,
+        text: `Mira el perfil de este Guardian en Urban Guardian`,
+        url: url
+      });
+    } catch (err) {
+      // User cancelled
+    }
+  } else {
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Enlace copiado al portapapeles', 'success');
+    } catch (err) {
+      showToast('No se pudo copiar el enlace', 'error');
+    }
+  }
+};
+
+// ── Helpers ───────────────────────────────────────────────
+function showError(msg) {
+  document.getElementById('loading-screen').innerHTML = `
+    <div style="text-align:center;padding:var(--space-xl);">
+      <i class="fa-solid fa-circle-exclamation" style="font-size:2rem;color:var(--danger);margin-bottom:var(--space-md);"></i>
+      <p style="color:var(--text-muted);">${msg}</p>
+      <button class="btn-secondary-action" style="margin-top:var(--space-lg);width:auto;padding:10px 20px;" onclick="goBack()">
+        Volver al mapa
+      </button>
+    </div>
+  `;
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container') || createToastContainer();
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<i class="fa-solid fa-${
+    type === 'success' ? 'circle-check' :
+    type === 'error'   ? 'circle-xmark' : 'circle-info'
+  }"></i> ${msg}`;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function createToastContainer() {
+  const el = document.createElement('div');
+  el.id = 'toast-container';
+  el.className = 'toast-container';
+  document.body.appendChild(el);
+  return el;
+}
+</script>
+
+</body>
+</html>
