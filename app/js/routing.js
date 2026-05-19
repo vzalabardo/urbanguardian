@@ -70,8 +70,46 @@ export function calcSafetyScore(route, incidents) {
   return Math.max(0, Math.round(100 - penalty));
 }
 
-const SAFE_ROUTE_ID = 'ug-route-safe';
-const FAST_ROUTE_ID = 'ug-route-fast';
+const SAFE_ROUTE_ID  = 'ug-route-safe';
+const FAST_ROUTE_ID  = 'ug-route-fast';
+const INDEXED_IDS    = ['ug-ri-0', 'ug-ri-1', 'ug-ri-2'];
+const INDEXED_COLORS = ['#2ECC71', '#4A90E2', '#F39C12'];
+
+// ── Draw up to 3 routes, color-coded by safety rank ────────
+export function drawAllRoutes(routes) {
+  const map = getMap();
+  if (!map) return;
+  // Draw lower-ranked routes first so safest renders on top
+  [...routes].reverse().forEach((route, revIdx) => {
+    const idx    = routes.length - 1 - revIdx;
+    const id     = INDEXED_IDS[idx];
+    const color  = INDEXED_COLORS[idx];
+    const width  = idx === 0 ? 6 : 4;
+    const opacity = idx === 0 ? 0.95 : 0.45;
+    _drawLayer(map, id, route.geometry, color, width, opacity);
+  });
+}
+
+// ── Highlight one route by index, dim others ───────────────
+export function highlightRouteByIndex(idx) {
+  const map = getMap();
+  if (!map) return;
+  INDEXED_IDS.forEach((id, i) => {
+    if (!map.getLayer(`${id}-line`)) return;
+    map.setPaintProperty(`${id}-line`, 'line-opacity', i === idx ? 0.95 : 0.15);
+    map.setPaintProperty(`${id}-line`, 'line-width',   i === idx ? 7   : 3);
+  });
+}
+
+// ── Clear all indexed + legacy routes ──────────────────────
+export function clearAllRoutes() {
+  const map = getMap();
+  if (!map) return;
+  for (const id of [...INDEXED_IDS, SAFE_ROUTE_ID, FAST_ROUTE_ID, ROUTE_SOURCE_ID]) {
+    if (map.getLayer(`${id}-line`)) map.removeLayer(`${id}-line`);
+    if (map.getSource(id))          map.removeSource(id);
+  }
+}
 
 // ── Internal helper: add/update a single line layer ────────
 function _drawLayer(map, id, geometry, color, width, opacity) {
