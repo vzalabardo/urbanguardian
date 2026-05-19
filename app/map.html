@@ -549,7 +549,7 @@
 
     /* ── Guardian Profile Sheet ──────────────────────────────── */
     .guardian-sheet-backdrop {
-      position: fixed; inset: 0;
+      position: absolute; inset: 0;
       background: rgba(0,0,0,0.6);
       z-index: 300;
       opacity: 0; pointer-events: none;
@@ -734,7 +734,7 @@
 
     /* ── Help / Necesito Ayuda Button ────────────────────────── */
     .help-btn {
-      position: fixed;
+      position: absolute;
       bottom: 90px;
       right: var(--space-md);
       width: 56px; height: 56px;
@@ -758,7 +758,7 @@
 
     /* ── Help Modal (Nearby Guardians) ────────────────────── */
     .help-modal-backdrop {
-      position: fixed; inset: 0;
+      position: absolute; inset: 0;
       background: rgba(0,0,0,0.6);
       z-index: 150;
       opacity: 0; pointer-events: none;
@@ -997,7 +997,7 @@
 
     /* ── Necesito Ayuda Button ─────────────────────────────── */
     .help-btn {
-      position: fixed;
+      position: absolute;
       bottom: 90px;
       right: var(--space-md);
       width: 56px; height: 56px;
@@ -1021,7 +1021,7 @@
 
     /* ── Help Modal (Nearby Guardians) ────────────────────── */
     .help-modal-backdrop {
-      position: fixed; inset: 0;
+      position: absolute; inset: 0;
       background: rgba(0,0,0,0.6);
       z-index: 150;
       opacity: 0; pointer-events: none;
@@ -1416,18 +1416,18 @@
     </div>
   </div>
 
-</div><!-- /mobile-frame -->
-
-    <!-- ── Guardian Profile Sheet ──────────────────────────── -->
-<div class="guardian-sheet-backdrop" id="guardian-sheet-backdrop" onclick="closeGuardianProfile()">
-  <div class="guardian-sheet" id="guardian-sheet" onclick="event.stopPropagation()">
-    <div class="guardian-sheet-handle"></div>
-    <button class="guardian-sheet-close" onclick="closeGuardianProfile()"><i class="fa-solid fa-xmark"></i></button>
-    <div id="guardian-sheet-content">
-      <div class="gs-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> <span data-i18n="loading_profile">Loading profile…</span></div>
+  <!-- ── Guardian Profile Sheet ──────────────────────────── -->
+  <div class="guardian-sheet-backdrop" id="guardian-sheet-backdrop" onclick="closeGuardianProfile()">
+    <div class="guardian-sheet" id="guardian-sheet" onclick="event.stopPropagation()">
+      <div class="guardian-sheet-handle"></div>
+      <button class="guardian-sheet-close" onclick="closeGuardianProfile()"><i class="fa-solid fa-xmark"></i></button>
+      <div id="guardian-sheet-content">
+        <div class="gs-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> <span data-i18n="loading_profile">Loading profile…</span></div>
+      </div>
     </div>
   </div>
-</div>
+
+</div><!-- /mobile-frame -->
 
 <!-- ── SOS Overlay ──────────────────────────────────────── -->
 <div class="sos-overlay hidden" id="sos-overlay">
