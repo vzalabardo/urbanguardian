@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#121212">
-  <title>Urban Guardian — Bienvenido</title>
+  <title>Urban Guardian — Welcome</title>
   <link rel="stylesheet" href="../css/app.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="../js/i18n.js"></script>
   <style>
     /* ── Onboarding-specific styles ── */
     .onboarding-wrap {
@@ -100,24 +101,24 @@
         <div class="slide-icon blue">
           <i class="fa-solid fa-map-location-dot"></i>
         </div>
-        <h2>Rutas seguras en tiempo real</h2>
-        <p>Calcula trayectos que evitan zonas con incidentes recientes reportados por la comunidad.</p>
+        <h2>Smart Safe Routes</h2>
+        <p>Get walking routes that avoid areas with recent community-reported incidents — updated in real time.</p>
       </div>
 
       <div class="slide" id="slide-1">
         <div class="slide-icon green">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <h2>Red de Guardians</h2>
-        <p>Actívate como Guardian para acompañar virtualmente a otros usuarios durante sus trayectos nocturnos.</p>
+        <h2>Guardian Network</h2>
+        <p>Join verified Guardians who virtually accompany others on night journeys. Together we're safer.</p>
       </div>
 
       <div class="slide" id="slide-2">
         <div class="slide-icon red">
           <i class="fa-solid fa-bell-slash"></i>
         </div>
-        <h2>SOS silencioso</h2>
-        <p>Activa una alerta discreta sin levantar sospechas. PIN falso para situaciones de coacción.</p>
+        <h2>Silent SOS Alert</h2>
+        <p>Discreetly trigger an emergency alert without raising suspicion. Includes a decoy PIN for duress situations.</p>
       </div>
 
     </div>
@@ -132,10 +133,10 @@
     <!-- Actions -->
     <div class="onboarding-actions">
       <button class="btn btn-primary btn-full btn-lg" id="btn-next">
-        Siguiente
+        Next
       </button>
       <button class="btn btn-text btn-full" id="btn-skip" onclick="window.location.href='login.html'">
-        Omitir
+        Skip
       </button>
     </div>
 
@@ -166,7 +167,7 @@
     document.getElementById(`dot-${currentSlide}`).classList.add('active');
 
     if (currentSlide === totalSlides - 1) {
-      btnNext.textContent = 'Empezar';
+      btnNext.textContent = 'Get started';
     }
   }
 </script>

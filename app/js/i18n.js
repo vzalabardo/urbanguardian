@@ -170,8 +170,8 @@
 
       // ── Incident popup ───────────────────────────────────
       severity_label:       'Severity',
-      confirm_incident:     '✓ Confirm',
-      dispute_incident:     '✗ Dispute',
+      confirm_incident:     '✓ Still there',
+      dispute_incident:     '✗ No longer there',
       just_now:             'Just now',
       minutes_ago:          'min ago',
       hours_ago:            'h ago',
@@ -302,7 +302,7 @@
       // ── Toast messages ───────────────────────────────────
       toast_confirmed:      'Incidente confirmado. Gracias.',
       toast_confirm_err:    'Error al confirmar.',
-      toast_disputed:       'Incidente disputado.',
+      toast_disputed:       'Incidente marcado como resuelto.',
       toast_dispute_err:    'Error al disputar.',
       toast_wait_location:  'Espera a obtener tu ubicación primero',
       toast_no_location:    'Ubicación no disponible',
@@ -349,8 +349,8 @@
 
       // ── Incident popup ───────────────────────────────────
       severity_label:       'Gravedad',
-      confirm_incident:     '✓ Confirmar',
-      dispute_incident:     '✗ Disputar',
+      confirm_incident:     '✓ Sigue ahí',
+      dispute_incident:     '✗ Ya no está',
       just_now:             'Hace un momento',
       minutes_ago:          'min',
       hours_ago:            'h',
