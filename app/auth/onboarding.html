@@ -9,84 +9,498 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="../js/i18n.js"></script>
   <style>
-    /* ── Onboarding-specific styles ── */
+    /* ── Layout ────────────────────────────────────────────── */
     .onboarding-wrap {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: var(--space-lg);
-      padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom, 0));
+      overflow: hidden;
     }
 
+    /* ── Slides ────────────────────────────────────────────── */
     .slides-viewport {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      position: relative;
+      overflow: hidden;
     }
 
     .slide {
-      display: none;
+      position: absolute;
+      inset: 0;
+      display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: var(--space-lg);
-      text-align: center;
-      animation: fadeIn 0.35s ease;
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
     }
 
     .slide.active {
-      display: flex;
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
     }
 
-    .slide-icon {
-      width: 100px;
-      height: 100px;
-      border-radius: var(--radius-xl);
+    /* ── Slide visual area (top ~55%) ──────────────────────── */
+    .slide-visual {
+      flex: 0 0 55%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.75rem;
+      padding: 24px 20px 8px;
+      position: relative;
     }
 
-    .slide-icon.blue   { background: var(--primary-lt);  color: var(--primary); }
-    .slide-icon.green  { background: var(--safe-lt);     color: var(--safe); }
-    .slide-icon.red    { background: var(--danger-lt);   color: var(--danger); }
+    /* ── Slide text area (bottom ~45%) ─────────────────────── */
+    .slide-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 12px 28px 0;
+      gap: 10px;
+    }
 
-    .slide h2 {
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+    .badge-blue  { background: var(--primary-lt, rgba(108,99,255,0.15)); color: var(--primary, #6C63FF); }
+    .badge-green { background: var(--safe-lt, rgba(46,204,113,0.15));    color: var(--safe, #2ECC71); }
+    .badge-red   { background: var(--danger-lt, rgba(231,76,60,0.15));   color: var(--danger, #E74C3C); }
+
+    .slide-text h2 {
       font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 0;
     }
 
-    .slide p {
-      color: var(--text-muted);
-      font-size: 1rem;
+    .slide-text p {
+      color: var(--text-muted, #888);
+      font-size: 0.9rem;
       line-height: 1.6;
-      max-width: 300px;
+      margin: 0;
+    }
+
+    /* ── Bottom bar ────────────────────────────────────────── */
+    .onboarding-bottom {
+      padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0));
+      display: flex;
+      flex-direction: column;
+      gap: 0;
     }
 
     .dots {
       display: flex;
-      gap: var(--space-sm);
+      gap: 6px;
       justify-content: center;
-      margin: var(--space-lg) 0;
+      margin-bottom: 16px;
     }
 
     .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: var(--radius-full);
-      background: var(--border-md);
-      transition: all var(--transition);
+      width: 8px; height: 8px;
+      border-radius: 99px;
+      background: var(--border-md, #333);
+      transition: width 0.3s ease, background 0.3s ease;
     }
 
     .dot.active {
       width: 24px;
-      background: var(--primary);
+      background: var(--primary, #6C63FF);
     }
 
     .onboarding-actions {
       display: flex;
       flex-direction: column;
-      gap: var(--space-sm);
+      gap: 8px;
+    }
+
+    /* ════════════════════════════════════════════════════════
+       SLIDE 1 — Safe Routes mockup
+    ═════════════════════════════════════════════════════════ */
+    .mock-map {
+      width: 100%;
+      max-width: 300px;
+      background: #1a1a2e;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .mock-map-bg {
+      height: 110px;
+      background: linear-gradient(160deg, #0d1b2a 0%, #1a2940 50%, #0a1628 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Stylised route lines */
+    .mock-route-line {
+      position: absolute;
+      height: 3px;
+      border-radius: 2px;
+      transform-origin: left center;
+    }
+
+    .mock-route-safe {
+      background: #2ECC71;
+      width: 68%;
+      top: 42px;
+      left: 24px;
+      transform: rotate(-8deg);
+      box-shadow: 0 0 10px rgba(46,204,113,0.6);
+    }
+
+    .mock-route-safe::after {
+      content: '';
+      position: absolute;
+      right: 0; top: -18px;
+      width: 3px; height: 24px;
+      background: #2ECC71;
+      border-radius: 2px;
+      transform: rotate(55deg);
+      transform-origin: bottom center;
+    }
+
+    .mock-route-fast {
+      background: #4A90E2;
+      width: 55%;
+      top: 62px;
+      left: 24px;
+      transform: rotate(4deg);
+      opacity: 0.5;
+    }
+
+    .mock-origin-dot {
+      position: absolute;
+      left: 18px; top: 35px;
+      width: 10px; height: 10px;
+      background: #6C63FF;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 0 8px rgba(108,99,255,0.7);
+    }
+
+    .mock-dest-pin {
+      position: absolute;
+      right: 28px; top: 20px;
+      font-size: 18px;
+    }
+
+    .mock-route-cards {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mock-route-card {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid;
+    }
+
+    .mock-route-card.safe {
+      background: rgba(46,204,113,0.08);
+      border-color: rgba(46,204,113,0.3);
+    }
+
+    .mock-route-card.fast {
+      background: rgba(74,144,226,0.06);
+      border-color: rgba(74,144,226,0.2);
+    }
+
+    .mock-rc-icon {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .mock-rc-icon.safe { background: rgba(46,204,113,0.15); color: #2ECC71; }
+    .mock-rc-icon.fast { background: rgba(74,144,226,0.15); color: #4A90E2; }
+
+    .mock-rc-info { flex: 1; }
+
+    .mock-rc-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #eee;
+      line-height: 1;
+    }
+
+    .mock-rc-meta {
+      font-size: 0.6rem;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .mock-rc-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+    }
+
+    .mock-rc-badge.high { background: rgba(46,204,113,0.15); color: #2ECC71; }
+    .mock-rc-badge.low  { background: rgba(231,76,60,0.15);   color: #E74C3C; }
+
+    /* ════════════════════════════════════════════════════════
+       SLIDE 2 — Guardian Network mockup
+    ═════════════════════════════════════════════════════════ */
+    .mock-guardian-panel {
+      width: 100%;
+      max-width: 300px;
+      background: var(--bg-card, #1e1e1e);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .mock-panel-header {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .mock-panel-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #eee;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .mock-panel-sub {
+      font-size: 0.62rem;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .mock-guardian-list {
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mock-guardian-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .mock-g-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .mock-g-info { flex: 1; }
+
+    .mock-g-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #eee;
+      line-height: 1;
+    }
+
+    .mock-g-meta {
+      font-size: 0.6rem;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .mock-g-dist {
+      font-size: 0.6rem;
+      color: var(--safe, #2ECC71);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .mock-pulse-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--safe, #2ECC71);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 0 rgba(46,204,113,0.4);
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%   { box-shadow: 0 0 0 0   rgba(46,204,113,0.5); }
+      70%  { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
+      100% { box-shadow: 0 0 0 0   rgba(46,204,113,0); }
+    }
+
+    .mock-you-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      background: rgba(46,204,113,0.12);
+      border: 1px solid rgba(46,204,113,0.3);
+      border-radius: 99px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--safe, #2ECC71);
+      margin: 6px 10px 10px;
+      width: calc(100% - 20px);
+      justify-content: center;
+    }
+
+    /* ════════════════════════════════════════════════════════
+       SLIDE 3 — Silent SOS mockup
+    ═════════════════════════════════════════════════════════ */
+    .mock-sos-panel {
+      width: 100%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mock-sos-pulse-wrap {
+      position: relative;
+      width: 90px; height: 90px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .mock-sos-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(231,76,60,0.4);
+      animation: sos-ring 2s ease-out infinite;
+    }
+
+    .mock-sos-ring:nth-child(2) { animation-delay: 0.65s; }
+    .mock-sos-ring:nth-child(3) { animation-delay: 1.3s;  }
+
+    @keyframes sos-ring {
+      0%   { transform: scale(0.6); opacity: 0.8; }
+      100% { transform: scale(1.7); opacity: 0; }
+    }
+
+    .mock-sos-btn {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff6b6b, #E74C3C);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      color: #fff;
+      box-shadow: 0 0 30px rgba(231,76,60,0.5);
+      position: relative;
+      z-index: 1;
+    }
+
+    .mock-sos-label {
+      background: rgba(231,76,60,0.12);
+      border: 1px solid rgba(231,76,60,0.35);
+      border-radius: 12px;
+      padding: 10px 20px;
+      text-align: center;
+      width: 100%;
+      max-width: 240px;
+    }
+
+    .mock-sos-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #E74C3C;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mock-sos-sub {
+      font-size: 0.62rem;
+      color: #888;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .mock-sos-pin-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+      max-width: 240px;
+    }
+
+    .mock-sos-pin-input {
+      flex: 1;
+      height: 34px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .mock-sos-pin-dots {
+      display: flex; gap: 5px;
+    }
+
+    .mock-sos-pin-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .mock-sos-pin-dot.filled { background: #eee; }
+
+    .mock-sos-deactivate {
+      flex-shrink: 0;
+      padding: 0 12px;
+      height: 34px;
+      background: rgba(231,76,60,0.15);
+      border: 1px solid rgba(231,76,60,0.3);
+      border-radius: 8px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #E74C3C;
+      display: flex; align-items: center;
+      white-space: nowrap;
+    }
+
+    /* ── Slide-in animation ─────────────────────────────────── */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ── Staggered entry for mock cards ────────────────────── */
+    .mock-map, .mock-guardian-panel, .mock-sos-panel {
+      animation: none;
+    }
+    .slide.active .mock-map,
+    .slide.active .mock-guardian-panel,
+    .slide.active .mock-sos-panel {
+      animation: slideUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
+      animation-delay: 0.15s;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -94,50 +508,135 @@
 <div class="mobile-frame">
   <div class="onboarding-wrap">
 
-    <!-- Slides -->
     <div class="slides-viewport">
 
+      <!-- ── SLIDE 1: Safe Routes ──────────────────────────── -->
       <div class="slide active" id="slide-0">
-        <div class="slide-icon blue">
-          <i class="fa-solid fa-map-location-dot"></i>
+        <div class="slide-visual">
+          <div class="mock-map">
+            <div class="mock-map-bg">
+              <div class="mock-origin-dot"></div>
+              <div class="mock-route-safe"></div>
+              <div class="mock-route-fast"></div>
+              <div class="mock-dest-pin">📍</div>
+            </div>
+            <div class="mock-route-cards">
+              <div class="mock-route-card safe">
+                <div class="mock-rc-icon safe"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="mock-rc-info">
+                  <div class="mock-rc-title">Safest Route</div>
+                  <div class="mock-rc-meta">14 min · 1.6 km · Well lit</div>
+                </div>
+                <span class="mock-rc-badge high">94%</span>
+              </div>
+              <div class="mock-route-card fast">
+                <div class="mock-rc-icon fast"><i class="fa-solid fa-bolt"></i></div>
+                <div class="mock-rc-info">
+                  <div class="mock-rc-title">Fastest Route</div>
+                  <div class="mock-rc-meta">8 min · 1.1 km · Dark area</div>
+                </div>
+                <span class="mock-rc-badge low">38%</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <h2>Smart Safe Routes</h2>
-        <p>Get walking routes that avoid areas with recent community-reported incidents — updated in real time.</p>
+        <div class="slide-text">
+          <div class="slide-badge badge-blue"><i class="fa-solid fa-map-location-dot"></i> Safe routing</div>
+          <h2>Choose the<br>Safer Path</h2>
+          <p>Compare routes by safety score — not just speed. We factor in real community-reported incidents along your way.</p>
+        </div>
       </div>
 
+      <!-- ── SLIDE 2: Guardian Network ─────────────────────── -->
       <div class="slide" id="slide-1">
-        <div class="slide-icon green">
-          <i class="fa-solid fa-shield-halved"></i>
+        <div class="slide-visual">
+          <div class="mock-guardian-panel">
+            <div class="mock-panel-header">
+              <div class="mock-panel-title">
+                <i class="fa-solid fa-shield-halved" style="color:#2ECC71"></i>
+                Nearby Guardians
+              </div>
+              <div class="mock-panel-sub">Active volunteers · 3 found within 800m</div>
+            </div>
+            <div class="mock-guardian-list">
+              <div class="mock-guardian-item">
+                <div class="mock-g-avatar" style="background:linear-gradient(135deg,#6C63FF,#4A90E2)">AL</div>
+                <div class="mock-g-info">
+                  <div class="mock-g-name">Alex L.</div>
+                  <div class="mock-g-meta">Guardian Level 4 · 120 pts</div>
+                </div>
+                <div class="mock-pulse-dot"></div>
+                <div class="mock-g-dist">210 m</div>
+              </div>
+              <div class="mock-guardian-item">
+                <div class="mock-g-avatar" style="background:linear-gradient(135deg,#2ECC71,#27ae60)">MR</div>
+                <div class="mock-g-info">
+                  <div class="mock-g-name">María R.</div>
+                  <div class="mock-g-meta">Guardian Level 3 · 87 pts</div>
+                </div>
+                <div class="mock-pulse-dot"></div>
+                <div class="mock-g-dist">480 m</div>
+              </div>
+            </div>
+            <div class="mock-you-badge">
+              <i class="fa-solid fa-shield-halved"></i> Activate as a Guardian
+            </div>
+          </div>
         </div>
-        <h2>Guardian Network</h2>
-        <p>Join verified Guardians who virtually accompany others on night journeys. Together we're safer.</p>
+        <div class="slide-text">
+          <div class="slide-badge badge-green"><i class="fa-solid fa-shield-halved"></i> Guardian Network</div>
+          <h2>Never Walk<br>Alone</h2>
+          <p>Real people, real safety. Active Guardians nearby can virtually escort you — or you can become one.</p>
+        </div>
       </div>
 
+      <!-- ── SLIDE 3: Silent SOS ───────────────────────────── -->
       <div class="slide" id="slide-2">
-        <div class="slide-icon red">
-          <i class="fa-solid fa-bell-slash"></i>
+        <div class="slide-visual">
+          <div class="mock-sos-panel">
+            <div class="mock-sos-pulse-wrap">
+              <div class="mock-sos-ring"></div>
+              <div class="mock-sos-ring"></div>
+              <div class="mock-sos-ring"></div>
+              <div class="mock-sos-btn"><i class="fa-solid fa-bell"></i></div>
+            </div>
+            <div class="mock-sos-label">
+              <div class="mock-sos-title">⚠ Active Alert</div>
+              <div class="mock-sos-sub">Your location is being tracked.<br>Help is on the way.</div>
+            </div>
+            <div class="mock-sos-pin-row">
+              <div class="mock-sos-pin-input">
+                <div class="mock-sos-pin-dots">
+                  <div class="mock-sos-pin-dot filled"></div>
+                  <div class="mock-sos-pin-dot filled"></div>
+                  <div class="mock-sos-pin-dot"></div>
+                  <div class="mock-sos-pin-dot"></div>
+                </div>
+              </div>
+              <div class="mock-sos-deactivate">Deactivate</div>
+            </div>
+          </div>
         </div>
-        <h2>Silent SOS Alert</h2>
-        <p>Discreetly trigger an emergency alert without raising suspicion. Includes a decoy PIN for duress situations.</p>
+        <div class="slide-text">
+          <div class="slide-badge badge-red"><i class="fa-solid fa-bell-slash"></i> Silent SOS</div>
+          <h2>Discreet<br>Emergency Alert</h2>
+          <p>One tap triggers a silent SOS. Includes a decoy PIN so you can appear to cancel while the real alert stays active.</p>
+        </div>
       </div>
 
-    </div>
+    </div><!-- /slides-viewport -->
 
-    <!-- Dots -->
-    <div class="dots">
-      <div class="dot active" id="dot-0"></div>
-      <div class="dot" id="dot-1"></div>
-      <div class="dot" id="dot-2"></div>
-    </div>
-
-    <!-- Actions -->
-    <div class="onboarding-actions">
-      <button class="btn btn-primary btn-full btn-lg" id="btn-next">
-        Next
-      </button>
-      <button class="btn btn-text btn-full" id="btn-skip" onclick="window.location.href='login.html'">
-        Skip
-      </button>
+    <!-- ── Bottom bar ────────────────────────────────────────── -->
+    <div class="onboarding-bottom">
+      <div class="dots">
+        <div class="dot active" id="dot-0"></div>
+        <div class="dot" id="dot-1"></div>
+        <div class="dot" id="dot-2"></div>
+      </div>
+      <div class="onboarding-actions">
+        <button class="btn btn-primary btn-full btn-lg" id="btn-next">Next</button>
+        <button class="btn btn-text btn-full" id="btn-skip" onclick="window.location.href='login.html'">Skip</button>
+      </div>
     </div>
 
   </div>
@@ -146,7 +645,6 @@
 <script>
   let currentSlide = 0;
   const totalSlides = 3;
-
   const btnNext = document.getElementById('btn-next');
 
   btnNext.addEventListener('click', () => {
@@ -158,17 +656,31 @@
   });
 
   function goToSlide(index) {
-    document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+    const prev = document.getElementById(`slide-${currentSlide}`);
+    prev.classList.remove('active');
+    prev.style.transform = 'translateX(-40px)';
+    prev.style.opacity   = '0';
+
     document.getElementById(`dot-${currentSlide}`).classList.remove('active');
 
     currentSlide = index;
 
-    document.getElementById(`slide-${currentSlide}`).classList.add('active');
+    const next = document.getElementById(`slide-${currentSlide}`);
+    next.style.transform = 'translateX(40px)';
+    next.style.opacity   = '0';
+    next.classList.add('active');
+
+    // Force reflow then animate in
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        next.style.transform = 'translateX(0)';
+        next.style.opacity   = '1';
+      });
+    });
+
     document.getElementById(`dot-${currentSlide}`).classList.add('active');
 
-    if (currentSlide === totalSlides - 1) {
-      btnNext.textContent = 'Get started';
-    }
+    btnNext.textContent = currentSlide === totalSlides - 1 ? 'Get started' : 'Next';
   }
 </script>
 </body>
