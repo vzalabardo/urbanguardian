@@ -14,7 +14,7 @@ import { addDoc, collection, serverTimestamp }
 const DIRECTIONS_BASE = 'https://api.mapbox.com/directions/v5/mapbox/walking';
 const ROUTE_SOURCE_ID = 'ug-route';
 
-// ── Fetch walking route from Mapbox Directions API ─────────
+// ── Fetch single walking route from Mapbox Directions API ──
 export async function fetchRoute(originLng, originLat, destLng, destLat) {
   const coords = `${originLng},${originLat};${destLng},${destLat}`;
   const url = `${DIRECTIONS_BASE}/${coords}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_TOKEN}`;
@@ -27,6 +27,21 @@ export async function fetchRoute(originLng, originLat, destLng, destLat) {
   }
 
   return data.routes[0]; // { geometry, duration, distance, legs }
+}
+
+// ── Fetch multiple routes with alternatives ─────────────
+export async function fetchRoutes(originLng, originLat, destLng, destLat) {
+  const coords = `${originLng},${originLat};${destLng},${destLat}`;
+  const url = `${DIRECTIONS_BASE}/${coords}?geometries=geojson&overview=full&steps=true&alternatives=true&access_token=${MAPBOX_TOKEN}`;
+
+  const res  = await fetch(url);
+  const data = await res.json();
+
+  if (!data.routes || data.routes.length === 0) {
+    throw new Error('No route found');
+  }
+
+  return data.routes; // Array of route objects
 }
 
 // ── Calculate a basic safety score for a route ─────────────
@@ -53,6 +68,26 @@ export function calcSafetyScore(route, incidents) {
   }
 
   return Math.max(0, Math.round(100 - penalty));
+}
+
+const SAFE_ROUTE_ID = 'ug-route-safe';
+const FAST_ROUTE_ID = 'ug-route-fast';
+
+// ── Internal helper: add/update a single line layer ────────
+function _drawLayer(map, id, geometry, color, width, opacity) {
+  const geojson = { type: 'Feature', geometry };
+  if (map.getSource(id)) {
+    map.getSource(id).setData(geojson);
+    return;
+  }
+  map.addSource(id, { type: 'geojson', data: geojson });
+  map.addLayer({
+    id:     `${id}-line`,
+    type:   'line',
+    source:  id,
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint:  { 'line-color': color, 'line-width': width, 'line-opacity': opacity }
+  });
 }
 
 // ── Draw route on map ──────────────────────────────────────
@@ -85,12 +120,41 @@ export function drawRoute(route, color = '#4A90E2') {
   });
 }
 
+// ── Draw safe + fast routes simultaneously ─────────────────
+export function drawRoutes(safeRoute, fastRoute) {
+  const map = getMap();
+  if (!map) return;
+  if (fastRoute) _drawLayer(map, FAST_ROUTE_ID, fastRoute.geometry, '#4A90E2', 4, 0.5);
+  if (safeRoute) _drawLayer(map, SAFE_ROUTE_ID, safeRoute.geometry, '#2ECC71', 6, 0.95);
+}
+
+// ── Highlight one route, dim the other ────────────────────
+export function highlightRoute(which) { // 'safe' | 'fast'
+  const map = getMap();
+  if (!map) return;
+  const isSafe = which === 'safe';
+  if (map.getLayer(`${SAFE_ROUTE_ID}-line`))
+    map.setPaintProperty(`${SAFE_ROUTE_ID}-line`, 'line-opacity', isSafe ? 0.95 : 0.25);
+  if (map.getLayer(`${FAST_ROUTE_ID}-line`))
+    map.setPaintProperty(`${FAST_ROUTE_ID}-line`, 'line-opacity', isSafe ? 0.25 : 0.9);
+}
+
 // ── Clear route from map ───────────────────────────────────
 export function clearRoute() {
   const map = getMap();
   if (!map) return;
   if (map.getLayer(`${ROUTE_SOURCE_ID}-line`)) map.removeLayer(`${ROUTE_SOURCE_ID}-line`);
   if (map.getSource(ROUTE_SOURCE_ID))          map.removeSource(ROUTE_SOURCE_ID);
+}
+
+// ── Clear all routes (safe + fast + legacy) ────────────────
+export function clearRoutes() {
+  const map = getMap();
+  if (!map) return;
+  for (const id of [SAFE_ROUTE_ID, FAST_ROUTE_ID, ROUTE_SOURCE_ID]) {
+    if (map.getLayer(`${id}-line`)) map.removeLayer(`${id}-line`);
+    if (map.getSource(id))          map.removeSource(id);
+  }
 }
 
 // ── Save route to Firestore ────────────────────────────────

@@ -546,6 +546,108 @@
       border: 1px solid rgba(108,99,255,0.3);
     }
 
+    /* ── Route Comparison Sheet ──────────────────────────────── */
+    .route-sheet-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .route-sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+    .route-sheet {
+      background: var(--bg-dark);
+      border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 500px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+      padding-bottom: env(safe-area-inset-bottom, 8px);
+    }
+    .route-sheet-backdrop.open .route-sheet { transform: translateY(0); }
+    .route-sheet-handle {
+      width: 36px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 12px auto 0;
+    }
+    .route-sheet-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 14px var(--space-lg) 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .route-sheet-title { font-size: 1rem; font-weight: 700; }
+    .route-sheet-dest {
+      font-size: 0.8125rem; color: var(--text-muted);
+      margin-top: 2px; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-width: 220px;
+    }
+    .route-sheet-close {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--bg-input); border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); cursor: pointer; font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+    .route-options-list {
+      padding: var(--space-md);
+      display: flex; flex-direction: column; gap: var(--space-sm);
+    }
+    .route-option-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      display: flex; align-items: center; gap: var(--space-md);
+    }
+    .route-option-card.safe-option { border-color: rgba(46,204,113,0.35); }
+    .route-option-card.fast-option { border-color: rgba(74,144,226,0.35); }
+    .route-option-card:hover { border-color: var(--border-md); }
+    .route-option-card.safe-option:hover { border-color: var(--safe); }
+    .route-option-card.fast-option:hover { border-color: var(--primary); }
+    .route-option-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; flex-shrink: 0;
+    }
+    .route-option-icon.safe { background: rgba(46,204,113,0.15); color: var(--safe); }
+    .route-option-icon.fast { background: rgba(74,144,226,0.15); color: var(--primary); }
+    .route-option-info { flex: 1; min-width: 0; }
+    .route-option-title { font-size: 0.9375rem; font-weight: 700; }
+    .route-option-stats {
+      display: flex; gap: var(--space-sm); margin-top: 4px; flex-wrap: wrap;
+    }
+    .route-option-stat {
+      font-size: 0.75rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 3px;
+    }
+    .route-score-badge {
+      padding: 3px 10px; border-radius: var(--radius-full);
+      font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+      align-self: center;
+    }
+    .score-high   { background: rgba(46,204,113,0.15); color: var(--safe); }
+    .score-medium { background: rgba(243,156,18,0.15);  color: var(--warning); }
+    .score-low    { background: rgba(231,76,60,0.15);   color: var(--danger); }
+    .route-option-btn {
+      border: none; padding: 9px 16px; border-radius: var(--radius-md);
+      font-size: 0.8125rem; font-weight: 700; cursor: pointer;
+      flex-shrink: 0; transition: opacity 0.2s;
+    }
+    .route-option-btn:hover { opacity: 0.85; }
+    .route-option-card.safe-option .route-option-btn { background: var(--safe); color: #000; }
+    .route-option-card.fast-option .route-option-btn { background: var(--primary); color: #fff; }
+    .route-option-card.incidents-warning {
+      border-color: rgba(243,156,18,0.5) !important;
+    }
+    .route-incidents-banner {
+      display: flex; align-items: center; gap: 6px;
+      margin-top: 6px;
+      font-size: 0.72rem; color: var(--warning);
+    }
+
     /* ── Help / Necesito Ayuda Button ────────────────────────── */
     .help-btn {
       position: fixed;
@@ -1218,6 +1320,23 @@
   </div>
 </div>
 
+<!-- ── Route Comparison Sheet ───────────────────────────── -->
+<div class="route-sheet-backdrop" id="route-sheet-backdrop" onclick="closeRouteSheet()">
+  <div class="route-sheet" onclick="event.stopPropagation()">
+    <div class="route-sheet-handle"></div>
+    <div class="route-sheet-header">
+      <div>
+        <div class="route-sheet-title"><i class="fa-solid fa-route" style="color:var(--primary);margin-right:6px;"></i>Elige tu ruta</div>
+        <div class="route-sheet-dest" id="route-sheet-dest">—</div>
+      </div>
+      <button class="route-sheet-close" onclick="closeRouteSheet()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="route-options-list" id="route-options-list">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+</div>
+
 <!-- ── SOS Overlay ──────────────────────────────────────── -->
 <div class="sos-overlay hidden" id="sos-overlay">
   <div class="sos-pulse">
@@ -1274,7 +1393,7 @@ import { initMap, setUserMarker, flyTo, getMap,
          updateHeatmapLayer, setHeatmapVisibility }
                                    from './js/map.js';
 import { MAPBOX_TOKEN }            from './firebase-config.js';
-import { fetchRoute, calcSafetyScore, drawRoute, clearRoute, saveRoute }
+import { fetchRoutes, calcSafetyScore, drawRoutes, highlightRoute, clearRoutes, saveRoute }
                                    from './js/routing.js';
 
 // ── State ─────────────────────────────────────────────────
@@ -1888,57 +2007,145 @@ window.showView = function(viewId) {
 };
 
 // ── Route calculation ─────────────────────────────────────
+let _routeState = { safe: null, fast: null, destLat: null, destLng: null, destName: null };
+
 window.clearCurrentRoute = function() {
-  clearRoute();
+  clearRoutes();
   document.getElementById('route-info').classList.remove('visible');
+  document.getElementById('input-dest').value = '';
+  _routeState = { safe: null, fast: null, destLat: null, destLng: null, destName: null };
+};
+
+window.closeRouteSheet = function() {
+  document.getElementById('route-sheet-backdrop').classList.remove('open');
+};
+
+window.selectRoute = async function(which) {
+  highlightRoute(which);
+  closeRouteSheet();
+
+  const route = which === 'safe' ? _routeState.safe : _routeState.fast;
+  const score = calcSafetyScore(route, incidents);
+
+  const mins = Math.round(route.duration / 60);
+  const km   = (route.distance / 1000).toFixed(1);
+  document.getElementById('route-duration').textContent = `${mins} min`;
+  document.getElementById('route-distance').textContent = `${km} km`;
+  const safetyEl = document.getElementById('route-safety');
+  safetyEl.textContent = `${score}%`;
+  safetyEl.className   = `safety-score ${score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low'}`;
+  document.getElementById('route-info').classList.add('visible');
+
+  try {
+    await saveRoute({
+      origin:          { lat: userLat, lng: userLng },
+      destination:     { lat: _routeState.destLat, lng: _routeState.destLng, address: _routeState.destName },
+      route, safetyScore: score,
+      nearbyIncidents: incidents.map(i => i.id)
+    });
+    await incrementStat('routesCompleted');
+  } catch (e) {
+    console.warn('[route] saveRoute failed', e);
+  }
 };
 
 document.getElementById('btn-calc-route').addEventListener('click', async () => {
   const destVal = document.getElementById('input-dest').value.trim();
-  if (!destVal) {
-    document.getElementById('input-dest').focus();
-    return;
-  }
-  if (!userLat) { alert('Ubicación no disponible aún'); return; }
+  if (!destVal) { document.getElementById('input-dest').focus(); return; }
+  if (!userLat) { showToast('Ubicación no disponible aún', 'error'); return; }
 
   const btn = document.getElementById('btn-calc-route');
   btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>';
   btn.disabled  = true;
 
   try {
-    // Simple geocoding via Mapbox
-    const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(destVal)}.json?access_token=${MAPBOX_TOKEN}&limit=1`;
+    // Geocode destination
+    const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(destVal)}.json?access_token=${MAPBOX_TOKEN}&limit=1&proximity=${userLng},${userLat}`;
     const geo  = await fetch(geocodeUrl).then(r => r.json());
     const feat = geo.features?.[0];
     if (!feat) throw new Error('Destino no encontrado');
 
     const [destLng, destLat] = feat.center;
-    const route = await fetchRoute(userLng, userLat, destLng, destLat);
-    const score = calcSafetyScore(route, incidents);
+    const destName = feat.place_name;
 
-    drawRoute(route, score >= 70 ? '#2ECC71' : score >= 40 ? '#F39C12' : '#E74C3C');
+    // Fetch all routes (with alternatives)
+    const allRoutes = await fetchRoutes(userLng, userLat, destLng, destLat);
+
+    // Score every route and sort safest first
+    const scored = allRoutes.map(r => ({ route: r, score: calcSafetyScore(r, incidents) }));
+    scored.sort((a, b) => b.score - a.score);
+
+    const safeEntry = scored[0];
+    const fastEntry = scored.length > 1
+      ? scored.slice(1).sort((a, b) => a.route.duration - b.route.duration)[0]
+      : null;
+
+    // Save state for selectRoute
+    _routeState = {
+      safe: safeEntry.route,
+      fast: fastEntry?.route ?? null,
+      destLat, destLng, destName
+    };
+
+    // Draw both routes on map
+    clearRoutes();
+    drawRoutes(safeEntry.route, fastEntry?.route ?? null);
     flyTo((userLat + destLat) / 2, (userLng + destLng) / 2, 13);
 
-    const mins = Math.round(route.duration / 60);
-    const km   = (route.distance / 1000).toFixed(1);
-    document.getElementById('route-duration').textContent = `${mins} min`;
-    document.getElementById('route-distance').textContent = `${km} km`;
-    const safetyEl = document.getElementById('route-safety');
-    safetyEl.textContent = `${score}%`;
-    safetyEl.className   = `safety-score ${score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low'}`;
-    document.getElementById('route-info').classList.add('visible');
-
-    await saveRoute({
-      origin:          { lat: userLat, lng: userLng },
-      destination:     { lat: destLat, lng: destLng, address: feat.place_name },
-      route, safetyScore: score,
-      nearbyIncidents: incidents.map(i => i.id)
+    // Incidents near safe route
+    const nearSafe = incidents.filter(inc => {
+      const coords = safeEntry.route.geometry.coordinates;
+      return coords.some(([lng, lat]) =>
+        Math.hypot(lng - inc.location.lng, lat - inc.location.lat) < 0.002
+      );
     });
-    await incrementStat('routesCompleted');
+
+    // Build comparison sheet HTML
+    function routeCard(which, route, score, nearCount) {
+      const isSafe = which === 'safe';
+      const mins   = Math.round(route.duration / 60);
+      const km     = (route.distance / 1000).toFixed(1);
+      const scoreCls = score >= 70 ? 'score-high' : score >= 40 ? 'score-medium' : 'score-low';
+      const incidentBanner = nearCount > 0
+        ? `<div class="route-incidents-banner"><i class="fa-solid fa-triangle-exclamation"></i>${nearCount} incidente(s) reportado(s) en esta zona</div>`
+        : '';
+      return `
+        <div class="route-option-card ${isSafe ? 'safe-option' : 'fast-option'} ${!isSafe && nearCount > 0 ? 'incidents-warning' : ''}">
+          <div class="route-option-icon ${isSafe ? 'safe' : 'fast'}">
+            <i class="fa-solid ${isSafe ? 'fa-shield-halved' : 'fa-bolt'}"></i>
+          </div>
+          <div class="route-option-info">
+            <div class="route-option-title">${isSafe ? 'Ruta más segura' : 'Ruta más rápida'}</div>
+            <div class="route-option-stats">
+              <span class="route-option-stat"><i class="fa-solid fa-clock"></i> ${mins} min</span>
+              <span class="route-option-stat"><i class="fa-solid fa-road"></i> ${km} km</span>
+            </div>
+            ${incidentBanner}
+          </div>
+          <span class="route-score-badge ${scoreCls}">${score}%</span>
+          <button class="route-option-btn" onclick="selectRoute('${which}')">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>`;
+    }
+
+    const fastNearCount = fastEntry ? incidents.filter(inc => {
+      const coords = fastEntry.route.geometry.coordinates;
+      return coords.some(([lng, lat]) =>
+        Math.hypot(lng - inc.location.lng, lat - inc.location.lat) < 0.002
+      );
+    }).length : 0;
+
+    document.getElementById('route-sheet-dest').textContent = destName;
+    document.getElementById('route-options-list').innerHTML =
+      routeCard('safe', safeEntry.route, safeEntry.score, nearSafe.length) +
+      (fastEntry ? routeCard('fast', fastEntry.route, fastEntry.score, fastNearCount) : '');
+
+    document.getElementById('route-sheet-backdrop').classList.add('open');
 
   } catch (err) {
     console.error('[route]', err);
-    alert('No se pudo calcular la ruta. Verifica el destino.');
+    showToast('No se pudo calcular la ruta. Verifica el destino.', 'error');
   }
 
   btn.innerHTML = '<i class="fa-solid fa-route"></i> Ir';
