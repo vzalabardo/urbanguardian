@@ -29,19 +29,78 @@ export async function fetchRoute(originLng, originLat, destLng, destLat) {
   return data.routes[0]; // { geometry, duration, distance, legs }
 }
 
+// ── Compute a waypoint perpendicular to the origin→dest line ─
+function _perpWaypoint(originLng, originLat, destLng, destLat, fraction, offsetMeters) {
+  const pLat   = originLat + (destLat - originLat) * fraction;
+  const pLng   = originLng + (destLng - originLng) * fraction;
+  const dLat   = destLat - originLat;
+  const dLng   = destLng - originLng;
+  const len    = Math.sqrt(dLat * dLat + dLng * dLng) || 1;
+  const cosLat = Math.cos(pLat * Math.PI / 180) || 1;
+  const scale  = offsetMeters / 111000;
+  return {
+    lat: pLat + (-dLng / len) * scale,
+    lng: pLng + ( dLat / len) * scale / cosLat
+  };
+}
+
+// ── Fetch one route via a via-point ───────────────────────────
+async function _fetchViaRoute(originLng, originLat, viaLng, viaLat, destLng, destLat) {
+  const coords = `${originLng},${originLat};${viaLng},${viaLat};${destLng},${destLat}`;
+  const url    = `${DIRECTIONS_BASE}/${coords}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_TOKEN}`;
+  try {
+    const data = await fetch(url).then(r => r.json());
+    return data.routes?.[0] ?? null;
+  } catch (_) {
+    return null;
+  }
+}
+
 // ── Fetch multiple routes with alternatives ─────────────
 export async function fetchRoutes(originLng, originLat, destLng, destLat) {
+  // 1. Ask Mapbox for direct alternatives
   const coords = `${originLng},${originLat};${destLng},${destLat}`;
-  const url = `${DIRECTIONS_BASE}/${coords}?geometries=geojson&overview=full&steps=true&alternatives=true&access_token=${MAPBOX_TOKEN}`;
+  const url    = `${DIRECTIONS_BASE}/${coords}?geometries=geojson&overview=full&steps=true&alternatives=true&access_token=${MAPBOX_TOKEN}`;
+  const data   = await fetch(url).then(r => r.json());
 
-  const res  = await fetch(url);
-  const data = await res.json();
+  if (!data.routes?.length) throw new Error('No route found');
 
-  if (!data.routes || data.routes.length === 0) {
-    throw new Error('No route found');
+  const all = [...data.routes];
+
+  // 2. If fewer than 3, generate synthetic alternatives via perpendicular waypoints
+  if (all.length < 3) {
+    // Offset proportional to direct distance (15%), clamped 150–700 m
+    const directDeg = Math.sqrt(
+      Math.pow(destLat - originLat, 2) + Math.pow(destLng - originLng, 2)
+    );
+    const offsetM = Math.max(150, Math.min(700, directDeg * 111000 * 0.18));
+
+    // Four candidates: left/right at 35% and 60% along the line
+    const candidates = [
+      _perpWaypoint(originLng, originLat, destLng, destLat, 0.35,  offsetM),
+      _perpWaypoint(originLng, originLat, destLng, destLat, 0.35, -offsetM),
+      _perpWaypoint(originLng, originLat, destLng, destLat, 0.60,  offsetM),
+      _perpWaypoint(originLng, originLat, destLng, destLat, 0.60, -offsetM),
+    ];
+
+    const extras = await Promise.all(
+      candidates.map(wp => _fetchViaRoute(originLng, originLat, wp.lng, wp.lat, destLng, destLat))
+    );
+
+    for (const r of extras) {
+      if (!r) continue;
+      // Skip if too similar in distance to an existing route (within 6%)
+      const isDupe = all.some(existing =>
+        Math.abs(existing.distance - r.distance) / existing.distance < 0.06
+      );
+      if (!isDupe) {
+        all.push(r);
+        if (all.length >= 3) break;
+      }
+    }
   }
 
-  return data.routes; // Array of route objects
+  return all; // Array of up to 3 route objects
 }
 
 // ── Calculate a basic safety score for a route ─────────────
