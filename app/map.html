@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Urban Guardian</title>
   <link rel="stylesheet" href="css/app.css">
+  <script src="./js/i18n.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
@@ -1108,7 +1109,7 @@
   <!-- ── Header ─────────────────────────────────────────── -->
   <header class="main-header">
     <div class="header-user">
-      <span class="header-greeting">Hola,</span>
+      <span class="header-greeting" data-i18n="greeting">Hello,</span>
       <span class="header-name" id="header-name">...</span>
     </div>
     <div class="header-right">
@@ -1135,16 +1136,16 @@
       <div class="route-bar" id="route-bar">
         <div class="route-input-row">
           <span class="route-dot origin"></span>
-          <input class="route-input" id="input-origin" placeholder="Mi ubicación" readonly>
+          <input class="route-input" id="input-origin" data-i18n-placeholder="my_location" placeholder="My location" readonly>
         </div>
         <div style="display:flex;align-items:center;gap:8px;padding-left:4px;">
           <div class="route-divider"></div>
         </div>
         <div class="route-input-row">
           <span class="route-dot dest"></span>
-          <input class="route-input" id="input-dest" placeholder="¿A dónde vas?">
+          <input class="route-input" id="input-dest" data-i18n-placeholder="where_going" placeholder="Where are you going?">
           <button class="btn-route" id="btn-calc-route">
-            <i class="fa-solid fa-route"></i> Ir
+            <i class="fa-solid fa-route"></i> <span data-i18n="go">Go</span>
           </button>
         </div>
         <div class="route-info" id="route-info">
@@ -1160,8 +1161,8 @@
       <div id="map-container">
         <div class="map-placeholder" id="map-placeholder">
           <i class="fa-solid fa-map-location-dot"></i>
-          <p style="font-weight:600;color:var(--text-muted);">Cargando mapa…</p>
-          <p class="text-xs text-dim">Configura tu Mapbox token en firebase-config.js</p>
+          <p style="font-weight:600;color:var(--text-muted);" data-i18n="loading_map">Loading map…</p>
+          <p class="text-xs text-dim" data-i18n="configure_token">Set your Mapbox token in firebase-config.js</p>
         </div>
       </div>
       <button id="btn-heatmap-toggle"
@@ -1174,7 +1175,7 @@
       <!-- ── Necesito Ayuda Button (inside map view) ───────────────────────────── -->
       <button class="help-btn" id="help-btn" onclick="showHelpModal()">
         <i class="fa-solid fa-hand-holding-heart"></i>
-        Ayuda
+        <span data-i18n="help_btn">Help</span>
       </button>
 
       <!-- ── Help Modal (Nearby Guardians) ─────────────────── -->
@@ -1182,13 +1183,13 @@
         <div class="help-modal" onclick="event.stopPropagation()">
           <div class="help-modal-header">
             <div>
-              <div class="help-modal-title"><i class="fa-solid fa-hand-holding-heart" style="color:var(--safe);margin-right:6px;"></i>Guardians cercanos</div>
-              <div class="help-modal-subtitle">Solicita acompañamiento a un guardian activo</div>
+              <div class="help-modal-title"><i class="fa-solid fa-hand-holding-heart" style="color:var(--safe);margin-right:6px;"></i><span data-i18n="nearby_guardians">Nearby Guardians</span></div>
+              <div class="help-modal-subtitle" data-i18n="request_escort">Request escort from an active guardian</div>
             </div>
             <button class="help-modal-close" onclick="closeHelpModal()"><i class="fa-solid fa-xmark"></i></button>
           </div>
           <div class="help-modal-content" id="help-modal-content">
-            <div class="help-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Buscando guardians...</div>
+            <div class="help-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> <span data-i18n="searching_guardians">Searching for guardians…</span></div>
           </div>
         </div>
       </div>
@@ -1199,59 +1200,59 @@
     <div id="view-reportar" class="view">
       <div class="report-content">
         <div>
-          <h2>Reportar incidente</h2>
-          <p class="text-muted text-sm mt-sm">Ayuda a tu comunidad informando sobre situaciones de riesgo</p>
+          <h2 data-i18n="report_incident">Report Incident</h2>
+          <p class="text-muted text-sm mt-sm" data-i18n="help_community">Help your community by reporting safety concerns</p>
         </div>
 
         <div>
-          <p class="form-label mb-sm">Tipo de incidente</p>
+          <p class="form-label mb-sm" data-i18n="incident_type">Incident type</p>
           <div class="incident-types" id="incident-types">
             <button class="incident-type-btn" data-type="iluminacion" onclick="selectType(this)">
-              <span class="icon">💡</span><span class="label">Iluminación deficiente</span>
+              <span class="icon">💡</span><span class="label" data-i18n="type_lighting">Poor lighting</span>
             </button>
             <button class="incident-type-btn" data-type="grupo" onclick="selectType(this)">
-              <span class="icon">👥</span><span class="label">Grupo intimidante</span>
+              <span class="icon">👥</span><span class="label" data-i18n="type_group">Intimidating group</span>
             </button>
             <button class="incident-type-btn" data-type="robo" onclick="selectType(this)">
-              <span class="icon">🔪</span><span class="label">Robo / Atraco</span>
+              <span class="icon">🔪</span><span class="label" data-i18n="type_robbery">Robbery / Mugging</span>
             </button>
             <button class="incident-type-btn" data-type="accidente" onclick="selectType(this)">
-              <span class="icon">🚗</span><span class="label">Accidente</span>
+              <span class="icon">🚗</span><span class="label" data-i18n="type_accident">Accident</span>
             </button>
             <button class="incident-type-btn" data-type="zona_peligrosa" onclick="selectType(this)">
-              <span class="icon">🚨</span><span class="label">Zona peligrosa</span>
+              <span class="icon">🚨</span><span class="label" data-i18n="type_danger_zone">Danger zone</span>
             </button>
             <button class="incident-type-btn" data-type="otro" onclick="selectType(this)">
-              <span class="icon">⚠️</span><span class="label">Otro</span>
+              <span class="icon">⚠️</span><span class="label" data-i18n="type_other">Other</span>
             </button>
           </div>
         </div>
 
         <div>
-          <p class="form-label mb-sm">Nivel de gravedad</p>
+          <p class="form-label mb-sm" data-i18n="severity_level">Severity level</p>
           <div class="severity-row">
             <span class="severity-label" id="severity-val">3</span>
             <input type="range" id="severity-slider" min="1" max="5" value="3"
               oninput="document.getElementById('severity-val').textContent = this.value">
-            <span style="font-size:0.75rem;color:var(--text-dim);">5 = máximo</span>
+            <span style="font-size:0.75rem;color:var(--text-dim);" data-i18n="severity_max">5 = maximum</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="incident-desc">Descripción (opcional)</label>
+          <label class="form-label" for="incident-desc" data-i18n="description_optional">Description (optional)</label>
           <textarea class="form-input" id="incident-desc" rows="3"
-            placeholder="Describe brevemente la situación…"
+            data-i18n-placeholder="describe_briefly" placeholder="Briefly describe the situation…"
             style="resize:none;"></textarea>
         </div>
 
         <div class="location-badge" id="report-location">
           <i class="fa-solid fa-location-dot"></i>
-          <span id="report-coords">Obteniendo ubicación…</span>
+          <span id="report-coords" data-i18n="getting_location">Getting location…</span>
         </div>
 
         <button class="btn btn-primary btn-full btn-lg" id="btn-report" onclick="submitReport()">
           <i class="fa-solid fa-triangle-exclamation"></i>
-          Enviar reporte
+          <span data-i18n="send_report">Send report</span>
         </button>
       </div>
     </div>
@@ -1260,8 +1261,8 @@
     <div id="view-guardians" class="view">
       <div class="guardians-content">
         <div>
-          <h2>Red de Guardians</h2>
-          <p class="text-muted text-sm mt-sm">Voluntarios activos que acompañan trayectos en tiempo real</p>
+          <h2 data-i18n="guardian_network">Guardian Network</h2>
+          <p class="text-muted text-sm mt-sm" data-i18n="active_volunteers">Active volunteers accompanying routes in real time</p>
         </div>
 
         <div class="guardian-toggle-card" id="guardian-card">
@@ -1269,8 +1270,8 @@
             <i class="fa-solid fa-shield-halved"></i>
           </div>
           <div class="guardian-toggle-info">
-            <h4 id="guardian-toggle-title">Activarme como Guardian</h4>
-            <p id="guardian-toggle-desc">Ayuda a otros usuarios cercanos</p>
+            <h4 id="guardian-toggle-title" data-i18n="activate_guardian">Activate as Guardian</h4>
+            <p id="guardian-toggle-desc" data-i18n="help_nearby_users">Help nearby users</p>
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="guardian-toggle" onchange="toggleGuardian(this.checked)">
@@ -1279,9 +1280,9 @@
         </div>
 
         <div>
-          <p class="form-label mb-sm">Guardians activos cerca</p>
+          <p class="form-label mb-sm" data-i18n="active_nearby">Active guardians nearby</p>
           <div class="guardians-list" id="guardians-list">
-            <p class="text-muted text-sm" id="guardians-empty">Cargando guardians…</p>
+            <p class="text-muted text-sm" id="guardians-empty" data-i18n="loading_guardians">Loading guardians…</p>
           </div>
         </div>
       </div>
@@ -1295,67 +1296,74 @@
             <span id="profile-initials">?</span>
           </div>
           <div>
-            <p class="profile-name" id="profile-name">Cargando…</p>
+            <p class="profile-name" id="profile-name" data-i18n="loading_profile_name">Loading…</p>
             <p class="profile-email" id="profile-email"></p>
             <p class="profile-level" id="profile-level">Guardian Nivel 1</p>
           </div>
         </div>
 
         <div>
-          <p class="form-label mb-sm">Mis estadísticas</p>
+          <p class="form-label mb-sm" data-i18n="my_stats">My Statistics</p>
           <div class="stats-grid">
             <div class="stat-card">
               <span class="stat-icon">🗺️</span>
               <span class="stat-value" id="stat-routes">0</span>
-              <span class="stat-label">Rutas completadas</span>
+              <span class="stat-label" data-i18n="routes_completed">Routes completed</span>
             </div>
             <div class="stat-card">
               <span class="stat-icon">⚠️</span>
               <span class="stat-value" id="stat-incidents">0</span>
-              <span class="stat-label">Incidentes reportados</span>
+              <span class="stat-label" data-i18n="incidents_reported">Incidents reported</span>
             </div>
             <div class="stat-card">
               <span class="stat-icon">🛡️</span>
               <span class="stat-value" id="stat-help">0</span>
-              <span class="stat-label">Ayudas prestadas</span>
+              <span class="stat-label" data-i18n="help_provided">Help provided</span>
             </div>
             <div class="stat-card">
               <span class="stat-icon">🔔</span>
               <span class="stat-value" id="stat-sos">0</span>
-              <span class="stat-label">Alertas SOS</span>
+              <span class="stat-label" data-i18n="sos_alerts">SOS Alerts</span>
             </div>
           </div>
         </div>
 
         <div>
-          <p class="form-label mb-sm">Configuración</p>
+          <p class="form-label mb-sm" data-i18n="settings">Settings</p>
           <div class="settings-list">
 
             <!-- Editar perfil -->
             <div class="settings-item" onclick="window.location.href='profile/edit-profile.html'">
               <span class="settings-item-icon"><i class="fa-solid fa-user-pen"></i></span>
-              <span class="settings-item-label">Editar perfil</span>
+              <span class="settings-item-label" data-i18n="edit_profile">Edit profile</span>
               <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
             </div>
 
             <!-- PINs -->
             <div class="settings-item" onclick="window.location.href='profile/pins.html'">
               <span class="settings-item-icon"><i class="fa-solid fa-key"></i></span>
-              <span class="settings-item-label">PINs de seguridad</span>
+              <span class="settings-item-label" data-i18n="security_pins">Security PINs</span>
               <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
             </div>
 
             <!-- Contactos de emergencia -->
             <div class="settings-item" onclick="window.location.href='profile/contacts.html'">
               <span class="settings-item-icon"><i class="fa-solid fa-user-group"></i></span>
-              <span class="settings-item-label">Contactos de emergencia</span>
+              <span class="settings-item-label" data-i18n="emergency_contacts">Emergency contacts</span>
               <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
             </div>
 
-            <!-- Cerrar sesión -->
+            <!-- Language toggle -->
+            <div class="settings-item" onclick="toggleLang()">
+              <span class="settings-item-icon"><i class="fa-solid fa-language"></i></span>
+              <span class="settings-item-label" id="lang-toggle-label" data-i18n="language_current">🇬🇧 English</span>
+              <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
+            </div>
+
+            <!-- Log out -->
             <div class="settings-item danger" onclick="doLogout()">
               <span class="settings-item-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
-              <span class="settings-item-label">Cerrar sesión</span>
+              <span class="settings-item-label" data-i18n="logout">Log out</span>
               <i class="fa-solid fa-chevron-right settings-item-arrow"></i>
             </div>
           </div>
@@ -1369,11 +1377,11 @@
   <nav class="nav-bottom">
     <button class="nav-tab active" id="tab-mapa" onclick="showView('mapa')">
       <i class="fa-solid fa-map"></i>
-      Mapa
+      <span data-i18n="nav_map">Map</span>
     </button>
     <button class="nav-tab" id="tab-reportar" onclick="showView('reportar')">
       <i class="fa-solid fa-circle-exclamation"></i>
-      Reportar
+      <span data-i18n="nav_report">Report</span>
     </button>
     <button class="nav-sos-btn" id="sos-btn" onclick="triggerSOSUI()">
       <i class="fa-solid fa-bell"></i>
@@ -1381,11 +1389,11 @@
     </button>
     <button class="nav-tab" id="tab-guardians" onclick="showView('guardians')">
       <i class="fa-solid fa-shield-halved"></i>
-      Guardians
+      <span data-i18n="nav_guardians">Guardians</span>
     </button>
     <button class="nav-tab" id="tab-perfil" onclick="showView('perfil')">
       <i class="fa-solid fa-user"></i>
-      Perfil
+      <span data-i18n="nav_profile">Profile</span>
     </button>
   </nav>
 
@@ -1397,7 +1405,7 @@
       <div class="route-sheet-handle"></div>
       <div class="route-sheet-header">
         <div>
-          <div class="route-sheet-title"><i class="fa-solid fa-route" style="color:var(--primary);margin-right:6px;"></i>Elige tu ruta</div>
+          <div class="route-sheet-title"><i class="fa-solid fa-route" style="color:var(--primary);margin-right:6px;"></i><span data-i18n="choose_route">Choose your route</span></div>
           <div class="route-sheet-dest" id="route-sheet-dest">—</div>
         </div>
         <button class="route-sheet-close" onclick="closeRouteSheet()"><i class="fa-solid fa-xmark"></i></button>
@@ -1416,7 +1424,7 @@
     <div class="guardian-sheet-handle"></div>
     <button class="guardian-sheet-close" onclick="closeGuardianProfile()"><i class="fa-solid fa-xmark"></i></button>
     <div id="guardian-sheet-content">
-      <div class="gs-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Cargando perfil...</div>
+      <div class="gs-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> <span data-i18n="loading_profile">Loading profile…</span></div>
     </div>
   </div>
 </div>
@@ -1431,8 +1439,8 @@
       <i class="fa-solid fa-bell"></i>
     </div>
   </div>
-  <div class="sos-title">ALERTA ACTIVA</div>
-  <div class="sos-subtitle">Permanece tranquilo/a.<br>Tu ubicación está siendo registrada.</div>
+  <div class="sos-title" data-i18n="sos_active_alert">ACTIVE ALERT</div>
+  <div class="sos-subtitle" data-i18n-html="sos_stay_calm">Stay calm.<br>Your location is being tracked.</div>
   <div class="sos-timer" id="sos-timer">00:00</div>
   <div class="sos-pin-form">
     <input
@@ -1442,13 +1450,11 @@
       inputmode="numeric"
       pattern="[0-9]*"
       maxlength="6"
-      placeholder="Introduce PIN para desactivar"
+      data-i18n-placeholder="sos_enter_pin" placeholder="Enter PIN to deactivate"
       autocomplete="off"
     >
-    <button class="btn-sos-deactivate" onclick="deactivateSOSUI()">
-      Desactivar alerta
-    </button>
-    <span class="sos-pin-error" id="sos-pin-error">PIN incorrecto. Inténtalo de nuevo.</span>
+    <button class="btn-sos-deactivate" onclick="deactivateSOSUI()" data-i18n="sos_deactivate">Deactivate alert</button>
+    <span class="sos-pin-error" id="sos-pin-error" data-i18n="sos_wrong_pin">Wrong PIN. Try again.</span>
   </div>
 </div>
 
@@ -1543,7 +1549,7 @@ function renderProfileUI() {
   document.getElementById('profile-email').textContent  = email;
   document.getElementById('profile-initials').textContent = initials;
   document.getElementById('profile-level').textContent  =
-    `Guardian Nivel ${userProfile?.guardianLevel ?? 1} · ${userProfile?.guardianScore ?? 0} pts`;
+    `${t('guardian_level')} ${userProfile?.guardianLevel ?? 1} · ${userProfile?.guardianScore ?? 0} pts`;
 
   if (photoURL) {
     document.getElementById('header-avatar').innerHTML    = `<img src="${photoURL}" alt="">`;
@@ -1647,19 +1653,21 @@ window.toggleHeatmap = function() {
   setHeatmapVisibility(heatmapVisible);
   const btn = document.getElementById('btn-heatmap-toggle');
   if (btn) {
-    btn.title = heatmapVisible ? 'Ocultar mapa de calor' : 'Mostrar mapa de calor';
+    btn.title = heatmapVisible ? t('hide_heatmap') : t('show_heatmap');
     btn.style.opacity = heatmapVisible ? '1' : '0.45';
   }
 };
 
-const INCIDENT_TYPES = {
-  iluminacion:   { label: 'Iluminación deficiente', emoji: '💡' },
-  grupo:         { label: 'Grupo intimidante',       emoji: '👥' },
-  robo:          { label: 'Robo / Atraco',           emoji: '🔪' },
-  accidente:     { label: 'Accidente',               emoji: '🚗' },
-  zona_peligrosa:{ label: 'Zona peligrosa',          emoji: '🚨' },
-  otro:          { label: 'Otro',                    emoji: '⚠️' }
-};
+function getIncidentTypes() {
+  return {
+    iluminacion:   { label: t('type_lighting'),    emoji: '💡' },
+    grupo:         { label: t('type_group'),       emoji: '👥' },
+    robo:          { label: t('type_robbery'),     emoji: '🔪' },
+    accidente:     { label: t('type_accident'),    emoji: '🚗' },
+    zona_peligrosa:{ label: t('type_danger_zone'), emoji: '🚨' },
+    otro:          { label: t('type_other'),       emoji: '⚠️' }
+  };
+}
 
 function sevColor(s) {
   if (s >= 4) return '#E74C3C';
@@ -1670,9 +1678,9 @@ function sevColor(s) {
 function timeAgo(ts) {
   if (!ts) return '';
   const secs = Math.floor((Date.now() - ts) / 1000);
-  if (secs < 60)  return 'Hace un momento';
-  if (secs < 3600) return `Hace ${Math.floor(secs/60)} min`;
-  return `Hace ${Math.floor(secs/3600)} h`;
+  if (secs < 60)   return t('just_now');
+  if (secs < 3600) return `${Math.floor(secs/60)} ${t('minutes_ago')}`;
+  return `${Math.floor(secs/3600)} ${t('hours_ago')}`;
 }
 
 function renderIncidentsOnMap() {
@@ -1680,7 +1688,8 @@ function renderIncidentsOnMap() {
   const geojson = incidentsToGeoJSON(incidents);
 
   addIncidentMarkers(geojson, (props, lngLat) => {
-    const info    = INCIDENT_TYPES[props.type] || INCIDENT_TYPES.otro;
+    const INCIDENT_TYPES = getIncidentTypes();
+  const info    = INCIDENT_TYPES[props.type] || INCIDENT_TYPES.otro;
     const color   = sevColor(props.severity);
     const ago     = timeAgo(props.reportedAt);
     const desc    = props.description ? `<p class="incident-popup-desc">${props.description}</p>` : '';
@@ -1694,13 +1703,13 @@ function renderIncidentsOnMap() {
           </div>
         </div>
         <div class="incident-popup-sev">
-          <span>Gravedad ${props.severity}/5</span>
+          <span>${t('severity_label')} ${props.severity}/5</span>
           <div class="sev-bar"></div>
         </div>
         ${desc}
         <div class="incident-popup-actions">
-          <button class="popup-btn popup-btn-confirm" onclick="confirmIncidentUI('${props.id}')">✓ Confirmar</button>
-          <button class="popup-btn popup-btn-dispute" onclick="disputeIncidentUI('${props.id}')">✗ Disputar</button>
+          <button class="popup-btn popup-btn-confirm" onclick="confirmIncidentUI('${props.id}')">${t('confirm_incident')}</button>
+          <button class="popup-btn popup-btn-dispute" onclick="disputeIncidentUI('${props.id}')">${t('dispute_incident')}</button>
         </div>
       </div>`;
     showPopup(lngLat, html);
@@ -1719,9 +1728,9 @@ window.confirmIncidentUI = async function(id) {
   try {
     await confirmIncident(id);
     closePopup();
-    showToast('Incidente confirmado. Gracias.', 'success');
+    showToast(t('toast_confirmed'), 'success');
   } catch (e) {
-    showToast('Error al confirmar.', 'error');
+    showToast(t('toast_confirm_err'), 'error');
   }
 };
 
@@ -1729,9 +1738,9 @@ window.disputeIncidentUI = async function(id) {
   try {
     await disputeIncident(id);
     closePopup();
-    showToast('Incidente disputado.', 'info');
+    showToast(t('toast_disputed'), 'info');
   } catch (e) {
-    showToast('Error al disputar.', 'error');
+    showToast(t('toast_dispute_err'), 'error');
   }
 };
 
@@ -1746,12 +1755,12 @@ function startGuardianListener() {
 }
 
 function guardianActiveTime(startedAt) {
-  if (!startedAt) return 'Activo ahora';
+  if (!startedAt) return t('active_now');
   const ms = Date.now() - (startedAt?.toMillis?.() ?? startedAt);
   const mins = Math.floor(ms / 60000);
-  if (mins < 1)  return 'Activo ahora';
-  if (mins < 60) return `Activo hace ${mins} min`;
-  return `Activo hace ${Math.floor(mins/60)} h`;
+  if (mins < 1)  return t('active_now');
+  if (mins < 60) return `${t('active_since')} ${mins} min`;
+  return `${t('active_since')} ${Math.floor(mins/60)} h`;
 }
 
 function guardianLevelColor(level) {
@@ -1781,7 +1790,7 @@ function renderGuardiansOnMap() {
           <div>
             <div class="guardian-popup-name">${name}</div>
             <div class="guardian-popup-meta">
-              <span class="guardian-level-badge ${lvlCls}">Nivel ${level}</span>
+              <span class="guardian-level-badge ${lvlCls}">${t('guardian_level')} ${level}</span>
               ${activeStr}
             </div>
           </div>
@@ -1789,25 +1798,25 @@ function renderGuardiansOnMap() {
         <div class="guardian-popup-stats">
           <div class="guardian-popup-stat">
             <div class="guardian-popup-stat-val">${score}</div>
-            <div class="guardian-popup-stat-lbl">Puntos</div>
+            <div class="guardian-popup-stat-lbl">${t('points')}</div>
           </div>
           <div class="guardian-popup-stat">
             <div class="guardian-popup-stat-val">${stats.helpProvided ?? 0}</div>
-            <div class="guardian-popup-stat-lbl">Ayudas</div>
+            <div class="guardian-popup-stat-lbl">${t('help_short')}</div>
           </div>
           <div class="guardian-popup-stat">
             <div class="guardian-popup-stat-val">${stats.incidentsReported ?? 0}</div>
-            <div class="guardian-popup-stat-lbl">Reportes</div>
+            <div class="guardian-popup-stat-lbl">${t('reports_short')}</div>
           </div>
         </div>
         <div class="guardian-popup-actions">
           <button class="guardian-popup-btn guardian-popup-btn-primary"
             onclick="window.location.href='guardian/profile.html?id=${uid}&request=true'">
-            <i class="fa-solid fa-user"></i> Ver perfil completo
+            <i class="fa-solid fa-user"></i> ${t('view_full_profile')}
           </button>
           <button class="guardian-popup-btn guardian-popup-btn-secondary"
             onclick="window.location.href='guardian/profile.html?id=${uid}&request=true'">
-            <i class="fa-solid fa-hand-holding-hand"></i> Solicitar acompañamiento
+            <i class="fa-solid fa-hand-holding-hand"></i> ${t('request_escort_btn')}
           </button>
         </div>
       </div>`;
@@ -1822,7 +1831,7 @@ function renderGuardiansList() {
   if (guardians.length === 0) {
     list.innerHTML = '';
     empty.style.display = 'block';
-    empty.textContent   = 'No hay Guardians activos cerca ahora mismo.';
+    empty.textContent   = t('no_guardians_nearby');
     return;
   }
 
@@ -1838,9 +1847,9 @@ function renderGuardiansList() {
         <div class="guardian-item-avatar">${photoHTML}</div>
         <div class="guardian-item-info">
           <p class="guardian-item-name">${name}</p>
-          <p class="guardian-item-dist">Nivel ${g.guardianLevel ?? 1} · Activo ahora</p>
+          <p class="guardian-item-dist">${t('guardian_level')} ${g.guardianLevel ?? 1} · ${t('active_now')}</p>
         </div>
-        <span class="guardian-item-badge">Activo</span>
+        <span class="guardian-item-badge">${t('active')}</span>
       </div>`;
   }).join('');
 }
@@ -1852,13 +1861,13 @@ window.showGuardianProfile = async function(guardianId) {
 
   const backdrop = document.getElementById('guardian-sheet-backdrop');
   const content  = document.getElementById('guardian-sheet-content');
-  content.innerHTML = `<div class="gs-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Cargando perfil...</div>`;
+  content.innerHTML = `<div class="gs-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> ${t('loading_profile')}</div>`;
   backdrop.classList.add('open');
 
   try {
     const p = await getGuardianProfile(guardianId);
     if (!p) {
-      content.innerHTML = `<div class="gs-loading">No se encontró el perfil.</div>`;
+      content.innerHTML = `<div class="gs-loading">${t('profile_not_found')}</div>`;
       return;
     }
 
@@ -1881,22 +1890,22 @@ window.showGuardianProfile = async function(guardianId) {
         ${email ? `<div class="gs-email">${email}</div>` : ''}
         <div class="gs-level-badge">
           <i class="fa-solid fa-shield-halved"></i>
-          Guardian Nivel ${level} &middot; ${score} pts
+          ${t('guardian_level')} ${level} &middot; ${score} pts
         </div>
       </div>
 
       <div class="gs-stats">
         <div class="gs-stat-card">
           <span class="gs-stat-val">${stats.routesCompleted ?? 0}</span>
-          <span class="gs-stat-lbl">Rutas</span>
+          <span class="gs-stat-lbl">${t('routes_short')}</span>
         </div>
         <div class="gs-stat-card">
           <span class="gs-stat-val">${stats.incidentsReported ?? 0}</span>
-          <span class="gs-stat-lbl">Reportes</span>
+          <span class="gs-stat-lbl">${t('reports_short')}</span>
         </div>
         <div class="gs-stat-card">
           <span class="gs-stat-val">${stats.helpProvided ?? 0}</span>
-          <span class="gs-stat-lbl">Ayudas</span>
+          <span class="gs-stat-lbl">${t('help_short')}</span>
         </div>
         <div class="gs-stat-card">
           <span class="gs-stat-val">${stats.sosActivations ?? 0}</span>
@@ -1905,14 +1914,14 @@ window.showGuardianProfile = async function(guardianId) {
       </div>
 
       <div class="gs-section">
-        <div class="gs-section-title">Actividad</div>
+        <div class="gs-section-title">${t('activity')}</div>
         <div class="gs-activity-item">
           <div class="gs-activity-icon" style="background:var(--safe-lt);color:var(--safe);">
             <i class="fa-solid fa-shield-halved"></i>
           </div>
           <div>
-            <div class="gs-activity-text">Guardian activo ahora</div>
-            <div class="gs-activity-sub">Disponible para acompa\u00f1ar trayectos</div>
+            <div class="gs-activity-text">${t('guardian_active_now')}</div>
+            <div class="gs-activity-sub">${t('available_to_escort')}</div>
           </div>
         </div>
         ${(stats.helpProvided ?? 0) > 0 ? `
@@ -1921,8 +1930,8 @@ window.showGuardianProfile = async function(guardianId) {
             <i class="fa-solid fa-hands-helping"></i>
           </div>
           <div>
-            <div class="gs-activity-text">${stats.helpProvided} ayudas prestadas</div>
-            <div class="gs-activity-sub">Voluntario verificado</div>
+            <div class="gs-activity-text">${stats.helpProvided} ${t('help_provided_count')}</div>
+            <div class="gs-activity-sub">${t('verified_volunteer')}</div>
           </div>
         </div>` : ''}
         ${(stats.incidentsReported ?? 0) > 0 ? `
@@ -1931,8 +1940,8 @@ window.showGuardianProfile = async function(guardianId) {
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
           <div>
-            <div class="gs-activity-text">${stats.incidentsReported} incidentes reportados</div>
-            <div class="gs-activity-sub">Contribuye a la seguridad de la comunidad</div>
+            <div class="gs-activity-text">${stats.incidentsReported} ${t('incidents_rep_count')}</div>
+            <div class="gs-activity-sub">${t('contributes_safety')}</div>
           </div>
         </div>` : ''}
         ${createdDate ? `
@@ -1941,7 +1950,7 @@ window.showGuardianProfile = async function(guardianId) {
             <i class="fa-solid fa-calendar"></i>
           </div>
           <div>
-            <div class="gs-activity-text">Miembro desde ${createdDate}</div>
+            <div class="gs-activity-text">${t('member_since')} ${createdDate}</div>
             <div class="gs-activity-sub">Urban Guardian</div>
           </div>
         </div>` : ''}
@@ -1949,7 +1958,7 @@ window.showGuardianProfile = async function(guardianId) {
     `;
   } catch (err) {
     console.error('[showGuardianProfile]', err);
-    content.innerHTML = `<div class="gs-loading">Error al cargar el perfil.</div>`;
+    content.innerHTML = `<div class="gs-loading">${t('profile_load_error')}</div>`;
   }
 };
 
@@ -1960,13 +1969,13 @@ window.closeGuardianProfile = function() {
 // ── Help / Necesito Ayuda ─────────────────────────────────
 window.showHelpModal = function() {
   if (!userLat || !userLng) {
-    showToast('Espera a obtener tu ubicación primero', 'error');
+    showToast(t('toast_wait_location'), 'error');
     return;
   }
   
   const backdrop = document.getElementById('help-modal-backdrop');
   const content = document.getElementById('help-modal-content');
-  content.innerHTML = '<div class="help-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Buscando guardians...</div>';
+  content.innerHTML = `<div class="help-loading"><span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> ${t('searching_guardians')}</div>`;
   backdrop.classList.add('open');
   
   renderNearbyGuardians();
@@ -1989,8 +1998,8 @@ function renderNearbyGuardians() {
     content.innerHTML = `
       <div class="help-empty-state">
         <i class="fa-solid fa-shield-halved"></i>
-        <p>No hay guardians activos cerca</p>
-        <p style="font-size:0.75rem;margin-top:8px;">Intenta más tarde o usa el botón SOS para emergencias</p>
+        <p>${t('no_guardians_nearby')}</p>
+        <p style="font-size:0.75rem;margin-top:8px;">${t('no_guardians_sub')}</p>
       </div>`;
     return;
   }
@@ -2006,8 +2015,8 @@ function renderNearbyGuardians() {
     content.innerHTML = `
       <div class="help-empty-state">
         <i class="fa-solid fa-person-walking-arrow-right"></i>
-        <p>No hay guardians dentro de 5 km</p>
-        <p style="font-size:0.75rem;margin-top:8px;">Intenta más tarde o amplía tu búsqueda</p>
+        <p>${t('no_guardians_nearby')}</p>
+        <p style="font-size:0.75rem;margin-top:8px;">${t('no_guardians_sub')}</p>
       </div>`;
     return;
   }
@@ -2029,7 +2038,7 @@ function renderNearbyGuardians() {
         <div class="nearby-guardian-avatar">${photoHTML}</div>
         <div class="nearby-guardian-info">
           <div class="nearby-guardian-name">${name}</div>
-          <div class="nearby-guardian-meta">Nivel ${level} · ${score} pts</div>
+          <div class="nearby-guardian-meta">${t('guardian_level')} ${level} · ${score} pts</div>
         </div>
         <div class="nearby-guardian-dist">
           <i class="fa-solid fa-location-arrow"></i> ${distText}
@@ -2092,7 +2101,7 @@ window.showView = function(viewId) {
 };
 
 // ── Route calculation ─────────────────────────────────────
-const ROUTE_LABELS  = ['Ruta más segura', 'Alternativa', 'Alternativa 2'];
+function getRouteLabels() { return [t('route_safest'), t('route_alternative'), t('route_alternative_2')]; }
 const ROUTE_ICONS   = ['fa-shield-halved', 'fa-bolt', 'fa-shuffle'];
 const ROUTE_CLSBASE = ['safe-option', 'fast-option', 'alt-option'];
 const ROUTE_COLORS_HEX = ['#2ECC71', '#4A90E2', '#F39C12'];
@@ -2156,14 +2165,14 @@ function countNearIncidents(route) {
 
 function routeCard(idx, route, score, nearCount) {
   const cls      = ROUTE_CLSBASE[idx] ?? 'alt-option';
-  const label    = ROUTE_LABELS[idx]  ?? `Opción ${idx + 1}`;
+  const label    = getRouteLabels()[idx] ?? `Option ${idx + 1}`;
   const icon     = ROUTE_ICONS[idx]   ?? 'fa-route';
   const hex      = ROUTE_COLORS_HEX[idx] ?? '#aaa';
   const mins     = Math.round(route.duration / 60);
   const km       = (route.distance / 1000).toFixed(1);
   const scoreCls = score >= 70 ? 'score-high' : score >= 40 ? 'score-medium' : 'score-low';
-  const banner   = nearCount > 0
-    ? `<div class="route-incidents-banner"><i class="fa-solid fa-triangle-exclamation"></i>${nearCount} incidente${nearCount > 1 ? 's' : ''} reportado${nearCount > 1 ? 's' : ''} cerca</div>`
+  const incidentBanner = nearCount > 0
+    ? `<div class="route-incidents-banner"><i class="fa-solid fa-triangle-exclamation"></i>${nearCount} ${t('incidents_near')}</div>`
     : '';
   return `
     <div class="route-option-card ${cls}"
@@ -2179,7 +2188,7 @@ function routeCard(idx, route, score, nearCount) {
           <span class="route-option-stat"><i class="fa-solid fa-clock"></i> ${mins} min</span>
           <span class="route-option-stat"><i class="fa-solid fa-road"></i> ${km} km</span>
         </div>
-        ${banner}
+        ${incidentBanner}
       </div>
       <span class="route-score-badge ${scoreCls}">${score}%</span>
       <button class="route-option-btn" style="background:${hex}" onclick="selectRoute(${idx})">
@@ -2191,7 +2200,7 @@ function routeCard(idx, route, score, nearCount) {
 document.getElementById('btn-calc-route').addEventListener('click', async () => {
   const destVal = document.getElementById('input-dest').value.trim();
   if (!destVal) { document.getElementById('input-dest').focus(); return; }
-  if (!userLat) { showToast('Ubicación no disponible aún', 'error'); return; }
+  if (!userLat) { showToast(t('toast_no_location_yet'), 'error'); return; }
 
   const btn = document.getElementById('btn-calc-route');
   btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>';
@@ -2233,7 +2242,7 @@ document.getElementById('btn-calc-route').addEventListener('click', async () => 
 
     const singleNote = scored.length === 1
       ? `<p style="font-size:0.75rem;color:var(--text-muted);text-align:center;padding:0 var(--space-md) var(--space-md);">
-           <i class="fa-solid fa-info-circle"></i> Solo se encontró una ruta disponible para este destino
+           <i class="fa-solid fa-info-circle"></i> ${t('route_only_one')}
          </p>`
       : '';
 
@@ -2243,10 +2252,10 @@ document.getElementById('btn-calc-route').addEventListener('click', async () => 
 
   } catch (err) {
     console.error('[route]', err);
-    showToast('No se pudo calcular la ruta. Verifica el destino.', 'error');
+    showToast(t('toast_route_error'), 'error');
   }
 
-  btn.innerHTML = '<i class="fa-solid fa-route"></i> Ir';
+  btn.innerHTML = `<i class="fa-solid fa-route"></i> ${t('go')}`;
   btn.disabled  = false;
 });
 
@@ -2341,15 +2350,15 @@ function showLongPressPopup(map, lng, lat) {
 function openLongPressActionsPopup(lng, lat) {
   const html = `
     <div class="action-popup">
-      <div class="action-popup-title">¿Qué deseas hacer?</div>
+      <div class="action-popup-title">${t('what_to_do')}</div>
       <div class="action-popup-buttons">
         <button class="action-popup-btn" onclick="reportAtLongPress()">
           <i class="fa-solid fa-triangle-exclamation"></i>
-          Reportar incidencia
+          ${t('report_here')}
         </button>
         <button class="action-popup-btn" onclick="routeToLongPress()">
           <i class="fa-solid fa-route"></i>
-          Cómo llegar
+          ${t('how_to_get_there')}
         </button>
       </div>
     </div>
@@ -2360,13 +2369,13 @@ function openLongPressActionsPopup(lng, lat) {
 
 window.reportAtLongPress = function() {
   if (longPressMarker) longPressMarker.remove();
-  showToast('Ubicación seleccionada. Reporta el incidente.', 'info');
+  showToast(t('toast_loc_selected'), 'info');
   showView('reportar');
 };
 
 window.routeToLongPress = function() {
   if (!userLat || !longPressLat) {
-    showToast('Ubicación no disponible', 'error');
+    showToast(t('toast_no_location'), 'error');
     return;
   }
   if (longPressMarker) longPressMarker.remove();
@@ -2377,11 +2386,12 @@ window.routeToLongPress = function() {
   longPressLng = null;
 };
 
-async function calculateRouteToCoords(destLat, destLng, destLabel = 'Ubicación seleccionada') {
+async function calculateRouteToCoords(destLat, destLng, destLabel) {
   if (!userLat) {
-    showToast('Ubicación no disponible', 'error');
+    showToast(t('toast_no_location'), 'error');
     return;
   }
+  destLabel = destLabel || t('selected_location');
 
   closePopup();
 
@@ -2404,7 +2414,7 @@ async function calculateRouteToCoords(destLat, destLng, destLabel = 'Ubicación 
 
     const singleNote = scored.length === 1
       ? `<p style="font-size:0.75rem;color:var(--text-muted);text-align:center;padding:0 var(--space-md) var(--space-md);">
-           <i class="fa-solid fa-info-circle"></i> Solo se encontró una ruta disponible
+           <i class="fa-solid fa-info-circle"></i> ${t('route_only_one')}
          </p>`
       : '';
 
@@ -2414,7 +2424,7 @@ async function calculateRouteToCoords(destLat, destLng, destLabel = 'Ubicación 
 
   } catch (err) {
     console.error('[route]', err);
-    showToast('No se pudo calcular la ruta', 'error');
+    showToast(t('toast_route_error_s'), 'error');
   }
 }
 
@@ -2460,14 +2470,14 @@ window.submitReport = async function() {
     longPressLng = null;
 
     showView('mapa');
-    showToast('Incidente reportado correctamente', 'success');
+    showToast(t('toast_reported'), 'success');
   } catch (err) {
     console.error('[report]', err);
-    showToast('Error al enviar el reporte', 'error');
+    showToast(t('toast_report_err'), 'error');
   }
 
   btn.disabled  = false;
-  btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Enviar reporte';
+  btn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${t('send_report')}`;
 };
 
 // ── Guardian toggle ───────────────────────────────────────
@@ -2480,15 +2490,15 @@ window.toggleGuardian = async function(active) {
     if (active) {
       await activateGuardian();
       card.classList.add('active-guardian');
-      title.textContent = 'Guardian activo';
-      desc.textContent  = 'Estás acompañando a tu comunidad';
-      showToast('Modo Guardian activado', 'success');
+      title.textContent = t('guardian_active');
+      desc.textContent  = t('accompanying');
+      showToast(t('toast_guardian_on'), 'success');
     } else {
       await deactivateGuardian();
       card.classList.remove('active-guardian');
-      title.textContent = 'Activarme como Guardian';
-      desc.textContent  = 'Ayuda a otros usuarios cercanos';
-      showToast('Modo Guardian desactivado', 'info');
+      title.textContent = t('activate_guardian');
+      desc.textContent  = t('help_nearby_users');
+      showToast(t('toast_guardian_off'), 'info');
     }
   } catch (err) {
     console.error('[guardian toggle]', err);
@@ -2543,9 +2553,9 @@ window.deactivateSOSUI = async function() {
 
     if (result.success) {
       hideSosOverlay();
-      showToast('Alerta SOS desactivada', 'info');
+      showToast(t('toast_sos_off'), 'info');
     } else {
-      errEl.textContent = 'PIN incorrecto. Inténtalo de nuevo.';
+      errEl.textContent = t('sos_wrong_pin');
       errEl.classList.add('visible');
       document.getElementById('sos-pin-input').value = '';
     }
@@ -2596,25 +2606,25 @@ window.saveProfileInfo = async function() {
     await updateProfileInfo({ displayName: name || undefined, phone: phone || undefined });
     userProfile = await getProfile(currentUser.uid);
     renderProfileUI();
-    showToast('Perfil actualizado', 'success');
+    showToast(t('toast_profile_saved'), 'success');
   } catch (e) {
     console.error(e);
-    showToast('Error al guardar perfil', 'error');
+    showToast(t('toast_profile_err'), 'error');
   }
 };
 
 window.savePINs = async function() {
   const sosPIN  = document.getElementById('edit-sos-pin').value;
   const fakePIN = document.getElementById('edit-fake-pin').value;
-  if (!sosPIN) { showToast('El PIN real es obligatorio', 'error'); return; }
+  if (!sosPIN) { showToast(t('toast_pin_required'), 'error'); return; }
   try {
     await updatePINs({ sosPIN, fakePIN: fakePIN || null });
     document.getElementById('edit-sos-pin').value  = '';
     document.getElementById('edit-fake-pin').value = '';
-    showToast('PINs guardados', 'success');
+    showToast(t('toast_pins_saved'), 'success');
   } catch (e) {
     console.error(e);
-    showToast('Error al guardar PINs', 'error');
+    showToast(t('toast_pins_err'), 'error');
   }
 };
 
@@ -2655,10 +2665,10 @@ window.saveContacts = async function() {
   try {
     await updateTrustedContacts(contactRows);
     userProfile = await getProfile(currentUser.uid);
-    showToast('Contactos guardados', 'success');
+    showToast(t('toast_contacts_saved'), 'success');
   } catch (e) {
     console.error(e);
-    showToast('Error al guardar contactos', 'error');
+    showToast(t('toast_contacts_err'), 'error');
   }
 };
 

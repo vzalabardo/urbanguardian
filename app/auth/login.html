@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#121212">
-  <title>Urban Guardian — Iniciar sesión</title>
+  <title>Urban Guardian — Sign In</title>
   <link rel="stylesheet" href="../css/app.css">
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     .auth-screen {
@@ -74,8 +75,8 @@
       <div class="auth-logo">
         <i class="fa-solid fa-shield-halved"></i>
       </div>
-      <h2>Bienvenido de nuevo</h2>
-      <p class="text-muted">Inicia sesión para continuar</p>
+      <h2 data-i18n="welcome_back">Welcome back</h2>
+      <p class="text-muted" data-i18n="sign_in_to_continue">Sign in to continue</p>
     </div>
 
     <!-- Error banner -->
@@ -101,14 +102,14 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password">Contraseña</label>
+        <label class="form-label" for="password" data-i18n="password">Password</label>
         <div class="input-wrapper">
           <input
             class="form-input"
             type="password"
             id="password"
             name="password"
-            placeholder="Tu contraseña"
+            data-i18n-placeholder="your_password" placeholder="Your password"
             autocomplete="current-password"
             required
           >
@@ -119,11 +120,11 @@
       </div>
 
       <button type="button" class="btn btn-text" style="align-self:flex-end;padding-right:0;" onclick="window.location.href='#'">
-        ¿Olvidaste tu contraseña?
+        <span data-i18n="forgot_password">Forgot your password?</span>
       </button>
 
       <button type="submit" class="btn btn-primary btn-full btn-lg mt-md" id="btn-login">
-        Iniciar sesión
+        <span data-i18n="sign_in">Sign in</span>
       </button>
 
     </form>
@@ -132,14 +133,14 @@
 
     <button class="btn btn-ghost btn-full" id="btn-google" disabled style="opacity:0.5;cursor:not-allowed;">
       <i class="fa-brands fa-google"></i>
-      Continuar con Google
-      <span class="badge badge-primary text-xs" style="margin-left:auto;">Próximamente</span>
+      <span data-i18n="continue_google">Continue with Google</span>
+      <span class="badge badge-primary text-xs" style="margin-left:auto;" data-i18n="soon">Coming soon</span>
     </button>
 
     <!-- Footer -->
     <div class="auth-footer">
-      ¿No tienes cuenta?
-      <a href="register.html" style="font-weight:600;">Regístrate</a>
+      <span data-i18n="no_account">Don't have an account?</span>
+      <a href="register.html" style="font-weight:600;" data-i18n="register">Sign up</a>
     </div>
 
   </div>
@@ -172,25 +173,25 @@
     const errText  = document.getElementById('error-text');
 
     btn.disabled   = true;
-    btn.innerHTML  = '<span class="spinner"></span> Entrando…';
+    btn.innerHTML  = `<span class="spinner"></span> ${t('signing_in')}`;
     banner.classList.remove('visible');
 
     try {
       await loginWithEmail(email, password);
       window.location.href = '../map.html';
     } catch (err) {
-      let msg = 'Ocurrió un error. Inténtalo de nuevo.';
+      let msg = t('auth_err_generic');
       if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
-        msg = 'Email o contraseña incorrectos.';
+        msg = t('auth_err_invalid');
       } else if (err.code === 'auth/user-not-found') {
-        msg = 'No existe una cuenta con este email.';
+        msg = t('auth_err_not_found');
       } else if (err.code === 'auth/too-many-requests') {
-        msg = 'Demasiados intentos. Espera unos minutos.';
+        msg = t('auth_err_too_many');
       }
       errText.textContent = msg;
       banner.classList.add('visible');
       btn.disabled   = false;
-      btn.innerHTML  = 'Iniciar sesión';
+      btn.innerHTML  = t('sign_in');
     }
   });
 </script>
