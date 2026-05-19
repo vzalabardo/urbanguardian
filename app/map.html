@@ -2377,38 +2377,41 @@ window.routeToLongPress = function() {
   longPressLng = null;
 };
 
-async function calculateRouteToCoords(destLat, destLng) {
+async function calculateRouteToCoords(destLat, destLng, destLabel = 'Ubicación seleccionada') {
   if (!userLat) {
     showToast('Ubicación no disponible', 'error');
     return;
   }
 
+  closePopup();
+
   try {
-    const route = await fetchRoute(userLng, userLat, destLng, destLat);
-    if (!route) throw new Error('No se pudo calcular la ruta');
+    const allRoutes = await fetchRoutes(userLng, userLat, destLng, destLat);
 
-    drawRoute(route);
+    const scored = allRoutes
+      .map(r => ({ route: r, score: calcSafetyScore(r, incidents) }))
+      .sort((a, b) => b.score - a.score || a.route.duration - b.route.duration);
 
-    const distKm  = (route.distance / 1000).toFixed(1);
-    const durMins = Math.ceil(route.duration / 60);
-    const score   = calculateSafetyScore(route, incidents);
+    _routeState = { routes: scored.map(s => s.route), destLat, destLng, destName: destLabel };
 
-    document.getElementById('route-dist').textContent = `${distKm} km`;
-    document.getElementById('route-time').textContent = `${durMins} min`;
-    const safetyEl = document.getElementById('route-safety');
-    safetyEl.textContent = `${score}%`;
-    safetyEl.className   = `safety-score ${score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low'}`;
-    document.getElementById('route-info').classList.add('visible');
+    clearAllRoutes();
+    drawAllRoutes(scored.map(s => s.route));
+    flyTo((userLat + destLat) / 2, (userLng + destLng) / 2, 13);
 
-    await saveRoute({
-      origin:          { lat: userLat, lng: userLng },
-      destination:     { lat: destLat, lng: destLng, address: 'Ubicación seleccionada' },
-      route, safetyScore: score,
-      nearbyIncidents: incidents.map(i => i.id)
-    });
-    await incrementStat('routesCompleted');
+    const cards = scored.map((s, i) =>
+      routeCard(i, s.route, s.score, countNearIncidents(s.route))
+    ).join('');
 
-    showToast('Ruta calculada correctamente', 'success');
+    const singleNote = scored.length === 1
+      ? `<p style="font-size:0.75rem;color:var(--text-muted);text-align:center;padding:0 var(--space-md) var(--space-md);">
+           <i class="fa-solid fa-info-circle"></i> Solo se encontró una ruta disponible
+         </p>`
+      : '';
+
+    document.getElementById('route-sheet-dest').textContent = destLabel;
+    document.getElementById('route-options-list').innerHTML = cards + singleNote;
+    document.getElementById('route-sheet-backdrop').classList.add('open');
+
   } catch (err) {
     console.error('[route]', err);
     showToast('No se pudo calcular la ruta', 'error');
